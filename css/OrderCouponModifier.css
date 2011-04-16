@@ -1,0 +1,5 @@
+/* delivery */
+#OrderCouponModifier_Form_ModifierForm{background: #f9f9f9; border-top: 1px dotted #ccc; border-bottom: 1px dotted #ccc; padding: 0 1.5em;}
+	#OrderCouponModifier_Form_ModifierForm fieldset{width: 100%; overflow: auto;}
+		#OrderCouponModifier_Form_ModifierForm h2{float: left; margin: 0; padding: 0.8em 0 0 0;}
+		#OrderCouponModifier_Form_ModifierForm #PickupOrDeliveryType{float: right; clear: none; width: 372px; margin: 1.1em 0 1em 0; padding: 0;}
