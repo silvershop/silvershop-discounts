@@ -1,12 +1,13 @@
 <?php
 
+define('ECOMMERCE_COUPON_DIR','ecommerce_coupon');
 
 /**
  * developed by www.sunnysideup.co.nz
  * author: Nicolaas - modules [at] sunnysideup.co.nz
 **/
 Director::addRules(50, array(
-	OrderCouponModifier_AjaxController::get_url_segment().'//$Action/$ID/$OtherID' => 'OrderCouponModifier_Controller'
+	OrderCouponModifier_Controller::get_url_segment().'//$Action/$ID/$OtherID' => 'OrderCouponModifier_Controller'
 ));
 
 

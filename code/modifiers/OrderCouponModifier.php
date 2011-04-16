@@ -68,11 +68,11 @@ class OrderCouponModifier extends OrderModifier {
 		//Requirements::themedCSS("OrderCouponModifier");
 		Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
 		Requirements::javascript(THIRDPARTY_DIR."/jquery-form/jquery.form.js");
-		Requirements::javascript("ecommerce_discount_coupon/javascript/OrderCouponModifier.js");
+		Requirements::javascript(ECOMMERCE_COUPON_DIR."/javascript/OrderCouponModifier.js");
 		$fields = new FieldSet();
 		$fields->push(new TextField('CouponCode',_t("OrderCouponModifier.COUPON", 'Coupon')));
 		$actions = new FieldSet(new FormAction('applycoupon', _t("OrderCouponModifier.APPLY", 'Apply')));
-		$controller = new OrderCouponModifier_AjaxController();
+		$controller = new OrderCouponModifier_Controller();
 		$validator = null;
 		return new OrderCouponModifier_Form($controller, 'ModifierForm', $fields, $actions, $validator);
 	}
@@ -299,6 +299,7 @@ class OrderCouponModifier_Controller extends Controller {
 			$modifiers = $order->Modifiers();
 			if($modifiers) {
 				foreach($modifiers as $modifier) {
+					//TODO: absstract or tidy this to become part of OrderModifier_Controller
 					if ($modifier InstanceOf OrderCouponModifier) {
 						$modifier->updateCouponCodeEntered($newOption);
 						$modifier->runUpdate();

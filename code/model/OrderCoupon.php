@@ -1,7 +1,9 @@
 <?php
 
 /**
- *@author nicolaas [at] sunnysideup.co.nz
+ *OrderCoupon
+ * 
+ *@author nicolaas [at] sunnysideup.co.nz, jeremy [at] burnbright.co.nz
  *
  **/
 
@@ -14,6 +16,8 @@ class OrderCoupon extends DataObject {
 		"DiscountAbsolute" => "Currency",
 		"DiscountPercentage" => "Decimal(4,2)",
 		//"CanOnlyBeUsedOnce" => "Boolean",
+		
+		//TODO: Order must be greater than...
 		
 		"UseLimit" => 'Int'
 	);
@@ -30,7 +34,7 @@ class OrderCoupon extends DataObject {
 	public static $field_labels = array(
 		"DiscountAbsolute" => "Discount as absolute reduction of total - if any (e.g. 10 = -$10.00)",
 		"DiscountPercentage" => "Discount as percentage of total - if any (e.g. 10 = -10%)",
-		"UseCount" => "number of times the code has been used"
+		"UseLimit" => "number of times the code can been used. (or enter 0 for unlimited)"
 	);
 
 	public static $summary_fields = array(
@@ -96,6 +100,9 @@ class OrderCoupon extends DataObject {
 
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
+		
+		//TODO: only allow entering percentage, OR ammount
+		
 		return $fields;
 	}
 
