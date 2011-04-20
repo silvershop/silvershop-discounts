@@ -15,6 +15,5 @@ Director::addRules(50, array(
 //===================---------------- START ecommerce_discount_coupon MODULE ----------------===================
 //NOTE: add http://svn.gpmd.net/svn/open/multiselectfield/tags/0.2/ for nicer interface
 //DiscountCoupon::set_form_header("Delivery Option (REQUIRED)"); //doesn't work
-ProductsAndGroupsModelAdmin::add_managed_model("OrderCoupon");
 Order::set_modifiers(array('OrderCouponModifier'));
 //===================---------------- END ecommerce_discount_coupon MODULE ----------------===================
