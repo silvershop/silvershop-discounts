@@ -33,8 +33,10 @@ class OrderCouponModifier extends OrderModifier {
 	}
 
 	public static $singular_name = "Order Coupon Reduction";
+		function i18n_singular_name() { return _t("OrderCouponModifier.ORDERCOUPONREDUCTION", "Order Coupon Reduction");}
 
 	public static $plural_name = "Order Coupon Reductions";
+		function i18n_plural_name() { return _t("OrderCouponModifier.ORDERCOUPONREDUCTIONS", "Order Coupon Reductions");}
 
 // ######################################## *** other (non) static variables (e.g. protected static $special_name_for_something, protected $order)
 
@@ -56,8 +58,8 @@ class OrderCouponModifier extends OrderModifier {
 	}
 
 	public static function init_for_order($className) {
-		
-		
+
+
 	}
 
 // ######################################## *** form functions (e. g. showform and getform)
@@ -67,15 +69,18 @@ class OrderCouponModifier extends OrderModifier {
 		return true;
 	}
 
+	function getModifierForm($controller) {
+		return self::get_form();
+	}
 	static function get_form($controller) {
 		//Requirements::themedCSS("OrderCouponModifier");
 		//Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
 		//Requirements::javascript(THIRDPARTY_DIR."/jquery-form/jquery.form.js");
 		//Requirements::javascript(ECOMMERCE_COUPON_DIR."/javascript/OrderCouponModifier.js");
-		
-		
+
+
 		return new CouponForm(null,"CouponForm");
-		
+
 		/*
 		$fields = new FieldSet();
 		$fields->push(new TextField('CouponCode',_t("OrderCouponModifier.COUPON", 'Coupon')));
@@ -135,7 +140,7 @@ class OrderCouponModifier extends OrderModifier {
 	/**
 	*@return boolean
 	**/
-	public function CanRemove() {
+	public function CanBeRemoved() {
 		return true;
 	}
 
@@ -216,12 +221,12 @@ class OrderCouponModifier extends OrderModifier {
 	*@return float
 	**/
 
-	protected function LiveAmount() {
+	protected function LiveCalculationValue() {
 		if(!self::$actual_deductions) {
 			self::$actual_deductions = 0;
 			$subTotal = $this->LiveSubTotalAmount();
 			if($coupon = $this->OrderCoupon()) {
-				self::$actual_deductions = $coupon->getDiscountValue($subTotal); 
+				self::$actual_deductions = $coupon->getDiscountValue($subTotal);
 			}
 			if($subTotal < self::$actual_deductions) {
 				self::$actual_deductions = $subTotal;
@@ -260,34 +265,34 @@ class OrderCouponModifier extends OrderModifier {
 
 //TODO: shift some of this to Modifer_Form
 class CouponForm extends OrderModifierForm{
-	
+
 	function __construct($controller = null, $name){
-				 
+
 		$fields = new FieldSet();
 		$fields->push(new HeaderField('CouponHeading',_t("CouponForm.COUPONHEADING", 'Coupon/Voucher Code'),3));
 		$fields->push(new TextField('Code',_t("CouponForm.COUPON", 'Enter your coupon code if you have one.')));
 		$actions = new FieldSet(new FormAction('apply', _t("CouponForm.APPLY", 'Apply')));
 		$validator = new CouponFormValidator(array('Code'));
-		
+
 		parent::__construct($controller, $name, $fields, $actions, $validator);
 	}
-	
+
 	function apply($data,$form){
-		
+
 		$coupon = OrderCoupon::get_by_code($data['Code']);
-			
+
 		//add a new discount modifier to the cart, linking to the entered coupon
-		
+
 		//check it hasn't already been added/ used up
 		//create new modifier
 		$modifier = new OrderCouponModifier();
 		$modifier->OrderCouponID = $coupon->ID;
 		$modifier->write();
-		
+
 		ShoppingCart::add_new_modifier($modifier);
-		
+
 		//TODO: introduce retry/lockout time per IP address
-		
+
 		$successmessage = sprintf(_t("OrderCouponModifier.APPLIED",'%s - has been applied'),$coupon->Title);
 
 		//Order::save_current_order();
@@ -300,21 +305,21 @@ class CouponForm extends OrderModifierForm{
 		}
 		return;
 	}
-	
+
 }
 
 
 class CouponFormValidator extends RequiredFields{
-	
+
 	function php($data) {
 		$valid = parent::php($data);
 		//check the coupon exists, and can be used
 		if(!OrderCoupon::get_by_code($data['Code'])){
-			$this->validationError('Code',_t("OrderCouponModifier.NOTFOUND","Sorry, that coupon could not be found"),"bad");		
+			$this->validationError('Code',_t("OrderCouponModifier.NOTFOUND","Sorry, that coupon could not be found"),"bad");
 		}
-		return $valid;	
+		return $valid;
 	}
-	
+
 }
 
 //DELETE THESE:
@@ -324,7 +329,7 @@ class OrderCouponModifier_Form extends OrderModifierForm {
 	public function applycoupon($data, $form) {
 		if(isset($data['CouponCode'])) {
 			$newOption = Convert::raw2sql($request['CouponCode']);
-			
+
 			$order = ShoppingCart::current_order();
 			$modifiers = $order->Modifiers();
 			if($modifiers) {
@@ -334,7 +339,7 @@ class OrderCouponModifier_Form extends OrderModifierForm {
 					}
 				}
 			}
-			
+
 		}
 
 	}
