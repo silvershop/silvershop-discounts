@@ -9,6 +9,8 @@ TODO:
 	-ie: OrderCupon $has_many = array('FreeItems' => 'OrderItem');
 	-"foo" could be nothing
 
+* improve cmsFields
+* Prevent creating a cupon with the same code
 
 Changes:
 * Renamed every instance of DiscountCoupon (or similar) to OrderCoupon
