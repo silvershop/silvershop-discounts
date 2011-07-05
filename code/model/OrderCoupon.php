@@ -114,13 +114,14 @@ class OrderCoupon extends DataObject {
 	}
 
 	function getDiscountValue($subTotal){
+		$discount = 0;
 		if($this->DiscountAbsolute) {
-			return abs($this->Value);
+			$discount += abs($this->Value);
 		}
 		if($this->PercentageDiscount) {
-			return $subTotal * ($this->PercentageDiscount / 100);
+			$discount += $subTotal * ($this->PercentageDiscount / 100);
 		}
-		return 0;
+		return $discount;
 	}
 
 
