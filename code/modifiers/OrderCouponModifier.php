@@ -127,7 +127,7 @@ class OrderCouponModifier extends OrderModifier {
 	*@return boolean
 	**/
 	public function ShowInTable() {
-		return true;
+		return $this->OrderCouponID ?  true : false;
 	}
 
 	/**
@@ -213,8 +213,11 @@ class OrderCouponModifier extends OrderModifier {
 	**/
 
 	protected function LiveSubTotalAmount() {
-		$order = $this->Order();
-		return $order->SubTotal();
+		if($this->LiveOrderCouponID()) {
+			$order = $this->Order();
+			return $order->SubTotal();
+		}
+		return 0;
 	}
 
 	/**
@@ -227,9 +230,10 @@ class OrderCouponModifier extends OrderModifier {
 			$subTotal = $this->LiveSubTotalAmount();
 			if($coupon = $this->OrderCoupon()) {
 				self::$actual_deductions = $coupon->getDiscountValue($subTotal);
-			}
-			if($subTotal < self::$actual_deductions) {
-				self::$actual_deductions = $subTotal;
+				if($subTotal < self::$actual_deductions) {
+					self::$actual_deductions = $subTotal;
+				}
+				
 			}
 		}
 		return self::$actual_deductions;
