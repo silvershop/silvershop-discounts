@@ -154,16 +154,14 @@ class OrderCouponModifier extends OrderModifier {
 	/**
 	*@return float
 	**/
-	public function CartValue() {
+	public function CartValue() {return $this->getCartValue();}
+	public function getCartValue() {
 		return $this->Amount * -1;
 	}
 
 	/**
 	*@return string
 	**/
-	public function TableTitle() {
-		return $this->Name;
-	}
 
 // ######################################## ***  inner calculations.... USES CALCULATED VALUES
 
@@ -233,7 +231,7 @@ class OrderCouponModifier extends OrderModifier {
 				if($subTotal < self::$actual_deductions) {
 					self::$actual_deductions = $subTotal;
 				}
-				
+
 			}
 		}
 		return self::$actual_deductions;

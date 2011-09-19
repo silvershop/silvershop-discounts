@@ -78,7 +78,8 @@ class OrderCoupon extends DataObject {
 		return DataObject::get_one('OrderCoupon',"\"Code\" = UPPER('$code')");
 	}
 
-	function UseCount() {
+	function UseCount() {return $this->getUseCount();}
+	function getUseCount() {
 		$objects = DataObject::get("OrderCouponModifier", "\"OrderCouponID\" = ".$this->ID);
 		if($objects) {
 			return $objects->count();
@@ -86,13 +87,12 @@ class OrderCoupon extends DataObject {
 		return 0;
 	}
 
-	function IsValid() {
-
+	function IsValid() {return $this->getIsValid();}
+	function getIsValid() {
 		if($this->UseLimit > 0 && $this->UseCount() < $this->UseLimit) {
 			//$this->getForm()->sessionMessage(_t("OrderCoupon.LIMITREACHED","Limit of $this->UseLimit has been reached"),'bad');
 			return false;
 		}
-
 		//TODO:check order minimum
 
 		$startDate = strtotime($this->StartDate);
