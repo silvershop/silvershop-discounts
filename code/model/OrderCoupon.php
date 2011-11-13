@@ -69,7 +69,7 @@ class OrderCoupon extends DataObject {
 	public static $singular_name = "Order Coupon";
 		function i18n_singular_name() { return _t("OrderCoupon.ORDERCOUPON", "Order Coupon");}
 
-	public static $plural_name = "Order Coupon";
+	public static $plural_name = "Order Coupons";
 		function i18n_plural_name() { return _t("OrderCoupon.ORDERCOUPONS", "Order Coupons");}
 
 	public static $default_sort = "EndDate DESC, StartDate DESC";
