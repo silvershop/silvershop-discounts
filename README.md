@@ -1,4 +1,4 @@
-# Discounts - SilverStripe Submodule
+# Discount - SilverStripe Shop SubModule
 
 Allows creating discounts for products / orders.
 
