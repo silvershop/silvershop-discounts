@@ -1,0 +1,21 @@
+OrderCoupon:
+	coupon1:
+		Title: 50% off coupon
+		Code: 5B97AA9D75
+		Amount:
+		Percent: 0.05
+		Active: true
+		StartDate:
+		EndDate:
+	expiredcoupon:
+		Title: Save lots
+		Code: 04994C332A
+		Percent: 0.8
+		Active: true
+		StartDate:
+		EndDate: 12/12/1990
+	inactivecoupon:
+		Title: Not active
+		Code: EE891574D6
+		Amount: 10
+		

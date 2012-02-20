@@ -1,20 +1,13 @@
 <?php
 
 /**
- * @author Nicolaas [at] sunnysideup.co.nz
- * @package: ecommerce
- * @sub-package: ecommerce_delivery
- * @description: Shipping calculation scheme based on SimpleShippingModifier.
- * It lets you set fixed shipping costs, or a fixed
- * cost for each region you're delivering to.
+ * Order Coupon Modifier
+ * Enter description here ...
  */
 
 class OrderCouponModifier extends OrderModifier {
 
-// ######################################## *** model defining static variables (e.g. $db, $has_one)
-
 	public static $db = array(
-		'DebugString' => 'HTMLText',
 		'SubTotalAmount' => 'Currency',
 		'CouponCodeEntered' => 'Varchar(100)'
 	);
@@ -24,8 +17,6 @@ class OrderCouponModifier extends OrderModifier {
 	);
 
 	public static $defaults = array("Type" => "Deductable");
-
-// ######################################## *** cms variables + functions (e.g. getCMSFields, $searchableFields)
 
 	function getCMSFields() {
 		$fields = parent::getCMSFields();
@@ -43,18 +34,16 @@ class OrderCouponModifier extends OrderModifier {
 	public static $plural_name = "Order Coupon Reductions";
 		function i18n_plural_name() { return _t("OrderCouponModifier.ORDERCOUPONREDUCTIONS", "Order Coupon Reductions");}
 
-// ######################################## *** other (non) static variables (e.g. protected static $special_name_for_something, protected $order)
-
 	protected static $actual_deductions = 0;
-
-	protected $debugMessage = "";
 
 	protected static $code_entered = '';
 		static function set_code_entered($s) {self::$code_entered = $s;}
 		static function get_code_entered() {return self::$code_entered;}
 
-// ######################################## *** CRUD functions (e.g. canEdit)
-// ######################################## *** init and update functions
+	/** 
+	 * CRUD functions (e.g. canEdit)
+	 *  init and update functions
+	 */
 	public function runUpdate() {
 		$this->checkField("SubTotalAmount");
 		$this->checkField("CouponCodeEntered");
@@ -64,12 +53,11 @@ class OrderCouponModifier extends OrderModifier {
 
 	public static function init_for_order($className) {
 
-
 	}
 
-// ######################################## *** form functions (e. g. showform and getform)
-
-
+	/** 
+	 * form functions (e. g. showform and getform)
+	 */
 	static function show_form() {
 		return true;
 	}
@@ -78,24 +66,8 @@ class OrderCouponModifier extends OrderModifier {
 		return self::get_form();
 	}
 	static function get_form($controller) {
-		//Requirements::themedCSS("OrderCouponModifier");
-		//Requirements::javascript(THIRDPARTY_DIR."/jquery/jquery.js");
-		//Requirements::javascript(THIRDPARTY_DIR."/jquery-form/jquery.form.js");
-		//Requirements::javascript(ECOMMERCE_COUPON_DIR."/javascript/OrderCouponModifier.js");
-
-
-		return new CouponForm(null,"CouponForm");
-
-		/*
-		$fields = new FieldSet();
-		$fields->push(new TextField('CouponCode',_t("OrderCouponModifier.COUPON", 'Coupon')));
-		$actions = new FieldSet(new FormAction('applycoupon', _t("OrderCouponModifier.APPLY", 'Apply')));
-		$controller = new OrderCouponModifier_Controller();
-		$validator = null;
-		return new OrderCouponModifier_Form($controller, $this->Name.'Form', $fields, $actions, $validator);
-		*/
+		return new CouponForm($controller,"CouponForm");
 	}
-
 
 	public function updateCouponCodeEntered($code) {
 		self::set_code_entered($code);
@@ -118,60 +90,56 @@ class OrderCouponModifier extends OrderModifier {
 		$this->write();
 	}
 
-
 	public function setCouponByID($discountCouponID) {
 		$this->OrderCouponID = $discountCouponID;
 		$this->write();
 	}
 
-
-
-// ######################################## *** template functions (e.g. ShowInTable, TableTitle, etc...) ... USES DB VALUES
-
-	/**
-	*@return boolean
-	**/
+	/** 
+	 * template functions (e.g. ShowInTable, TableTitle, etc...) ... USES DB VALUES
+	 * @return boolean
+	 */
 	public function ShowInTable() {
 		return $this->OrderCouponID ?  true : false;
 	}
 
 	/**
-	*@return boolean
-	**/
+	 * @return boolean
+	 */
 	function CanBeHiddenAfterAjaxUpdate() {
 		return !$this->CouponCodeEntered;
 	}
 
 	/**
-	*@return boolean
-	**/
+	 * @return boolean
+	 */
 	public function CanBeRemoved() {
 		return true;
 	}
 
 	/**
-	*@return float
-	**/
+	 * @return float
+	 */
 	public function TableValue() {
 		return $this->Amount * -1;
 	}
 
 	/**
-	*@return float
-	**/
+	 * @return float
+	 */
 	public function CartValue() {return $this->getCartValue();}
 	public function getCartValue() {
 		return $this->Amount * -1;
 	}
 
 	/**
-	*@return string
-	**/
+	 * @return string
+	 */
 
-// ######################################## ***  inner calculations.... USES CALCULATED VALUES
-
-// ######################################## *** calculate database fields: protected function Live[field name]  ... USES CALCULATED VALUES
-
+	/** 
+	 *  inner calculations.... USES CALCULATED VALUES
+	 * calculate database fields: protected function Live[field name]  ... USES CALCULATED VALUES
+	 */
 	function LiveCouponCodeEntered (){
 		if($newCode = trim(self::get_code_entered())) {
 			return $newCode;
@@ -180,8 +148,8 @@ class OrderCouponModifier extends OrderModifier {
 	}
 
 	/**
-	*@return int
-	**/
+	 * @return int
+	 */
 	protected function LiveName() {
 		$code = $this->LiveCouponCodeEntered();
 		$coupon = $this->LiveOrderCoupon();
@@ -195,26 +163,24 @@ class OrderCouponModifier extends OrderModifier {
 	}
 
 	/**
-	*@return int
-	**/
+	 * @return int
+	 */
 	protected function LiveOrderCouponID() {
 		return $this->OrderCouponID;
 	}
 
 	/**
-	*@return OrderCoupon
-	**/
+	 * @return OrderCoupon
+	 */
 	protected function LiveOrderCoupon() {
 		if($id = $this->LiveOrderCouponID()){
 			return DataObject::get_by_id("OrderCoupon", $id);
 		}
 	}
 
-
 	/**
-	*@return float
-	**/
-
+	 * @return float
+	 */
 	protected function LiveSubTotalAmount() {
 		if($this->LiveOrderCouponID()) {
 			$order = $this->Order();
@@ -224,9 +190,8 @@ class OrderCouponModifier extends OrderModifier {
 	}
 
 	/**
-	*@return float
-	**/
-
+	 * @return float
+	 **/
 	protected function LiveCalculationValue() {
 		if(!self::$actual_deductions) {
 			self::$actual_deductions = 0;
@@ -242,20 +207,16 @@ class OrderCouponModifier extends OrderModifier {
 		return self::$actual_deductions;
 	}
 
-
-	protected function LiveDebugString() {
-		return $this->debugMessage;
-	}
-
-
-// ######################################## *** Type Functions (IsChargeable, IsDeductable, IsNoChange, IsRemoved)
-
+	/** 
+	 * Type Functions (IsChargeable, IsDeductable, IsNoChange, IsRemoved)
+	 */
 	public function IsDeductable() {
 		return true;
 	}
 
-// ######################################## *** standard database related functions (e.g. onBeforeWrite, onAfterWrite, etc...)
-
+	/** 
+	 * standard database related functions (e.g. onBeforeWrite, onAfterWrite, etc...)
+	 */
 	function onBeforeWrite() {
 		parent::onBeforeWrite();
 	}
@@ -263,10 +224,6 @@ class OrderCouponModifier extends OrderModifier {
 	function requireDefaultRecords() {
 		parent::requireDefaultRecords();
 	}
-
-// ######################################## *** AJAX related functions
-
-// ######################################## *** debug functions
 
 }
 
@@ -381,6 +338,5 @@ class OrderCouponModifier_Controller extends Controller {
 	function Link() {
 		return self::get_url_segment();
 	}
-
 
 }

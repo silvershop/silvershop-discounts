@@ -6,6 +6,8 @@ Allows creating discounts for products / orders.
  * discount coupons
  * credit notes
 
+Discounts can be applied to all products (ie order subtotal), or to individual products.
+
 ## Requirements
 
  * Shop Module + its own requirements
