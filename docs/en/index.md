@@ -17,5 +17,10 @@ Discounts come in two forms:
  
 ### Common use cases
  
-  * Unique coupon codes per customer, for a one-time sale.
-  * Single coupon code, with an expiry date, to be used by many people. 
+ * Unique coupon codes per customer, for a one-time sale.
+ * Coupon code, with an expiry date, to be used by many people.
+ * Coupon to use on a single product.
+  
+### System Restrictions
+
+ * Multiple coupons cannot be used for a single product.

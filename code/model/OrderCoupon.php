@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Order Coupon - applies a discount when entered at checkout.
+ * Applies a discount to current order, if applicable, when entered at checkout.
+ * @package shop-discounts
  */
-
 class OrderCoupon extends DataObject {
 
 	static $db = array(
@@ -19,6 +19,7 @@ class OrderCoupon extends DataObject {
 		"EndDate" => "Datetime",
 		"UseLimit" => "Int",
 		"MinOrderValue" => "Currency",
+		//per-order use limit
 	);
 	
 	static $defaults = array(
@@ -26,13 +27,8 @@ class OrderCoupon extends DataObject {
 		"UseLimit" => 1
 	);
 
-	static $has_many = array(
-		//'FreeItems' => 'OrderItem'
-		//'SpecificProducts' => 'Product' //ie: not for any order
-	);
-
-	static $casting = array(
-		"IsValid" => "Boolean"
+	static $many_many = array(
+		"Products" => "Product" //for restricting to product(s)
 	);
 
 	static $searchable_fields = array(
@@ -55,10 +51,9 @@ class OrderCoupon extends DataObject {
 	);
 
 	static $singular_name = "Discount";
-	function i18n_singular_name() { return _t("OrderCoupon.ORDERCOUPON", "Order Coupon");}
-
+	function i18n_singular_name() { return _t("OrderCoupon.COUPON", "Coupon");}
 	static $plural_name = "Discounts";
-	function i18n_plural_name() { return _t("OrderCoupon.ORDERCOUPONS", "Order Coupons");}
+	function i18n_plural_name() { return _t("OrderCoupon.COUPONS", "Coupons");}
 
 	static $default_sort = "EndDate DESC, StartDate DESC";
 	
@@ -67,7 +62,7 @@ class OrderCoupon extends DataObject {
 	static function get_by_code($code){
 		return DataObject::get_one('OrderCoupon',"\"Code\" = UPPER('$code')");
 	}
-
+	
 	/**
 	* Generates a unique code.
 	* @return string - new code
@@ -81,8 +76,97 @@ class OrderCoupon extends DataObject {
 		return $code;
 	}
 	
+	function getCMSFields($params = null){
+		$fields = parent::getCMSFields($params);
+		$fields->removeByName("Products");
+		$products = new ManyManyComplexTableField($this, "Products", "Product");
+		$fields->addFieldToTab("Root.Products", $products);
+		return $fields;
+	}
+	
 	function populateDefaults() {
 		$this->Code = self::generateCode();
+	}
+
+	/**
+	 * Self check if the coupon can be used.
+	 * @return boolean
+	 */
+	function valid($cart = null){
+		if(!$this->Active){
+			$this->validationerror = _t("OrderCoupon.INACTIVE","This coupon is not active.");
+			return false;
+		}
+		if($this->UseLimit > 0 && $this->getUseCount() < $this->UseLimit) {
+			$this->validationerror = _t("OrderCoupon.LIMITREACHED","Limit of $this->UseLimit uses for this code has been reached.");
+			return false;
+		}
+		$startDate = strtotime($this->StartDate);
+		$endDate = strtotime($this->EndDate);
+		$today = strtotime("today");
+		$yesterday = strtotime("yesterday");
+		if($endDate && $endDate < $yesterday){
+			$this->validationerror = _t("OrderCoupon.EXPIRED","This coupon has already expired.");
+			return false;
+		}
+		if($startDate && $startDate > $today){
+			$this->validationerror = _t("OrderCoupon.TOOEARLY","It is too early to use this coupon.");
+			return false;
+		}
+		
+		if($cart && $order = $cart->current()){
+			if($this->MinOrderValue && $order->SubTotal() < $this->MinOrderValue){
+				$this->validationerror = sprintf(_t("OrderCouponModifier.MINORDERVALUE","The minimum order value has not been reached."),$this->MinOrderValue);
+				return false;
+			}
+			$products = $this->Products();
+			if($products->exists()){
+				$incart = false;
+				foreach($products as $product){
+					if($cart->get($product)){
+						$incart = true;
+						break;
+					}
+				}
+				if(!$incart){
+					$this->validationerror = _t("OrderCouponModifier.PRODUCTNOTINCART","The required product is not in the cart.");
+					return false;
+				}
+			}
+			
+			//TODO: limited number of uses
+			
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Works out the discount on a given value.
+	 * @param float $subTotal
+	 * @return calculated discount
+	 */
+	function getDiscountValue($subTotal){
+		$discount = 0;
+		if($this->Amount) {
+			$discount += abs($this->Amount);
+		}
+		if($this->Percent) {
+			$discount += $subTotal * $this->Percent;
+		}
+		return $discount;
+	}
+	
+	/**
+	* How many times the coupon has been used.
+	* @return int
+	*/
+	function getUseCount() {
+		$objects = DataObject::get("OrderCouponModifier", "\"OrderCouponID\" = ".$this->ID);
+		if($objects) {
+			return $objects->count();
+		}
+		return 0;
 	}
 	
 	/**
@@ -94,59 +178,6 @@ class OrderCoupon extends DataObject {
 		$this->setField("Code", strtoupper($code));
 	}
 	
-	/**
-	 * How many times the coupon has been used.
-	 * @return int
-	 */
-	function getUseCount() {
-		$objects = DataObject::get("OrderCouponModifier", "\"OrderCouponID\" = ".$this->ID);
-		if($objects) {
-			return $objects->count();
-		}
-		return 0;
-	}
-
-	/**
-	 * Check if the coupon can be used
-	 * @return boolean
-	 */
-	function getIsValid() {
-		//has the code been used
-		if($this->UseLimit > 0 && $this->getUseCount() < $this->UseLimit) {
-			$this->validationerror = _t("OrderCoupon.LIMITREACHED","Limit of $this->UseLimit uses for this code has been reached.");
-			return false;
-		}
-		//TODO:check order minimum - this should be in a CouponValidator
-
-		$startDate = strtotime($this->StartDate);
-		$endDate = strtotime($this->EndDate);
-		$today = strtotime("today");
-		$yesterday = strtotime("yesterday");
-
-		if($this->EndDate && $endDate < $yesterday){
-			$this->validationerror = _t("OrderCoupon.EXPIRED","This coupon has already expired.");
-			return false;
-		}
-
-		if($this->StartDate && $startDate > $today){
-			$this->validationerror = _t("OrderCoupon.TOOEARLY","It is too early to use this coupon.");
-			return false;
-		}
-
-		return true;
-	}
-
-	function getDiscountValue($subTotal){
-		$discount = 0;
-		if($this->DiscountAbsolute) {
-			$discount += abs($this->Value);
-		}
-		if($this->PercentageDiscount) {
-			$discount += $subTotal * ($this->PercentageDiscount / 100);
-		}
-		return $discount;
-	}
-
 
 	function canDelete($member = null) {
 		return $this->canEdit($member);
@@ -158,6 +189,5 @@ class OrderCoupon extends DataObject {
 		}
 		return true;
 	}
-	
 
 }

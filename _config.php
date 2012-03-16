@@ -1,8 +1,6 @@
 <?php
 
 define('ECOMMERCE_COUPON_DIR','shop_discount');
-Director::addRules(50, array(
-	OrderCouponModifier_Controller::get_url_segment().'//$Action/$ID/$OtherID' => 'OrderCouponModifier_Controller'
-));
-
-Order::set_modifiers(array('OrderCouponModifier'));
+Object::add_extension("CheckoutPage_Controller", "CouponFormCheckoutDecorator");
+DataObject::add_extension("Product_OrderItem", "DiscountedOrderItem");
+DataObject::add_extension("CheckoutPage_Controller", "Product_OrderItem_Coupon");

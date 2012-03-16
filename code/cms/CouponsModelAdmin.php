@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author Nicolaas [at] sunnysideup.co.nz, jeremy [at] burnbright.co.nz
+ * @package shop-discounts
  **/
 
 class CouponsModelAdmin extends ModelAdmin {
@@ -66,7 +66,10 @@ class CouponsModelAdmin extends ModelAdmin {
 	
 
 }
-//remove side forms
+/**
+ * Removes empty before import option
+ * @package shop-discount
+ */
 class CouponsModelAdmin_CollectionController extends ModelAdmin_CollectionController {
 
 	//public function CreateForm() {return false;}
@@ -105,6 +108,9 @@ class CouponsModelAdmin_CollectionController extends ModelAdmin_CollectionContro
 
 }
 
+/**
+ * @package shop-discount
+ */
 class CouponsModelAdmin_RecordController extends ModelAdmin_RecordController{
 
 }

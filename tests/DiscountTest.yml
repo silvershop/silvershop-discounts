@@ -1,12 +1,17 @@
 OrderCoupon:
-	coupon1:
-		Title: 50% off coupon
+	validcoupon:
+		Title: 50% + $2 off coupon
 		Code: 5B97AA9D75
-		Amount:
-		Percent: 0.05
+		Amount: 2
+		Percent: 0.50
 		Active: true
-		StartDate:
-		EndDate:
+		StartDate: 2000-01-01 12:00:00
+		EndDate: 2200-01-01 12:00:00
+	unreleasedcoupon:
+		Title: Unreleased $10 off
+		Code: 0444444440
+		Amount: 10
+		StartDate: 2200-01-01 12:00:00
 	expiredcoupon:
 		Title: Save lots
 		Code: 04994C332A
@@ -18,4 +23,4 @@ OrderCoupon:
 		Title: Not active
 		Code: EE891574D6
 		Amount: 10
-		
+		Active: false
