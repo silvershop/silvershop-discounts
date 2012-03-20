@@ -6,12 +6,10 @@
 
 class CouponsModelAdmin extends ModelAdmin {
 
-	static $menu_priority = 4;
+	static $menu_priority = 2;
 
 	public static $collection_controller_class = "CouponsModelAdmin_CollectionController";
-
 	public static $record_controller_class = "CouponsModelAdmin_RecordController";
-
 	public static $managed_models = array("OrderCoupon");
 
 	public static function set_managed_models(array $array) {
@@ -20,48 +18,44 @@ class CouponsModelAdmin extends ModelAdmin {
 	public static function add_managed_model($item) {self::$managed_models[] = $item;}
 	
 	public static $url_segment = 'coupons';
-
 	public static $menu_title = 'Coupons';
 	
 	public static $model_importers = array(
 		'Product' => 'CouponBulkLoader',
 	);
 	
-	
 	function GenerateCouponsForm(){
-		
-		$fields = Object::create('OrderCoupon')->scaffoldFormFields();	
-		
+		$fields = Object::create('OrderCoupon')->scaffoldFormFields();
 		$fields->insertBefore(new HeaderField('generatorhead','Generate Coupons'),'Title');
 		$fields->insertBefore(new NumericField('Number','Number of coupons to generate'),'Title');
 		$fields->removeByName('Code');
 		
+		$fields->fieldByName('StartDate')->getDateField()->setConfig('showcalendar',true);
+		//$fields->fieldByName('StartDate')->getTimeField()->setConfig('showdropdown',true);
+		$fields->fieldByName('EndDate')->getDateField()->setConfig('showcalendar',true);
+		//$fields->fieldByName('EndDate')->getTimeField()->setConfig('showdropdown',true);
+		
 		$actions = new FieldSet(
 			new FormAction('generate','Generate')
 		);
-		
 		$validator = new RequiredFields(array(
 			'Title',
 			'Number'
 		));
-		
 		return new Form($this,"GenerateCouponsForm",$fields,$actions,$validator);
 	}
 	
 	function generate($data,$form){
-		
 		$count = 1;
 		if(isset($data['Number']) && is_numeric($data['Number']))
 			$count = (int)$data['Number'];
-			
 		for($i = 0; $i < $count; $i++){
 			$coupon = new OrderCoupon();
 			$form->saveInto($coupon);
-			$coupon->Code = OrderCoupon::generateNewCode();
+			$coupon->Code = OrderCoupon::generateCode();
 			$coupon->write();
 		}
-		
-		return "Generated $count coupons, now click 'Search' to see them";
+		return _t("CouponsModelAdmin.GENERATEDCOUPONS","Generated $count coupons, now click 'Search' to see them");
 	}
 	
 
@@ -71,9 +65,6 @@ class CouponsModelAdmin extends ModelAdmin {
  * @package shop-discount
  */
 class CouponsModelAdmin_CollectionController extends ModelAdmin_CollectionController {
-
-	//public function CreateForm() {return false;}
-	//public function ImportForm() {return false;}
 	
 	 //note that these are called once for each $managed_models
 	
@@ -85,7 +76,6 @@ class CouponsModelAdmin_CollectionController extends ModelAdmin_CollectionContro
 		}
 		return $form;
 	}
-	
 	
 	//TODO: Half-started attempt at modifying the way products are deleted - they should be deleted from both stages
 	function ResultsForm($searchCriteria){

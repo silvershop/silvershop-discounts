@@ -7,3 +7,4 @@
  * Gift card creation form...allows you to purchase at checkout.
  * apply to shipping only
  * Log coupon entries - failed and successful
+ * Generate barcodes or QR codes

@@ -5,14 +5,7 @@
 
 <div id="LeftPane">
 	<div id="SearchForm_holder" class="leftbottom">		
-		<% if SearchClassSelector = tabs %>
-			<ul class="tabstrip">
-				<% control ModelForms %>
-					<li class="$FirstLast"><a id="tab-ModelAdmin_$Title.HTMLATT" href="#{$Form.Name}_$ClassName">$Title</a></li>
-				<% end_control %>
-			</ul>
-		<% end_if %>
-		
+
 		<% if SearchClassSelector = dropdown %>
 			<p id="ModelClassSelector">
 				<% _t('ModelAdmin.SEARCHFOR','Search for:') %>
@@ -33,9 +26,5 @@
 		<div class="tab">
 			$GenerateCouponsForm
 		</div>		
-		
 	</div>
-	
-
 </div>
-
