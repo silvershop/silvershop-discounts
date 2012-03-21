@@ -28,10 +28,11 @@ class CouponForm extends OrderModifierForm{
 		$coupon = OrderCoupon::get_by_code($data['Code']); //already validated
 
 		//add a new discount modifier to the cart, linking to the entered coupon
-		$modifier = $order->getModifier('OrderCouponModifier',true);
-		$modifier->setCoupon($coupon);
-		$modifier->write();
-		$order->calculate(); //makes sure prices are up-to-date
+		if($modifier = $order->getModifier('OrderCouponModifier',true)){
+			$modifier->setCoupon($coupon);
+			$modifier->write();
+			$order->calculate(); //makes sure prices are up-to-date
+		}
 
 		$successmessage = sprintf(_t("OrderCouponModifier.APPLIED",'"%s" coupon has been applied'),$coupon->Title);
 
