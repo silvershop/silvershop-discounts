@@ -162,7 +162,7 @@ class OrderCoupon extends DataObject {
 	* @return int
 	*/
 	function getUseCount() {
-		$objects = DataObject::get("OrderCouponModifier", "\"OrderCouponID\" = ".$this->ID);
+		$objects = DataObject::get("OrderCouponModifier", "\"CouponID\" = ".$this->ID);
 		if($objects) {
 			return $objects->count();
 		}
