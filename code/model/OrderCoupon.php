@@ -79,8 +79,13 @@ class OrderCoupon extends DataObject {
 	function getCMSFields($params = null){
 		$fields = parent::getCMSFields($params);
 		$fields->removeByName("Products");
-		$products = new ManyManyComplexTableField($this, "Products", "Product");
-		$fields->addFieldToTab("Root.Products", $products);
+		if($this->ID){
+			$products = new ManyManyComplexTableField($this, "Products", "Product");
+			$fields->addFieldToTab("Root.Products", $products);
+		}else{
+			$fields->addFieldToTab("Root.Main", new LiteralField("warning","</p class=\"message warning\">You can specify products this coupon applies to after you save.</p>"));
+		}
+		$fields->fieldByName("Root.Main.Percent")->setTitle("Percent (eg 0.5 = 50% and 5 = 500%)");
 		return $fields;
 	}
 	
@@ -180,11 +185,14 @@ class OrderCoupon extends DataObject {
 	
 
 	function canDelete($member = null) {
-		return $this->canEdit($member);
+		if($this->getUseCount()) {
+			return false;
+		}
+		return true;
 	}
 
 	function canEdit($member = null) {
-		if($this->getUseCount()) {
+		if($this->getUseCount() && !$this->Active) {
 			return false;
 		}
 		return true;

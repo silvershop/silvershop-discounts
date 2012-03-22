@@ -11,9 +11,11 @@ Discounts come in two forms:
 ### Setup Options
 
  * Code (always required). By default a coupon code is 10 characters long.
- * Number of uses - unlimited, or a certian number of uses
+ * Amount/Percent - how much to take off.
+ 
+ * Usage limit - unlimited, or a certian number of uses
  * Use period - specify a start / end period that the voucher can be used within.
- * Product range
+ * Product range - restrict to specific products.
  
 ### Common use cases
  
@@ -24,3 +26,4 @@ Discounts come in two forms:
 ### System Restrictions
 
  * Multiple coupons cannot be used for a single product.
+

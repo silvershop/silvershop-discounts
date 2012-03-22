@@ -8,3 +8,5 @@
  * apply to shipping only
  * Log coupon entries - failed and successful
  * Generate barcodes or QR codes
+ * Cleaner way to get/set percent values: eg 50% , rather than 0.5
+ * Specify product groups/categories to apply to, rather than single items
