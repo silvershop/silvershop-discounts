@@ -31,7 +31,13 @@ class CouponTest extends FunctionalTest{
 		#TODO: check error
 	}
 	
-	
 	//TODO: has discount been applied to a completed order
+	function testPlaceDiscountedOrder(){
+		$order = $this->objFromFixture("Order", "cart");
+		
+		$this->assertEquals($order->GrandTotal(),200);
+		
+	}
+	
 	
 }

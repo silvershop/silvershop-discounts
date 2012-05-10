@@ -92,6 +92,19 @@ class OrderCoupon extends DataObject {
 	function populateDefaults() {
 		$this->Code = self::generateCode();
 	}
+	
+	function applyToOrder(Order $order){
+		if($modifier = $order->getModifier('OrderCouponModifier',true)){
+			$modifier->setCoupon($this);
+			$modifier->write();
+			$order->calculate(); //makes sure prices are up-to-date
+			$order->write();
+			//TODO: set message
+			return true;
+		}
+		//TODO: get/set error message
+		return false;
+	}
 
 	/**
 	 * Self check if the coupon can be used.
@@ -138,11 +151,8 @@ class OrderCoupon extends DataObject {
 					return false;
 				}
 			}
-			
 			//TODO: limited number of uses
-			
 		}
-		
 		return true;
 	}
 	

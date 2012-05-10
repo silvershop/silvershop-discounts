@@ -23,24 +23,20 @@ class CouponForm extends OrderModifierForm{
 	 * @param Form $form
 	 */
 	function apply($data,$form){
-		
 		$order = ShoppingCart::current_order();
 		$coupon = OrderCoupon::get_by_code($data['Code']); //already validated
-
 		//add a new discount modifier to the cart, linking to the entered coupon
-		if($modifier = $order->getModifier('OrderCouponModifier',true)){
-			$modifier->setCoupon($coupon);
-			$modifier->write();
-			$order->calculate(); //makes sure prices are up-to-date
+		$message = sprintf(_t("OrderCouponModifier.FAILED",'"%s" coupon could not be applied.'),$coupon->Title);
+		$messagetype = 'bad';
+		if($coupon->applyToOrder($order)){
+			$message = sprintf(_t("OrderCouponModifier.APPLIED",'"%s" coupon has been applied.'),$coupon->Title);
+			$messagetye = 'good';
 		}
-
-		$successmessage = sprintf(_t("OrderCouponModifier.APPLIED",'"%s" coupon has been applied'),$coupon->Title);
-
 		if(Director::is_ajax()) {
-			return ShoppingCart::return_message("success",$successmessage);
+			return $messagetype;
 		}
 		else {
-			$form->sessionMessage($successmessage,"good");
+			$form->sessionMessage($message,$messagetype);
 			Director::redirect(CheckoutPage::find_link());
 		}
 		return;
