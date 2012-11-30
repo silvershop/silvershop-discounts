@@ -14,6 +14,7 @@ class CouponForm extends OrderModifierForm{
 		$validator = new CouponFormValidator(array('Code'));
 
 		parent::__construct($controller, $name, $fields, $actions, $validator);
+		$this->extend('updateForm');
 	}
 
 	/**
