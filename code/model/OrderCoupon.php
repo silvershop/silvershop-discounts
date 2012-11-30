@@ -110,7 +110,7 @@ class OrderCoupon extends DataObject {
 	 * Self check if the coupon can be used.
 	 * @return boolean
 	 */
-	function valid($cart = null){
+	function valid($order = null){
 		if(!$this->Active){
 			$this->validationerror = _t("OrderCoupon.INACTIVE","This coupon is not active.");
 			return false;
@@ -132,7 +132,7 @@ class OrderCoupon extends DataObject {
 			return false;
 		}
 		
-		if($cart && $order = $cart->current()){
+		if($order){
 			if($this->MinOrderValue && $order->SubTotal() < $this->MinOrderValue){
 				$this->validationerror = sprintf(_t("OrderCouponModifier.MINORDERVALUE","The minimum order value has not been reached."),$this->MinOrderValue);
 				return false;
@@ -141,13 +141,13 @@ class OrderCoupon extends DataObject {
 			if($products->exists()){
 				$incart = false;
 				foreach($products as $product){
-					if($cart->get($product)){
+					if($order->Items()->find('ProductID',$product->ID)){
 						$incart = true;
 						break;
 					}
 				}
 				if(!$incart){
-					$this->validationerror = _t("OrderCouponModifier.PRODUCTNOTINCART","The required product is not in the cart.");
+					$this->validationerror = _t("OrderCouponModifier.PRODUCTNOTINORDER","The required product is not in the order.");
 					return false;
 				}
 			}

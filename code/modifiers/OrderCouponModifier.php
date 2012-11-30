@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Order Coupon Modifier
  * @package shop-discount
@@ -31,9 +30,7 @@ class OrderCouponModifier extends OrderModifier {
 	 * Validate cart against coupon
 	 */
 	function valid(){
-				
-		$cart = ShoppingCart::getInstance();
-		$order = $cart->current();
+		$order = $this->Order();
 		if(!$order){
 			return false;
 		}
@@ -41,7 +38,7 @@ class OrderCouponModifier extends OrderModifier {
 		if(!$coupon){
 			return false;
 		}
-		if(!$coupon->valid($cart)){
+		if(!$coupon->valid($order)){
 			return false;
 		}		
 		return true;

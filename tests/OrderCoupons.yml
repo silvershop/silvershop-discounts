@@ -1,16 +1,10 @@
-Product:
-    bicycle:
-        Title: Bicycle
-        Price: 50
-        AllowPurchase: 1
-
 OrderCoupon:
     validcoupon:
         Title: 50% + $2 off coupon
         Code: 5B97AA9D75
         Amount: 2
         Percent: 0.50
-        Active: true
+        Active: 1
         StartDate: 2000-01-01 12:00:00
         EndDate: 2200-01-01 12:00:00
     unreleasedcoupon:
@@ -22,20 +16,11 @@ OrderCoupon:
         Title: Save lots
         Code: 04994C332A
         Percent: 0.8
-        Active: true
+        Active: 1
         StartDate:
         EndDate: 12/12/1990
     inactivecoupon:
         Title: Not active
         Code: EE891574D6
         Amount: 10
-        Active: false
-
-Order:
-    cart:
-        Status: Cart
-
-Product_OrderItem:
-    bicycle_cart:
-        Product: =>Product.bicycle
-        Quantity: 4
+        Active: 0

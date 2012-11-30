@@ -5,8 +5,8 @@
  */
 class CouponTest extends FunctionalTest{
 	
-	static $fixture_file = 'shop_discount/tests/discounttest.yml';
-	
+	static $fixture_file = 'shop_discount/tests/OrderCoupons.yml';
+		
 	function testValidCoupon(){
 		$validcoupon = $this->objFromFixture('OrderCoupon', 'validcoupon');
 		$this->assertTrue($validcoupon->valid());
@@ -30,14 +30,5 @@ class CouponTest extends FunctionalTest{
 		$this->assertFalse($inactivecoupon->valid());
 		#TODO: check error
 	}
-	
-	//TODO: has discount been applied to a completed order
-	function testPlaceDiscountedOrder(){
-		$order = $this->objFromFixture("Order", "cart");
-		
-		$this->assertEquals($order->GrandTotal(),200);
-		
-	}
-	
 	
 }
