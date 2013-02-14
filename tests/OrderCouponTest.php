@@ -21,10 +21,10 @@ class OrderCouponTest extends FunctionalTest{
 	}
 	
 	function testPercent(){
-		$coupon = $this->objFromFixture('OrderCoupon', '50percentoff');
+		$coupon = $this->objFromFixture('OrderCoupon', '40percentoff');
 		$this->assertTrue($coupon->valid($this->cart));
-		$this->assertEquals($coupon->getDiscountValue(10), 5, "50% off value");
-		$this->assertEquals($coupon->orderDiscount($this->placedorder), 250, "50% off order");
+		$this->assertEquals($coupon->getDiscountValue(10), 4, "40% off value");
+		$this->assertEquals($coupon->orderDiscount($this->placedorder), 200, "40% off order");
 	}
 	
 	function testAmount(){
@@ -110,7 +110,50 @@ class OrderCouponTest extends FunctionalTest{
 		));
 		$shipping->write();
 		$order->Modifiers()->add($shipping);
+		$this->assertTrue($coupon->valid($order),"Free shipping coupon is valid");
 		$this->assertEquals($coupon->orderDiscount($order), 12.34, "Shipping discount");
+	}
+	
+	function testShippingAmountDiscount(){
+		$order = $this->cart;
+		$coupon = $this->objFromFixture("OrderCoupon", "10dollarsoffshipping");
+		$shipping = new ShippingFrameworkModifier(array(
+			'Amount' => 30,
+			'OrderID' => $order->ID
+		));
+		$shipping->write();
+		$order->Modifiers()->add($shipping);
+		$this->assertTrue($coupon->valid($order),"10 dollars off shipping discount is valid");
+		$this->assertEquals($coupon->orderDiscount($order),10,"$10 discount");
+	}
+	
+	function testShippingPercentDiscount(){
+		$order = $this->othercart;
+		$coupon = $this->objFromFixture("OrderCoupon", "30percentoffshipping");
+		$shipping = new ShippingFrameworkModifier(array(
+			'Amount' => 10,
+			'OrderID' => $order->ID
+		));
+		$shipping->write();
+		$order->Modifiers()->add($shipping);
+		$this->assertTrue($coupon->valid($order),"30% off shipping discount is valid");
+		$this->assertEquals($coupon->orderDiscount($order),3,"30% discount on $10 of shipping");
+	}
+	
+	function testShipingAndItems(){
+		//test an edge case, where a discount is for orders, and shipping.
+		$order = $this->othercart; //$200
+		$coupon = $this->objFromFixture("OrderCoupon", "shippinganditems");
+		$shipping = new ShippingFrameworkModifier(array(
+			'Amount' => 30,
+			'OrderID' => $order->ID
+		));
+		$shipping->write();
+		$order->Modifiers()->add($shipping);
+		$this->assertTrue($coupon->valid($order),"Shipping and items coupon is valid");
+		$this->assertEquals($coupon->orderDiscount($order),20,"$20 discount");
+		
+		//TODO:  test when subtotal & shipping are both < 20
 	}
 	
 	function testCumulative(){

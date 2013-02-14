@@ -283,8 +283,12 @@ class OrderCoupon extends DataObject {
 		}
 		if($this->ForShipping){
 			if($shipping = $order->getModifier("ShippingFrameworkModifier")){
-				$discount += $shipping->Amount;
+				$discount += $this->getDiscountValue($shipping->Amount);
 			}
+		}
+		//ensure discount never goes above Amount
+		if($this->Type == "Amount" && $discount > $this->Amount){
+			$discount = $this->Amount;
 		}
 		return $discount;
 	}
@@ -318,13 +322,13 @@ class OrderCoupon extends DataObject {
 	 * @param float $subTotal
 	 * @return calculated discount
 	 */
-	function getDiscountValue($subTotal){
+	function getDiscountValue($value){
 		$discount = 0;
 		if($this->Amount) {
 			$discount += abs($this->Amount);
 		}
 		if($this->Percent) {
-			$discount += $subTotal * $this->Percent;
+			$discount += $value * $this->Percent;
 		}
 		return $discount;
 	}
