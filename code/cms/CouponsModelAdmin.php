@@ -94,7 +94,6 @@ class CouponsModelAdmin_CollectionController extends ModelAdmin_CollectionContro
 		}
 		return $form;
 	}
-	
 
 }
 
@@ -102,5 +101,5 @@ class CouponsModelAdmin_CollectionController extends ModelAdmin_CollectionContro
  * @package shop-discount
  */
 class CouponsModelAdmin_RecordController extends ModelAdmin_RecordController{
-
+	
 }

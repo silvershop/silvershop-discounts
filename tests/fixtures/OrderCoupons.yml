@@ -1,0 +1,92 @@
+OrderCoupon:
+    50percentoff:
+        Title: 50% off
+        Code: 5B97AA9D75
+        Type: Percent
+        Percent: 0.50
+        Active: 1
+        StartDate: 2000-01-01 12:00:00
+        EndDate: 2200-01-01 12:00:00
+    10dollarsoff:
+        Title: $10 off
+        Code: TENDOLLARSOFF
+        Type: Amount
+        Amount: 10
+        Active: 1
+    ordersabove200:
+        Title: $10 off
+        Code: TENDOLLARSOFF
+        Type: Amount
+        Amount: 10
+        Active: 1
+        MinOrderValue: 200
+    products20percentoff:
+        Title: Selected products
+        Code: PRODUCTS
+        Percent: 0.2
+        Active: 1
+    clothing5percent:
+        Title: 5% off clothing
+        Code: CHEAPCLOTHING
+        Type: Percent
+        Percent: 0.05
+        Active: 1
+    zoned:
+        Title: Zoned Coupon
+        Code: ZONED
+        Type: Percent
+        Percent: 0.16
+        Active: 1
+    grouped:
+        Title: Special Members Coupon
+        Code: GROUPED
+        Type: Percent
+        Percent: 0.9
+        Active: 1
+    unreleasedcoupon:
+        Title: Unreleased $10 off
+        Code: 0444444440
+        Type: Amount
+        Amount: 10
+        StartDate: 2200-01-01 12:00:00
+    expiredcoupon:
+        Title: Save lots
+        Code: 04994C332A
+        Type: Percent
+        Percent: 0.8
+        Active: 1
+        StartDate:
+        EndDate: 12/12/1990
+    inactivecoupon:
+        Title: Not active
+        Code: EE891574D6
+        Type: Amount
+        Amount: 10
+        Active: 0
+    noncumulative:
+        Title: Non cumulative
+        Code: NONCUMULATIVE023
+        Type: Percent
+        Percent: 0.1
+        Active: 1
+    freeshipping:
+        Title: Free shipping
+        Code: FREESHIPPING
+        ForShipping: 1
+        Active: 1
+    limited:
+        Title: Limited
+        Code: LIMITED
+        Active: 1
+        UseLimit: 10
+    used:
+        Title: Used
+        Code: USEDCOUPON
+        Active: 1
+        UseLimit: 1
+        
+OrderCouponModifier:
+    limited:
+        CouponID: =>OrderCoupon.limited
+    used:
+        CouponID: =>OrderCoupon.used

@@ -53,21 +53,7 @@ class OrderCouponModifier extends OrderModifier {
 	 */
 	function value($incoming){
 		if($coupon = $this->Coupon()){
-			$discount = 0;
-			$products = $coupon->Products();
-			if($products->exists()){
-				$cart = ShoppingCart::getInstance();
-				foreach($products as $product){
-					if($item = $cart->get($product)){
-						for($i = 0; $i < $item->Quantity; $i++){
-							$discount += $coupon->getDiscountValue($item->UnitPrice());
-						}
-					}
-				}
-			}else{
-				$discount = $coupon->getDiscountValue($incoming);
-			}
-			$this->Amount = $discount;
+			$this->Amount = $coupon->orderDiscount($this->Order());
 		}
 		return $this->Amount;
 	}

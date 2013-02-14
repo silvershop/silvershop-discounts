@@ -3,7 +3,7 @@
 class CouponModifiersTest extends SapphireTest{
 	
 	static $fixture_file = array(
-		'shop_discount/tests/OrderCoupons.yml',
+		'shop_discount/tests/fixtures/OrderCoupons.yml',
 		'shop/tests/fixtures/Cart.yml'
 	);
 	
@@ -25,11 +25,11 @@ class CouponModifiersTest extends SapphireTest{
 		$order = $this->objFromFixture("Order", "cart1");
 		$order->calculate();
 		$this->assertEquals($order->GrandTotal(), 2000, "Price without coupon is $2000");
-		$coupon = $this->objFromFixture("OrderCoupon", "validcoupon");
+		$coupon = $this->objFromFixture("OrderCoupon", "50percentoff");
 		$valid = $coupon->valid($order);
-		$this->assertTrue($valid,'Check the coupon is indeed valid');
+		$this->assertTrue($valid,'Check the coupon is indeed valid '.$coupon->getMessage());
 		$coupon->applyToOrder($order);
-		$this->assertEquals($order->GrandTotal(), 998, "Half price & -$2 coupon");
+		$this->assertEquals($order->GrandTotal(), 1000, "Half price");
 	}
 	
 	//TODO: test product discounts

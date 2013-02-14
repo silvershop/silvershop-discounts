@@ -7,9 +7,9 @@
 class CouponForm extends OrderModifierForm{
 
 	function __construct($controller = null, $name){
-		$fields = new FieldSet();
-		$fields->push(new HeaderField('CouponHeading',_t("CouponForm.COUPONHEADING", 'Coupon/Voucher Code'),3));
-		$fields->push(new TextField('Code',_t("CouponForm.COUPON", 'Enter your coupon code if you have one.')));
+		$fields = new FieldSet(
+			new TextField('Code',_t("CouponForm.COUPON", 'Enter your coupon code if you have one.'))
+		);
 		$actions = new FieldSet(new FormAction('apply', _t("CouponForm.APPLY", 'Apply')));
 		$validator = new CouponFormValidator(array('Code'));
 
@@ -36,10 +36,8 @@ class CouponForm extends OrderModifierForm{
 		if(Director::is_ajax()) {
 			return $messagetype;
 		}
-		else {
-			$form->sessionMessage($message,$messagetype);
-			Director::redirect(CheckoutPage::find_link());
-		}
+		$form->sessionMessage($message,$messagetype);
+		$this->Controller()->redirectBack();
 		return;
 	}
 	
@@ -61,8 +59,8 @@ class CouponFormValidator extends RequiredFields{
 		}
 		//check the coupon exists, and can be used
 		if($coupon = OrderCoupon::get_by_code($data['Code'])){
-			if(!$coupon->valid($cart)){
-				$this->validationError('Code',$coupon->validationerror,"bad");
+			if(!$coupon->valid($order)){
+				$this->validationError('Code',$coupon->getMessage(),"bad");
 				return false;
 			}			
 		}else{
