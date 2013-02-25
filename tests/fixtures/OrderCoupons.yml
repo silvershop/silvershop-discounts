@@ -110,8 +110,19 @@ OrderCoupon:
         Active: 1
         UseLimit: 1
         
+Order:
+    limitedcoupon:
+        Status: Complete
+        Paid: 2000-01-01 12:00:00
+        Placed: 2000-01-01 12:02:00
+    usedcoupon:
+        Status: Paid
+        Paid: 2000-01-01 12:00:00
+        Placed: 2000-01-01 12:02:00
 OrderCouponModifier:
     limited:
         CouponID: =>OrderCoupon.limited
+        OrderID: =>Order.limitedcoupon
     used:
         CouponID: =>OrderCoupon.used
+        OrderID: =>Order.usedcoupon
