@@ -346,14 +346,16 @@ class OrderCoupon extends DataObject {
 	* @return int
 	*/
 	function getUseCount($order = null) {
-		$currentorderfilter = "";
+		$filter = "\"Order\".\"Paid\" IS NOT NULL";
 		if($order){
-			$currentorderfilter = " AND \"OrderID\" != ".$order->ID;
+			$filter .= " AND \"OrderAttribute\".\"OrderID\" != ".$order->ID;
 		}
-		if($usedcoupons = DataObject::get("OrderCouponModifier", "\"CouponID\" = ".$this->ID.$currentorderfilter)) {
-			return $usedcoupons->Count();
-		}
-		return 0;
+		$join = "INNER JOIN \"Order\" ON \"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"";
+		$query = new SQLQuery("COUNT(\"OrderCouponModifier\")");
+		$query = singleton("OrderCouponModifier")->buildSQL("","","",$join);
+		$query->where = array($filter);
+		$query->select("OrderCouponModifier.ID");
+		return $query->unlimitedRowCount("\"OrderCouponModifier\".\"ID\"");
 	}
 	
 	/**
