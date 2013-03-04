@@ -201,13 +201,12 @@ class OrderCoupon extends DataObject {
 		}
 		$startDate = strtotime($this->StartDate);
 		$endDate = strtotime($this->EndDate);
-		$today = strtotime("today");
-		$yesterday = strtotime("yesterday");
-		if($endDate && $endDate < $yesterday){
+		$now = time();
+		if($endDate && $endDate < $now){
 			$this->error(_t("OrderCoupon.EXPIRED","This coupon has already expired."));
 			return false;
 		}
-		if($startDate && $startDate > $today){
+		if($startDate && $startDate > $now){
 			$this->error(_t("OrderCoupon.TOOEARLY","It is too early to use this coupon."));
 			return false;
 		}
