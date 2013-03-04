@@ -375,9 +375,10 @@ class OrderCoupon extends DataObject {
 	}
 
 	function canEdit($member = null) {
-		if($this->getUseCount() && !$this->Active) {
+		//TODO: reintroduce this code, once table fields have been fixed to paginate in read-only state
+		/*if($this->getUseCount() && !$this->Active) {
 			return false;
-		}
+		}*/
 		return true;
 	}
 	

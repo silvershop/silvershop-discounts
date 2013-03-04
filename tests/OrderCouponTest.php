@@ -95,8 +95,8 @@ class OrderCouponTest extends FunctionalTest{
 	}
 	
 	function testDates(){
-		$expiredcoupon = $this->objFromFixture('OrderCoupon', 'unreleasedcoupon');
-		$this->assertFalse($expiredcoupon->valid($this->cart),"Coupon is un released (start date has not arrived)");
+		$unreleasedcoupon = $this->objFromFixture('OrderCoupon', 'unreleasedcoupon');
+		$this->assertFalse($unreleasedcoupon->valid($this->cart),"Coupon is un released (start date has not arrived)");
 		$expiredcoupon = $this->objFromFixture('OrderCoupon', 'expiredcoupon');
 		$this->assertFalse($expiredcoupon->valid($this->cart),"Coupon has expired (end date has passed)");
 	}
