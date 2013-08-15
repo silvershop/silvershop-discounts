@@ -15,9 +15,9 @@
 	"require" : {
 		"silverstripe/cms": "~3.1",
 		"silverstripe/framework": "~3.1",
-		"burnbright/shop": "*"
+		"burnbright/silverstripe-shop": "*"
 	},
 	"extra" : {
 		"installer-name": "shop_discount"
-   }
+    }
 }
