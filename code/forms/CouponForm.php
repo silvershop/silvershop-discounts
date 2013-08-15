@@ -7,10 +7,10 @@
 class CouponForm extends OrderModifierForm{
 
 	function __construct($controller = null, $name){
-		$fields = new FieldSet(
+		$fields = new FieldList(
 			new TextField('Code',_t("CouponForm.COUPON", 'Enter your coupon code if you have one.'))
 		);
-		$actions = new FieldSet(new FormAction('apply', _t("CouponForm.APPLY", 'Apply')));
+		$actions = new FieldList(new FormAction('apply', _t("CouponForm.APPLY", 'Apply')));
 		$validator = new CouponFormValidator(array('Code'));
 
 		parent::__construct($controller, $name, $fields, $actions, $validator);
@@ -22,23 +22,23 @@ class CouponForm extends OrderModifierForm{
 	 * 
 	 * @param array $data
 	 * @param Form $form
+	 * @return string
 	 */
 	function apply($data,$form){
-		$order = ShoppingCart::current_order();
+		$order = ShoppingCart::singleton()->current();
 		$coupon = OrderCoupon::get_by_code($data['Code']); //already validated
 		//add a new discount modifier to the cart, linking to the entered coupon
 		$message = sprintf(_t("OrderCouponModifier.FAILED",'"%s" coupon could not be applied.'),$coupon->Title);
 		$messagetype = 'bad';
 		if($coupon->applyToOrder($order)){
 			$message = sprintf(_t("OrderCouponModifier.APPLIED",'"%s" coupon has been applied.'),$coupon->Title);
-			$messagetye = 'good';
+			$messagetype = 'good';
 		}
 		if(Director::is_ajax()) {
 			return $messagetype;
 		}
 		$form->sessionMessage($message,$messagetype);
 		$this->Controller()->redirectBack();
-		return;
 	}
 	
 }

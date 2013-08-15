@@ -40,22 +40,23 @@ class CouponReport extends ShopPeriodReport{
 	
 	function query($params){
 		$query = parent::query($params);
-		$query->select(
+		$query->setSelect(array(
 			"$this->periodfield AS FilterPeriod",
 			"OrderCoupon.*",
 			"\"Title\" AS \"Name\"",
 			"COUNT(OrderCouponModifier.ID) AS Entered",
 			"SUM(if($this->periodfield IS NOT NULL, 1, 0)) AS Uses",
-			"SUM(if($this->periodfield IS NOT NULL,OrderModifier.Amount,0)) AS Savings");
+			"SUM(if($this->periodfield IS NOT NULL,OrderModifier.Amount,0)) AS Savings"
+		));
 		$query->innerJoin("OrderCouponModifier", "OrderCoupon.ID = OrderCouponModifier.CouponID");
 		$query->innerJoin("OrderAttribute", "OrderCouponModifier.ID = OrderAttribute.ID");
 		$query->innerJoin("OrderModifier", "OrderCouponModifier.ID = OrderModifier.ID");
 		$query->innerJoin("Order", "OrderAttribute.OrderID = Order.ID");
-		$query->groupby("OrderCoupon.ID");
-		if(!$query->orderby){
-			$query->orderby("Savings DESC,Title ASC");
+		$query->setGroupBy("OrderCoupon.ID");
+		if(!$query->getOrderBy()){
+			$query->setOrderBy("Savings DESC,Title ASC");
 		}
-		$query->limit("50");
+		$query->setLimit("50");
 		return $query;
 	}
 	
