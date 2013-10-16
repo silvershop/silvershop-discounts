@@ -83,7 +83,7 @@ class CouponFormCheckoutDecorator extends Extension{
 	);
 	
 	function CouponForm(){
-		if(ShoppingCart::order_started()){
+		if(ShoppingCart::curr()){
 			return new CouponForm($this->owner,'CouponForm');
 		}
 	}
