@@ -28,9 +28,10 @@ class CouponForm extends OrderModifierForm{
 		$order = ShoppingCart::singleton()->current();
 		$coupon = OrderCoupon::get_by_code($data['Code']); //already validated
 		//add a new discount modifier to the cart, linking to the entered coupon
-		$message = sprintf(_t("OrderCouponModifier.FAILED",'"%s" coupon could not be applied.'),$coupon->Title);
+		$message = sprintf(_t("OrderCouponModifier.FAILED",'"%s" coupon could not be applied.'),
+			($coupon && $coupon->exists()) ? $coupon->Title : $data['Code']);
 		$messagetype = 'bad';
-		if($coupon->applyToOrder($order)){
+		if ($coupon && $coupon->exists() && $coupon->applyToOrder($order)){
 			$message = sprintf(_t("OrderCouponModifier.APPLIED",'"%s" coupon has been applied.'),$coupon->Title);
 			$messagetype = 'good';
 		}
