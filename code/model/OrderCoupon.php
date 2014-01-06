@@ -307,7 +307,7 @@ class OrderCoupon extends DataObject {
 				$discount += ($discountvalue > $discountable) ? $discountable : $discountvalue; //prevent discount being greater than what is possible
 			}
 		}
-		if($this->ForShipping){
+		if($this->ForShipping && class_exists('ShippingFrameworkModifier')){
 			if($shipping = $order->getModifier("ShippingFrameworkModifier")){
 				$discount += $this->getDiscountValue($shipping->Amount);
 			}
