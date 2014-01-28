@@ -102,6 +102,7 @@ class OrderCouponTest extends FunctionalTest{
 	}
 	
 	function testFreeShipping(){
+		if (!class_exists('ShippingFrameworkModifier')) return;
 		$coupon = $this->objFromFixture("OrderCoupon", "freeshipping");
 		$order = $this->cart;
 		$shipping = new ShippingFrameworkModifier(array(
@@ -115,6 +116,7 @@ class OrderCouponTest extends FunctionalTest{
 	}
 	
 	function testShippingAmountDiscount(){
+		if (!class_exists('ShippingFrameworkModifier')) return;
 		$order = $this->cart;
 		$coupon = $this->objFromFixture("OrderCoupon", "10dollarsoffshipping");
 		$shipping = new ShippingFrameworkModifier(array(
@@ -128,6 +130,7 @@ class OrderCouponTest extends FunctionalTest{
 	}
 	
 	function testShippingPercentDiscount(){
+		if (!class_exists('ShippingFrameworkModifier')) return;
 		$order = $this->othercart;
 		$coupon = $this->objFromFixture("OrderCoupon", "30percentoffshipping");
 		$shipping = new ShippingFrameworkModifier(array(
@@ -141,6 +144,7 @@ class OrderCouponTest extends FunctionalTest{
 	}
 	
 	function testShipingAndItems(){
+		if (!class_exists('ShippingFrameworkModifier')) return;
 		//test an edge case, where a discount is for orders, and shipping.
 		$order = $this->othercart; //$200
 		$coupon = $this->objFromFixture("OrderCoupon", "shippinganditems");

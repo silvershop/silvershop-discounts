@@ -89,18 +89,18 @@ class OrderCoupon extends DataObject {
 	protected $message = null, $messagetype = null;
 	
 	function getCMSFields($params = null){
-		$fields = new FieldSet(
-			new TextField("Title"),
-			new TextField("Code"),
-			new CheckboxField("Active","Active (allow this coupon to be used)"),
-			new FieldGroup("This discount applies to:",
-				new CheckboxField("ForItems","Item values"),
-				new CheckboxField("ForShipping","Shipping cost")
-			),
-			new HeaderField("Criteria","Order and Item Criteria",4),
-			new LabelField("CriteriaDescription", "Configure the requirements an order must meet for this coupon to be used with it:"),
+		$fields = new FieldList(array(
 			$tabset = new TabSet("Root",
 				$maintab = new Tab("Main",
+					new TextField("Title"),
+					new TextField("Code"),
+					new CheckboxField("Active","Active (allow this coupon to be used)"),
+					new FieldGroup("This discount applies to:",
+						new CheckboxField("ForItems","Item values"),
+						new CheckboxField("ForShipping","Shipping cost")
+					),
+					new HeaderField("Criteria","Order and Item Criteria",4),
+					new LabelField("CriteriaDescription", "Configure the requirements an order must meet for this coupon to be used with it:"),
 					new FieldGroup("Valid date range:",
 						new CouponDatetimeField("StartDate","Start Date / Time"),
 						new CouponDatetimeField("EndDate","End Date / Time (you should set the end time to 23:59:59, if you want to include the entire end day)")
@@ -109,27 +109,28 @@ class OrderCoupon extends DataObject {
 					new NumericField("UseLimit","Limit number of uses (0 = unlimited)")
 				)
 			)
-		);
+		));
 		if($this->isInDB()){
 			if($this->ForItems){
 				$tabset->push(new Tab("Products",
-					new LabelField("ProductsDescription", "Select specific products that this coupon can be uesd with"),
-					$products = new ManyManyComplexTableField($this, "Products", "Product")
+					new LabelField("ProductsDescription", "Select specific products that this coupon can be used with"),
+					$products = new GridField("Products", "Products", $this->Products(), new GridFieldConfig_RelationEditor())
 				));
 				$tabset->push(new Tab("Categories",
-					new LabelField("CategoriesDescription", "Select specific product categories that this coupon can be uesd with"),
-					$categories = new ManyManyComplexTableField($this, "Categories", "ProductCategory")
+					new LabelField("CategoriesDescription", "Select specific product categories that this coupon can be used with"),
+					$categories = new GridField("Categories", "Categories", $this->Categories(), new GridFieldConfig_RelationEditor())
 				));
-				$products->setPermissions(array('show'));
-				$categories->setPermissions(array('show'));
+//				$products->setPermissions(array('show'));
+//				$categories->setPermissions(array('show'));
 			}
 			
 			$tabset->push(new Tab("Zones",
-				$zones = new ManyManyComplexTableField($this, "Zones", "Zone")
+				$zones = new GridField("Zones", "Zones", $this->Zones(), new GridFieldConfig_RelationEditor())
 			));
 			
 			$maintab->Fields()->push($grps = new DropdownField("GroupID", "Member Belongs to Group", DataObject::get('Group')->map('ID','Title')));
 			$grps->setHasEmptyDefault(true);
+			$grps->setEmptyString('-- Any Group --');
 			
 			if($this->Type == "Percent"){
 				$fields->insertBefore($percent = new NumericField("Percent","Percentage discount"), "Active");
@@ -155,12 +156,36 @@ class OrderCoupon extends DataObject {
 		$this->extend("updateCMSFields",$fields);
 		return $fields;
 	}
-	
-	function populateDefaults() {
-		parent::populateDefaults();
-		$this->Code = self::generateCode();
+
+	// This was causing crashes on /dev/build. Moving to onBeforeWrite. MG 8.15.13
+//	function populateDefaults() {
+//		parent::populateDefaults();
+//		$this->Code = self::generateCode();
+//	}
+
+	/**
+	 * Autogenerate the code if needed
+	 */
+	protected function onBeforeWrite() {
+		// If they didn't enter a code, generate a random one
+		if (empty($this->Code)) $this->Code = self::generateCode();
+		parent::onBeforeWrite();
 	}
-	
+
+	/**
+	 * We have to tap in here to correct "50" to "0.5" for the percent
+	 * field. This is a common user error and it's nice to just fix it
+	 * for them.
+	 *
+	 * @param string $fieldName Name of the field
+	 * @param mixed $value New field value
+	 * @return DataObject $this
+	 */
+	public function setCastedField($fieldName, $value) {
+		if ($fieldName == 'Percent' && $value > 1) $value /= 100.0;
+		return parent::setCastedField($fieldName, $value);
+	}
+
 	/*
 	 * Assign this coupon to a OrderCouponModifier on the given order
 	 */
@@ -180,6 +205,7 @@ class OrderCoupon extends DataObject {
 
 	/**
 	 * Check if this coupon can be used with a given order
+	 * @param Order $order
 	 * @return boolean
 	 */
 	function valid($order){
@@ -263,7 +289,8 @@ class OrderCoupon extends DataObject {
 	
 	/**
 	 * Work out the discount for a given order.
-	 * @return discount
+	 * @param Order $order
+	 * @return double - discount amount
 	 */
 	function orderDiscount(Order $order){
 		$discount = 0;
@@ -280,7 +307,7 @@ class OrderCoupon extends DataObject {
 				$discount += ($discountvalue > $discountable) ? $discountable : $discountvalue; //prevent discount being greater than what is possible
 			}
 		}
-		if($this->ForShipping){
+		if($this->ForShipping && class_exists('ShippingFrameworkModifier')){
 			if($shipping = $order->getModifier("ShippingFrameworkModifier")){
 				$discount += $this->getDiscountValue($shipping->Amount);
 			}
@@ -345,24 +372,34 @@ class OrderCoupon extends DataObject {
 	* @return int
 	*/
 	function getUseCount($order = null) {
+//		$filter = "\"Order\".\"Paid\" IS NOT NULL";
+//		if($order){
+//			$filter .= " AND \"OrderAttribute\".\"OrderID\" != ".$order->ID;
+//		}
+//		$join = "INNER JOIN \"Order\" ON \"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"";
+//		$query = new SQLQuery("COUNT(\"OrderCouponModifier\")");
+//		$query = singleton("OrderCouponModifier")->buildSQL("","","",$join);
+//		$query->where = array($filter);
+//		$query->select("OrderCouponModifier.ID");
+//		return $query->unlimitedRowCount("\"OrderCouponModifier\".\"ID\"");
+
 		$filter = "\"Order\".\"Paid\" IS NOT NULL";
 		if($order){
 			$filter .= " AND \"OrderAttribute\".\"OrderID\" != ".$order->ID;
 		}
-		$join = "INNER JOIN \"Order\" ON \"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"";
-		$query = new SQLQuery("COUNT(\"OrderCouponModifier\")");
-		$query = singleton("OrderCouponModifier")->buildSQL("","","",$join);
-		$query->where = array($filter);
-		$query->select("OrderCouponModifier.ID");
-		return $query->unlimitedRowCount("\"OrderCouponModifier\".\"ID\"");
+
+		return OrderCouponModifier::get()
+			->where($filter)
+			->innerJoin('Order', '"OrderAttribute"."OrderID" = "Order"."ID"')
+			->count();
 	}
 	
 	/**
 	* Forces codes to be alpha-numeric, without spaces, and uppercase
 	*/
 	function setCode($code){
-		$code = eregi_replace("[^[:alnum:]]", " ", $code);
-		$code = trim(eregi_replace(" +", "", $code)); //gets rid of any white spaces
+		$code = preg_replace('/[^0-9a-zA-Z]+/', '', $code);
+//		$code = trim(preg_replace('/\s+/', "", $code)); //gets rid of any white spaces
 		$this->setField("Code", strtoupper($code));
 	}
 	

@@ -1,0 +1,23 @@
+{
+	"name" : "burnbright/silverstripe-shop-discount",
+	"description" : "Discounts submodule for silverstripe-shop module",
+	"license" : "BSD-2-Clause",
+	"type" : "silverstripe-module",
+	"keywords" : ["silverstripe","shop","shopping cart","ecommerce","discount","coupons"],
+	"authors" : [
+		{
+			"name" : "Jeremy Shipman",
+			"email" : "jeremy@burnbright.net",
+			"homepage" : "https://github.com/jedateach",
+			"role" : "Developer"
+		}
+	],
+	"require" : {
+		"silverstripe/cms": "~3.1",
+		"silverstripe/framework": "~3.1",
+		"burnbright/silverstripe-shop": "*"
+	},
+	"extra" : {
+		"installer-name": "shop_discount"
+    }
+}
