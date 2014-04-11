@@ -21,6 +21,7 @@ class CouponsModelAdmin extends ModelAdmin {
 
 	public static $url_segment = 'coupons';
 	public static $menu_title = 'Coupons';
+	public static $menu_icon = 'shop_discount/images/icon-coupons.png';
 
 	public static $model_importers = array(
 		'Product' => 'CouponBulkLoader',
@@ -62,46 +63,3 @@ class CouponsModelAdmin extends ModelAdmin {
 	}
 
 }
-/**
- * Removes empty before import option
- * @package shop-discount
- */
-//class CouponsModelAdmin_CollectionController extends ModelAdmin_CollectionController {
-//
-//	 //note that these are called once for each $managed_models
-//
-//	function ImportForm(){
-//		$form = parent::ImportForm();
-//		if($form){
-//			//EmptyBeforeImport checkbox does not appear to work for SiteTree objects, so removed for now
-//			$form->Fields()->removeByName('EmptyBeforeImport');
-//		}
-//		return $form;
-//	}
-//
-//	//TODO: Half-started attempt at modifying the way products are deleted - they should be deleted from both stages
-//	function ResultsForm($searchCriteria){
-//		$form = parent::ResultsForm($searchCriteria);
-//		if($tf = $form->Fields()->fieldByName($this->modelClass)){
-//			/*$tf->actions['create'] = array(
-//				'label' => 'delete',
-//				'icon' => null,
-//				'icon_disabled' => 'cms/images/test.gif',
-//				'class' => 'testlink'
-//			);*/
-//
-//			/*$tf->setPermissions(array(
-//				'create'
-//			));*/
-//		}
-//		return $form;
-//	}
-//
-//}
-
-/**
- * @package shop-discount
- */
-//class CouponsModelAdmin_RecordController extends ModelAdmin_RecordController{
-//
-//}
