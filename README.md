@@ -10,16 +10,23 @@ Discounts can be applied to all products (ie order subtotal), or to individual p
 
 ## Requirements
 
- * Shop Module + its own requirements
+ * Shop Module + its requirements
 
 ## Installation Instructions
 
  * Install code to your SilverStripe root directory.
- * Add $CouponForm to your checkout page template to display the coupon entry form.
- * Add the appropriate modifier to your Order::set_modifiers(array(...)) config
 
+via composer:
+
+```sh
+	composer require burnbright/silverstripe-shop-discount dev-master
 ```
-	Order::set_modifiers(array(
-		"OrderCouponModifier"
-	));
+
+ * Add $CouponForm to your checkout page template to display the coupon entry form.
+ * Add the appropriate modifier to your order modifiers yaml config
+
+```yaml
+Order:
+	modifiers:
+		- OrderCouponModifier
 ```
