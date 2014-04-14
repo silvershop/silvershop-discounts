@@ -5,7 +5,7 @@
  */
 class OrderCoupon extends DataObject {
 
-	static $db = array(
+	private static $db = array(
 		"Title" => "Varchar(255)", //store the promotion name, or whatever you like
 		"Code" => "Varchar(25)",
 		"Type" => "Enum('Percent,Amount','Percent')",
@@ -15,7 +15,7 @@ class OrderCoupon extends DataObject {
 
 		"ForItems" => "Boolean",
 		"ForShipping" => "Boolean",
-		
+
 		//Item / order validity criteria
 		//"Cumulative" => "Boolean",
 		"MinOrderValue" => "Currency",
@@ -23,37 +23,37 @@ class OrderCoupon extends DataObject {
 		"StartDate" => "Datetime",
 		"EndDate" => "Datetime"
 	);
-	
-	static $has_one = array(
+
+	private static $has_one = array(
 		"GiftVoucher" => "GiftVoucher_OrderItem", //used to link to gift voucher purchase
 		"Group" => "Group"
 	);
-	
-	static $many_many = array(
+
+	private static $many_many = array(
 		"Products" => "Product", //for restricting to product(s)
 		"Categories" => "ProductCategory",
 		"Zones" => "Zone"
 	);
 
-	static $searchable_fields = array(
+	private static $searchable_fields = array(
 		"Code"
 	);
 
-	static $defaults = array(
+	private static $defaults = array(
 		"Type" => "Percent",
 		"Active" => true,
 		"UseLimit" => 0,
 		//"Cumulative" => 1,
 		"ForItems" => 1
 	);
-	
-	static $field_labels = array(
+
+	private static $field_labels = array(
 		"DiscountNice" => "Discount",
 		"UseLimit" => "Maximum number of uses",
 		"MinOrderValue" => "Minimum subtotal of order"
 	);
 
-	static $summary_fields = array(
+	private static $summary_fields = array(
 		"Code",
 		"Title",
 		"DiscountNice",
@@ -61,52 +61,58 @@ class OrderCoupon extends DataObject {
 		"EndDate"
 	);
 
-	static $singular_name = "Discount";
-	function i18n_singular_name() { return _t("OrderCoupon.COUPON", "Coupon");}
-	static $plural_name = "Discounts";
-	function i18n_plural_name() { return _t("OrderCoupon.COUPONS", "Coupons");}
+	private static $singular_name = "Discount";
+	private static $plural_name = "Discounts";
 
-	static $default_sort = "EndDate DESC, StartDate DESC";
-	static $code_length = 10;
+	private static $default_sort = "EndDate DESC, StartDate DESC";
+	public static $code_length = 10;
 
-	static function get_by_code($code){
-		return DataObject::get_one('OrderCoupon',"\"Code\" = UPPER('$code')");
+	public static function get_by_code($code) {
+		return DataObject::get_one('OrderCoupon', "\"Code\" = UPPER('$code')");
 	}
-	
+
 	/**
 	* Generates a unique code.
 	* @return string - new code
 	*/
-	static function generateCode($length = null){
+	public static function generateCode($length = null) {
 		$length = ($length) ? $length : self::$code_length;
 		$code = null;
 		do{
-			$code = strtoupper(substr(md5(microtime()),0,$length));
-		}while(DataObject::get('OrderCoupon',"\"Code\" = '$code'"));
+			$code = strtoupper(substr(md5(microtime()), 0, $length));
+		}while(DataObject::get('OrderCoupon', "\"Code\" = '$code'"));
+
 		return $code;
 	}
-	
-	protected $message = null, $messagetype = null;
-	
-	function getCMSFields($params = null){
+
+	protected $message = null;
+	protected $messagetype = null;
+
+	public function getCMSFields($params = null) {
 		$fields = new FieldList(array(
 			$tabset = new TabSet("Root",
 				$maintab = new Tab("Main",
 					new TextField("Title"),
 					new TextField("Code"),
-					new CheckboxField("Active","Active (allow this coupon to be used)"),
+					new CheckboxField("Active", "Active (allow this coupon to be used)"),
 					new FieldGroup("This discount applies to:",
-						new CheckboxField("ForItems","Item values"),
-						new CheckboxField("ForShipping","Shipping cost")
+						new CheckboxField("ForItems", "Item values"),
+						new CheckboxField("ForShipping", "Shipping cost")
 					),
-					new HeaderField("Criteria","Order and Item Criteria",4),
-					new LabelField("CriteriaDescription", "Configure the requirements an order must meet for this coupon to be used with it:"),
+					new HeaderField("Criteria", "Order and Item Criteria", 4),
+					new LabelField(
+						"CriteriaDescription",
+						"Configure the requirements an order must meet for this coupon to be used with it:"
+					),
 					new FieldGroup("Valid date range:",
-						new CouponDatetimeField("StartDate","Start Date / Time"),
-						new CouponDatetimeField("EndDate","End Date / Time (you should set the end time to 23:59:59, if you want to include the entire end day)")
+						new CouponDatetimeField("StartDate", "Start Date / Time"),
+						new CouponDatetimeField(
+							"EndDate",
+							"End Date / Time (you should set the end time to 23:59:59, if you want to include the entire end day)"
+						)
 					),
-					new CurrencyField("MinOrderValue","Minimum order subtotal"),
-					new NumericField("UseLimit","Limit number of uses (0 = unlimited)")
+					new CurrencyField("MinOrderValue", "Minimum order subtotal"),
+					new NumericField("UseLimit", "Limit number of uses (0 = unlimited)")
 				)
 			)
 		));
@@ -123,24 +129,26 @@ class OrderCoupon extends DataObject {
 //				$products->setPermissions(array('show'));
 //				$categories->setPermissions(array('show'));
 			}
-			
+
 			$tabset->push(new Tab("Zones",
 				$zones = new GridField("Zones", "Zones", $this->Zones(), new GridFieldConfig_RelationEditor())
 			));
-			
-			$maintab->Fields()->push($grps = new DropdownField("GroupID", "Member Belongs to Group", DataObject::get('Group')->map('ID','Title')));
+
+			$maintab->Fields()->push(
+				$grps = new DropdownField("GroupID", "Member Belongs to Group", DataObject::get('Group')->map('ID', 'Title'))
+			);
 			$grps->setHasEmptyDefault(true);
 			$grps->setEmptyString('-- Any Group --');
-			
+
 			if($this->Type == "Percent"){
-				$fields->insertBefore($percent = new NumericField("Percent","Percentage discount"), "Active");
+				$fields->insertBefore($percent = new NumericField("Percent", "Percentage discount"), "Active");
 				$percent->setTitle("Percent discount (eg 0.05 = 5%, 0.5 = 50%, and 5 = 500%)");
 			}elseif($this->Type == "Amount"){
-				$fields->insertBefore($amount = new NumericField("Amount","Discount value"), "Active");
+				$fields->insertBefore($amount = new NumericField("Amount", "Discount value"), "Active");
 			}
 		}else{
-			$fields->insertBefore(  
-				new OptionsetField("Type","Type of discount", 
+			$fields->insertBefore(
+				new OptionsetField("Type", "Type of discount",
 					array(
 						"Percent" => "Percentage of subtotal (eg 25%)",
 						"Amount" => "Fixed amount (eg $25.00)"
@@ -149,11 +157,11 @@ class OrderCoupon extends DataObject {
 				"Active"
 			);
 			$fields->insertAfter(
-				new LiteralField("warning","<p class=\"message good\">More criteria options can be set after an intial save</p>"),
+				new LiteralField("warning", "<p class=\"message good\">More criteria options can be set after an intial save</p>"),
 				"Criteria"
 			);
 		}
-		$this->extend("updateCMSFields",$fields);
+		$this->extend("updateCMSFields", $fields);
 		return $fields;
 	}
 
@@ -189,17 +197,17 @@ class OrderCoupon extends DataObject {
 	/*
 	 * Assign this coupon to a OrderCouponModifier on the given order
 	 */
-	function applyToOrder(Order $order){
-		$modifier = $order->getModifier('OrderCouponModifier',true);
+	public function applyToOrder(Order $order) {
+		$modifier = $order->getModifier('OrderCouponModifier', true);
 		if($modifier){
 			$modifier->setCoupon($this);
 			$modifier->write();
 			$order->calculate(); //makes sure prices are up-to-date
 			$order->write();
-			$this->message(_t("OrderCoupon.APPLIED","Coupon applied."),"good");
+			$this->message(_t("OrderCoupon.APPLIED", "Coupon applied."), "good");
 			return true;
 		}
-		$this->error(_t("OrderCoupon.CANTAPPLY","Could not apply"));
+		$this->error(_t("OrderCoupon.CANTAPPLY", "Could not apply"));
 		return false;
 	}
 
@@ -208,62 +216,67 @@ class OrderCoupon extends DataObject {
 	 * @param Order $order
 	 * @return boolean
 	 */
-	function valid($order){
+	public function valid($order) {
 		if(empty($order)){
-			$this->error(_t("OrderCoupon.NOORDER","Order has not been started."));
+			$this->error(_t("OrderCoupon.NOORDER", "Order has not been started."));
 			return false;
 		}
 		if(!$this->Active){
-			$this->error(_t("OrderCoupon.INACTIVE","This coupon is not active."));
+			$this->error(_t("OrderCoupon.INACTIVE", "This coupon is not active."));
 			return false;
 		}
 		if($this->UseLimit > 0 && $this->getUseCount($order) >= $this->UseLimit) {
-			$this->error(_t("OrderCoupon.LIMITREACHED","Limit of $this->UseLimit uses for this code has been reached."));
+			$this->error(_t("OrderCoupon.LIMITREACHED", "Limit of $this->UseLimit uses for this code has been reached."));
 			return false;
 		}
 		if($this->MinOrderValue > 0 && $order->SubTotal() < $this->MinOrderValue){
-			$this->error(sprintf(_t("OrderCouponModifier.MINORDERVALUE","Your cart subtotal must be at least %s to use this coupon"),$this->dbObject("MinOrderValue")->Nice()));
+			$this->error(
+				sprintf(
+					_t("OrderCouponModifier.MINORDERVALUE", "Your cart subtotal must be at least %s to use this coupon"),
+					$this->dbObject("MinOrderValue")->Nice()
+				)
+			);
 			return false;
 		}
 		$startDate = strtotime($this->StartDate);
 		$endDate = strtotime($this->EndDate);
 		$now = time();
 		if($endDate && $endDate < $now){
-			$this->error(_t("OrderCoupon.EXPIRED","This coupon has already expired."));
+			$this->error(_t("OrderCoupon.EXPIRED", "This coupon has already expired."));
 			return false;
 		}
 		if($startDate && $startDate > $now){
-			$this->error(_t("OrderCoupon.TOOEARLY","It is too early to use this coupon."));
+			$this->error(_t("OrderCoupon.TOOEARLY", "It is too early to use this coupon."));
 			return false;
 		}
 		$group = $this->Group();
 		$member = (Member::currentUser()) ? Member::currentUser() : $order->Member(); //get member
 		if($group->exists() && (!$member || !$member->inGroup($group))){
-			$this->error(_t("OrderCoupon.GROUPED","Only specific members can use this coupon."));
+			$this->error(_t("OrderCoupon.GROUPED", "Only specific members can use this coupon."));
 			return false;
 		}
 		$zones = $this->Zones();
 		if($zones->exists()){
 			$address = $order->getShippingAddress();
 			if(!$address){
-				$this->error(_t("OrderCouponModifier.NOTINZONE","This coupon can only be used for a specific shipping location."));
+				$this->error(_t("OrderCouponModifier.NOTINZONE", "This coupon can only be used for a specific shipping location."));
 				return false;
 			}
 			$currentzones = Zone::get_zones_for_address($address);
 			if(!$currentzones || !$currentzones->exists()){
-				$this->error(_t("OrderCouponModifier.NOTINZONE","This coupon can only be used for a specific shipping location."));
+				$this->error(_t("OrderCouponModifier.NOTINZONE", "This coupon can only be used for a specific shipping location."));
 				return false;
 			}
 			//check if any of currentzones is in zones
 			$inzone = false;
 			foreach($currentzones as $zone){
-				if($zones->find('ID',$zone->ID)){
+				if($zones->find('ID', $zone->ID)){
 					$inzone = true;
 					break;
 				}
 			}
 			if(!$inzone){
-				$this->error(_t("OrderCouponModifier.NOTINZONE","This coupon can only be used for a specific shipping location."));
+				$this->error(_t("OrderCouponModifier.NOTINZONE", "This coupon can only be used for a specific shipping location."));
 				return false;
 			}
 		}
@@ -276,23 +289,23 @@ class OrderCoupon extends DataObject {
 			}
 		}
 		if(!$incart){
-			$this->error(_t("OrderCouponModifier.PRODUCTNOTINORDER","No items in the cart match the coupon criteria"));
+			$this->error(_t("OrderCouponModifier.PRODUCTNOTINORDER", "No items in the cart match the coupon criteria"));
 			return false;
 		}
 		$valid = true;
-		$this->extend("updateValidation",$order, $valid, $error);
+		$this->extend("updateValidation", $order, $valid, $error);
 		if(!$valid){
 			$this->error($error);
 		}
 		return $valid;
 	}
-	
+
 	/**
 	 * Work out the discount for a given order.
 	 * @param Order $order
 	 * @return double - discount amount
 	 */
-	function orderDiscount(Order $order){
+	public function orderDiscount(Order $order) {
 		$discount = 0;
 		if($this->ForItems){
 			$items = $order->Items();
@@ -303,8 +316,9 @@ class OrderCoupon extends DataObject {
 				}
 			}
 			if($discountable){
-				$discountvalue = $this->getDiscountValue($discountable); 
-				$discount += ($discountvalue > $discountable) ? $discountable : $discountvalue; //prevent discount being greater than what is possible
+				$discountvalue = $this->getDiscountValue($discountable);
+				//prevent discount being greater than what is possible
+				$discount += ($discountvalue > $discountable) ? $discountable : $discountvalue;
 			}
 		}
 		if($this->ForShipping && class_exists('ShippingFrameworkModifier')){
@@ -318,13 +332,13 @@ class OrderCoupon extends DataObject {
 		}
 		return $discount;
 	}
-	
+
 	/**
 	 * Check if order item meets criteria of this coupon
 	 * @param OrderItem $item
 	 * @return boolean
 	 */
-	function itemMatchesCriteria(OrderItem $item){
+	public function itemMatchesCriteria(OrderItem $item) {
 		$products = $this->Products();
 		if($products->exists()){
 			if(!$products->find('ID', $item->ProductID)){
@@ -339,16 +353,16 @@ class OrderCoupon extends DataObject {
 			}
 		}
 		$match = true;
-		$this->extend("updateItemCriteria",$item, $match);
-		return $match;				
+		$this->extend("updateItemCriteria", $item, $match);
+		return $match;
 	}
-	
+
 	/**
 	 * Works out the discount on a given value.
 	 * @param float $subTotal
 	 * @return calculated discount
 	 */
-	function getDiscountValue($value){
+	public function getDiscountValue($value) {
 		$discount = 0;
 		if($this->Amount) {
 			$discount += abs($this->Amount);
@@ -358,20 +372,20 @@ class OrderCoupon extends DataObject {
 		}
 		return $discount;
 	}
-	
-	function getDiscountNice(){
+
+	public function getDiscountNice() {
 		if($this->Type == "Percent"){
 			return $this->dbObject("Percent")->Nice();
 		}
 		return $this->dbObject("Amount")->Nice();
 	}
-	
+
 	/**
 	* How many times the coupon has been used
 	* @param string $order - ignore this order when counting uses
 	* @return int
 	*/
-	function getUseCount($order = null) {
+	public function getUseCount($order = null) {
 //		$filter = "\"Order\".\"Paid\" IS NOT NULL";
 //		if($order){
 //			$filter .= " AND \"OrderAttribute\".\"OrderID\" != ".$order->ID;
@@ -393,45 +407,45 @@ class OrderCoupon extends DataObject {
 			->innerJoin('Order', '"OrderAttribute"."OrderID" = "Order"."ID"')
 			->count();
 	}
-	
+
 	/**
 	* Forces codes to be alpha-numeric, without spaces, and uppercase
 	*/
-	function setCode($code){
+	public function setCode($code) {
 		$code = preg_replace('/[^0-9a-zA-Z]+/', '', $code);
 //		$code = trim(preg_replace('/\s+/', "", $code)); //gets rid of any white spaces
 		$this->setField("Code", strtoupper($code));
 	}
-	
-	function canDelete($member = null) {
+
+	public function canDelete($member = null) {
 		if($this->getUseCount()) {
 			return false;
 		}
 		return true;
 	}
 
-	function canEdit($member = null) {
+	public function canEdit($member = null) {
 		//TODO: reintroduce this code, once table fields have been fixed to paginate in read-only state
 		/*if($this->getUseCount() && !$this->Active) {
 			return false;
 		}*/
 		return true;
 	}
-	
-	protected function message($messsage, $type = "good"){
+
+	protected function message($messsage, $type = "good") {
 		$this->message = $messsage;
 		$this->messagetype = $type;
 	}
-	
-	protected function error($message){
+
+	protected function error($message) {
 		$this->message($message, "bad");
 	}
-	
-	function getMessage(){
+
+	public function getMessage() {
 		return $this->message;
 	}
-	
-	function getMessageType(){
+
+	public function getMessageType() {
 		return $this->messagetype;
 	}
 

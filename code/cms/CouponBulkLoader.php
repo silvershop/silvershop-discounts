@@ -6,7 +6,7 @@
  * @package shop-discounts
  */
 class CouponBulkLoader extends CSVBulkLoader{
-	
+
 	//TODO
-	
+
 }

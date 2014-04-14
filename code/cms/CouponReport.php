@@ -1,14 +1,14 @@
 <?php
 
 class CouponReport extends ShopPeriodReport{
-	
+
 	protected $title = "Coupon Usage";
 	protected $dataClass = "OrderCoupon";
 	protected $periodfield = "Order.Paid";
 	protected $description = "See the total savings for coupons. Note that the 'Entered' field may not be
 										accurate if old/expired carts have been deleted from the database.";
-	
-	function columns(){
+
+	public function columns() {
 		return array(
 			"Name" => "Title",
 			"Code" => "Code",
@@ -18,17 +18,17 @@ class CouponReport extends ShopPeriodReport{
 			"Savings" => "Savings"
 		);
 	}
-	
+
 	/**
 	 * Remove unsortable columns
 	 */
-	function sortColumns() {
+	public function sortColumns() {
 		$cols = parent::sortColumns();
 		unset($cols['DiscountNice']);
 		return $cols;
 	}
-	
-	function getReportField(){
+
+	public function getReportField() {
 		$field = parent::getReportField();
 //		$field->addSummary("Total",array(
 //			"Entered"=>"sum",
@@ -37,8 +37,8 @@ class CouponReport extends ShopPeriodReport{
 //		));
 		return $field;
 	}
-	
-	function query($params){
+
+	public function query($params) {
 		$query = parent::query($params);
 		$query->setSelect("OrderCoupon.*")
 			->selectField($this->periodfield, 'FilterPeriod')
@@ -60,5 +60,5 @@ class CouponReport extends ShopPeriodReport{
 
 		return $query;
 	}
-	
+
 }

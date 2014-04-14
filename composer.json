@@ -1,6 +1,6 @@
 {
 	"name" : "burnbright/silverstripe-shop-discount",
-	"description" : "Discounts submodule for silverstripe-shop module",
+	"description" : "Discounts submodule for silverstripe-shop module. Create coupons and generic discounts to be applied at checkout.",
 	"license" : "BSD-2-Clause",
 	"type" : "silverstripe-module",
 	"keywords" : ["silverstripe","shop","shopping cart","ecommerce","discount","coupons"],

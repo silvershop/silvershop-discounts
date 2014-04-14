@@ -109,7 +109,7 @@ OrderCoupon:
         Code: USEDCOUPON
         Active: 1
         UseLimit: 1
-        
+
 Order:
     limitedcoupon:
         Status: Complete

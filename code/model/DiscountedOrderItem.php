@@ -1,9 +1,9 @@
 <?php
 
 class DiscountedOrderItem extends DataExtension {
-	
-	static $db = array(
+
+	public static $db = array(
 		'Discount' => 'Currency'
 	);
-	
+
 }
