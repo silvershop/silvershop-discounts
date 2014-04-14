@@ -62,7 +62,7 @@ class OrderCouponModifier extends OrderModifier {
 		if($coupon = $this->Coupon()) {
 			return sprintf(_t("OrderCouponModifier.COUPON", "Coupon: %s"), $coupon->Title);
 		}
-		return _t("OrderCouponModifier.NOCOUPONENTERED", "No Coupon Entered").$code;
+		return _t("OrderCouponModifier.NOCOUPONENTERED", "No Coupon Entered");
 	}
 
 	/**
