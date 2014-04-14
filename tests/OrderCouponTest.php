@@ -15,7 +15,7 @@ class OrderCouponTest extends FunctionalTest{
 	public function setUp() {
 		parent::setUp();
 		ShopTest::setConfiguration();
-		$this->placedorder = $this->objFromFixture("Order", "placed");
+		$this->placedorder = $this->objFromFixture("Order", "unpaid");
 		$this->cart = $this->objFromFixture("Order", "cart");
 		$this->othercart = $this->objFromFixture("Order", "othercart");
 	}

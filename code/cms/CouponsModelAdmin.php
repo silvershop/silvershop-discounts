@@ -55,7 +55,7 @@ class CouponsModelAdmin extends ModelAdmin {
 		for($i = 0; $i < $count; $i++){
 			$coupon = new OrderCoupon();
 			$form->saveInto($coupon);
-			$coupon->Code = OrderCoupon::generateCode();
+			$coupon->Code = OrderCoupon::generate_code();
 			$coupon->write();
 		}
 		return _t("CouponsModelAdmin.GENERATEDCOUPONS", "Generated $count coupons, now click 'Search' to see them");

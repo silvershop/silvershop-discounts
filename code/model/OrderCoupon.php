@@ -25,7 +25,8 @@ class OrderCoupon extends DataObject {
 	);
 
 	private static $has_one = array(
-		"GiftVoucher" => "GiftVoucher_OrderItem", //used to link to gift voucher purchase
+		//used to link to gift voucher purchase
+		"GiftVoucher" => "GiftVoucher_OrderItem",
 		"Group" => "Group"
 	);
 
@@ -68,19 +69,21 @@ class OrderCoupon extends DataObject {
 	public static $code_length = 10;
 
 	public static function get_by_code($code) {
-		return DataObject::get_one('OrderCoupon', "\"Code\" = UPPER('$code')");
+		return self::get()->filter('Code:nocase', $code)->first();
 	}
 
 	/**
 	* Generates a unique code.
-	* @return string - new code
+	* @return string the new code
 	*/
-	public static function generateCode($length = null) {
+	public static function generate_code($length = null) {
 		$length = ($length) ? $length : self::$code_length;
 		$code = null;
 		do{
 			$code = strtoupper(substr(md5(microtime()), 0, $length));
-		}while(DataObject::get('OrderCoupon', "\"Code\" = '$code'"));
+		}while(
+			self::get()->filter("Code:nocase", $code)->exists()
+		);
 
 		return $code;
 	}
@@ -165,18 +168,13 @@ class OrderCoupon extends DataObject {
 		return $fields;
 	}
 
-	// This was causing crashes on /dev/build. Moving to onBeforeWrite. MG 8.15.13
-//	function populateDefaults() {
-//		parent::populateDefaults();
-//		$this->Code = self::generateCode();
-//	}
-
 	/**
-	 * Autogenerate the code if needed
+	 * Autogenerate the code, if needed
 	 */
 	protected function onBeforeWrite() {
-		// If they didn't enter a code, generate a random one
-		if (empty($this->Code)) $this->Code = self::generateCode();
+		if (empty($this->Code)){
+			$this->Code = self::generate_code();
+		}
 		parent::onBeforeWrite();
 	}
 
@@ -226,13 +224,19 @@ class OrderCoupon extends DataObject {
 			return false;
 		}
 		if($this->UseLimit > 0 && $this->getUseCount($order) >= $this->UseLimit) {
-			$this->error(_t("OrderCoupon.LIMITREACHED", "Limit of $this->UseLimit uses for this code has been reached."));
+			$this->error(_t(
+				"OrderCoupon.LIMITREACHED",
+				"Limit of $this->UseLimit uses for this code has been reached."
+			));
 			return false;
 		}
 		if($this->MinOrderValue > 0 && $order->SubTotal() < $this->MinOrderValue){
 			$this->error(
 				sprintf(
-					_t("OrderCouponModifier.MINORDERVALUE", "Your cart subtotal must be at least %s to use this coupon"),
+					_t(
+						"OrderCouponModifier.MINORDERVALUE",
+						"Your cart subtotal must be at least %s to use this coupon"
+					),
 					$this->dbObject("MinOrderValue")->Nice()
 				)
 			);
@@ -259,12 +263,18 @@ class OrderCoupon extends DataObject {
 		if($zones->exists()){
 			$address = $order->getShippingAddress();
 			if(!$address){
-				$this->error(_t("OrderCouponModifier.NOTINZONE", "This coupon can only be used for a specific shipping location."));
+				$this->error(_t(
+					"OrderCouponModifier.NOTINZONE",
+					"This coupon can only be used for a specific shipping location."
+				));
 				return false;
 			}
 			$currentzones = Zone::get_zones_for_address($address);
 			if(!$currentzones || !$currentzones->exists()){
-				$this->error(_t("OrderCouponModifier.NOTINZONE", "This coupon can only be used for a specific shipping location."));
+				$this->error(_t(
+					"OrderCouponModifier.NOTINZONE",
+					"This coupon can only be used for a specific shipping location."
+				));
 				return false;
 			}
 			//check if any of currentzones is in zones
@@ -276,20 +286,27 @@ class OrderCoupon extends DataObject {
 				}
 			}
 			if(!$inzone){
-				$this->error(_t("OrderCouponModifier.NOTINZONE", "This coupon can only be used for a specific shipping location."));
+				$this->error(_t(
+					"OrderCouponModifier.NOTINZONE",
+					"This coupon can only be used for a specific shipping location."
+				));
 				return false;
 			}
 		}
 		$items = $order->Items();
 		$incart = false; //note that this means an order without items will always be invalid
 		foreach($items as $item){
-			if($this->itemMatchesCriteria($item)){ //check at least one item in the cart meets the coupon's criteria
+			//check at least one item in the cart meets the coupon's criteria
+			if($this->itemMatchesCriteria($item)){
 				$incart = true;
 				break;
 			}
 		}
 		if(!$incart){
-			$this->error(_t("OrderCouponModifier.PRODUCTNOTINORDER", "No items in the cart match the coupon criteria"));
+			$this->error(_t(
+				"OrderCouponModifier.PRODUCTNOTINORDER",
+				"No items in the cart match the coupon criteria"
+			));
 			return false;
 		}
 		$valid = true;
@@ -330,6 +347,7 @@ class OrderCoupon extends DataObject {
 		if($this->Type == "Amount" && $discount > $this->Amount){
 			$discount = $this->Amount;
 		}
+
 		return $discount;
 	}
 
@@ -354,6 +372,7 @@ class OrderCoupon extends DataObject {
 		}
 		$match = true;
 		$this->extend("updateItemCriteria", $item, $match);
+
 		return $match;
 	}
 
@@ -370,13 +389,16 @@ class OrderCoupon extends DataObject {
 		if($this->Percent) {
 			$discount += $value * $this->Percent;
 		}
+
 		return $discount;
 	}
 
 	public function getDiscountNice() {
 		if($this->Type == "Percent"){
+
 			return $this->dbObject("Percent")->Nice();
 		}
+
 		return $this->dbObject("Amount")->Nice();
 	}
 
@@ -386,17 +408,6 @@ class OrderCoupon extends DataObject {
 	* @return int
 	*/
 	public function getUseCount($order = null) {
-//		$filter = "\"Order\".\"Paid\" IS NOT NULL";
-//		if($order){
-//			$filter .= " AND \"OrderAttribute\".\"OrderID\" != ".$order->ID;
-//		}
-//		$join = "INNER JOIN \"Order\" ON \"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"";
-//		$query = new SQLQuery("COUNT(\"OrderCouponModifier\")");
-//		$query = singleton("OrderCouponModifier")->buildSQL("","","",$join);
-//		$query->where = array($filter);
-//		$query->select("OrderCouponModifier.ID");
-//		return $query->unlimitedRowCount("\"OrderCouponModifier\".\"ID\"");
-
 		$filter = "\"Order\".\"Paid\" IS NOT NULL";
 		if($order){
 			$filter .= " AND \"OrderAttribute\".\"OrderID\" != ".$order->ID;

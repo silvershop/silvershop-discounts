@@ -58,10 +58,6 @@ class GiftVoucherTest extends SapphireTest{
 		$this->assertEquals($coupon->Type, "Amount", "Coupon type is 'Amount'");
 	}
 
-	public function testOnPayment() {
-
-	}
-
 	//TODO: ensure gift vouchers can only be used once
 
 }
