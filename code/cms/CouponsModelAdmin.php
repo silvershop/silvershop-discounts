@@ -6,26 +6,15 @@
 
 class CouponsModelAdmin extends ModelAdmin {
 
+	private static $url_segment = 'coupons';
+	private static $menu_title = 'Coupons';
+	private static $menu_icon = 'shop_discount/images/icon-coupons.png';
 	private static $menu_priority = 2;
 
-	public static $collection_controller_class = "CouponsModelAdmin_CollectionController";
-	public static $record_controller_class = "CouponsModelAdmin_RecordController";
-	public static $managed_models = array("OrderCoupon");
-
-	public static function set_managed_models(array $array) {
-		self::$managed_models = $array;
-	}
-	public static function add_managed_model($item) {
-		self::$managed_models[] = $item;
-	}
-
-	public static $url_segment = 'coupons';
-	public static $menu_title = 'Coupons';
-	public static $menu_icon = 'shop_discount/images/icon-coupons.png';
-
-	public static $model_importers = array(
-		'Product' => 'CouponBulkLoader',
+	private static $managed_models = array(
+		"OrderCoupon"
 	);
+	public static $model_importers = array();
 
 	public function GenerateCouponsForm() {
 		$fields = Object::create('OrderCoupon')->scaffoldFormFields();
@@ -59,7 +48,11 @@ class CouponsModelAdmin extends ModelAdmin {
 			$coupon->Code = OrderCoupon::generate_code();
 			$coupon->write();
 		}
-		return _t("CouponsModelAdmin.GENERATEDCOUPONS", "Generated $count coupons, now click 'Search' to see them");
+
+		return _t(
+			"CouponsModelAdmin.GENERATEDCOUPONS",
+			"Generated $count coupons, now click 'Search' to see them"
+		);
 	}
 
 }

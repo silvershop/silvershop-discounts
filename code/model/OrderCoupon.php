@@ -188,7 +188,10 @@ class OrderCoupon extends DataObject {
 	 * @return DataObject $this
 	 */
 	public function setCastedField($fieldName, $value) {
-		if ($fieldName == 'Percent' && $value > 1) $value /= 100.0;
+		if ($fieldName == 'Percent' && $value > 1){
+			$value /= 100.0;	
+		}
+		
 		return parent::setCastedField($fieldName, $value);
 	}
 
