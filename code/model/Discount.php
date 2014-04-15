@@ -72,12 +72,14 @@ class Discount extends DataObject{
 						"CriteriaDescription",
 						"Configure the requirements an order must meet for this coupon to be used with it:"
 					),
-					new FieldGroup("Valid date range:",
+					FieldGroup::create("Valid date range:",
 						CouponDatetimeField::create("StartDate", "Start Date / Time"),
 						CouponDatetimeField::create(
 							"EndDate",
-							"End Date / Time (you should set the end time to 23:59:59, if you want to include the entire end day)"
+							"End Date / Time"
 						)
+					)->setDescription(
+						"You should set the end time to 23:59:59, if you want to include the entire end day."
 					),
 					CurrencyField::create("MinOrderValue", "Minimum order subtotal"),
 					NumericField::create("UseLimit", "Limit number of uses")
@@ -89,18 +91,28 @@ class Discount extends DataObject{
 			if($this->ForItems){
 				$tabset->push(new Tab("Products",
 					LabelField::create("ProductsDescription", "Select specific products that this discount applies to"),
-					GridField::create("Products", "Products", $this->Products(), new GridFieldConfig_RelationEditor())
+					GridField::create("Products", "Products", $this->Products(),
+						GridFieldConfig_RelationEditor::create()
+							->removeComponentsByType("GridFieldAddNewButton")
+							->removeComponentsByType("GridFieldEditButton")
+					)
 				));
 				$tabset->push(new Tab("Categories",
 					LabelField::create("CategoriesDescription", "Select specific product categories that this discount applies to"),
-					GridField::create("Categories", "Categories", $this->Categories(), new GridFieldConfig_RelationEditor())
+					GridField::create("Categories", "Categories", $this->Categories(),
+						GridFieldConfig_RelationEditor::create()
+							->removeComponentsByType("GridFieldAddNewButton")
+							->removeComponentsByType("GridFieldEditButton")
+					)
 				));
-//				$products->setPermissions(array('show'));
-//				$categories->setPermissions(array('show'));
 			}
 
 			$tabset->push(new Tab("Zones",
-				$zones = new GridField("Zones", "Zones", $this->Zones(), new GridFieldConfig_RelationEditor())
+				$zones = new GridField("Zones", "Zones", $this->Zones(),
+					GridFieldConfig_RelationEditor::create()
+						->removeComponentsByType("GridFieldAddNewButton")
+						->removeComponentsByType("GridFieldEditButton")
+				)
 			));
 
 			$maintab->Fields()->push(
@@ -108,7 +120,7 @@ class Discount extends DataObject{
 					"Member Belongs to Group",
 					Group::get()->map('ID', 'Title')
 				)->setHasEmptyDefault(true)
-					->setEmptyString('-- Any Group --')
+				->setEmptyString('Any or no group')
 			);
 
 			if($this->Type == "Percent"){
@@ -140,7 +152,7 @@ class Discount extends DataObject{
 						More criteria options can be set after an intial save
 					</p>"
 				),
-				"Criteria"
+				"UseLimit"
 			);
 		}
 		$this->extend("updateCMSFields", $fields);
