@@ -3,55 +3,19 @@
  * Applies a discount to current order, if applicable, when entered at checkout.
  * @package shop-discounts
  */
-class OrderCoupon extends DataObject {
+class OrderCoupon extends Discount {
 
 	private static $db = array(
-		"Title" => "Varchar(255)", //store the promotion name, or whatever you like
-		"Code" => "Varchar(25)",
-		"Type" => "Enum('Percent,Amount','Percent')",
-		"Amount" => "Currency",
-		"Percent" => "Percentage",
-		"Active" => "Boolean",
-
-		"ForItems" => "Boolean",
-		"ForShipping" => "Boolean",
-
-		//Item / order validity criteria
-		//"Cumulative" => "Boolean",
-		"MinOrderValue" => "Currency",
-		"UseLimit" => "Int",
-		"StartDate" => "Datetime",
-		"EndDate" => "Datetime"
+		"Code" => "Varchar(25)"
 	);
 
 	private static $has_one = array(
 		//used to link to gift voucher purchase
-		"GiftVoucher" => "GiftVoucher_OrderItem",
-		"Group" => "Group"
-	);
-
-	private static $many_many = array(
-		"Products" => "Product", //for restricting to product(s)
-		"Categories" => "ProductCategory",
-		"Zones" => "Zone"
+		"GiftVoucher" => "GiftVoucher_OrderItem"
 	);
 
 	private static $searchable_fields = array(
 		"Code"
-	);
-
-	private static $defaults = array(
-		"Type" => "Percent",
-		"Active" => true,
-		"UseLimit" => 0,
-		//"Cumulative" => 1,
-		"ForItems" => 1
-	);
-
-	private static $field_labels = array(
-		"DiscountNice" => "Discount",
-		"UseLimit" => "Maximum number of uses",
-		"MinOrderValue" => "Minimum subtotal of order"
 	);
 
 	private static $summary_fields = array(
@@ -62,10 +26,8 @@ class OrderCoupon extends DataObject {
 		"EndDate"
 	);
 
-	private static $singular_name = "Discount";
-	private static $plural_name = "Discounts";
-
-	private static $default_sort = "EndDate DESC, StartDate DESC";
+	private static $singular_name = "Coupon";
+	private static $plural_name = "Coupons";
 	public static $code_length = 10;
 
 	public static function get_by_code($code) {
@@ -92,79 +54,14 @@ class OrderCoupon extends DataObject {
 	protected $messagetype = null;
 
 	public function getCMSFields($params = null) {
-		$fields = new FieldList(array(
-			$tabset = new TabSet("Root",
-				$maintab = new Tab("Main",
-					new TextField("Title"),
-					new TextField("Code"),
-					new CheckboxField("Active", "Active (allow this coupon to be used)"),
-					new FieldGroup("This discount applies to:",
-						new CheckboxField("ForItems", "Item values"),
-						new CheckboxField("ForShipping", "Shipping cost")
-					),
-					new HeaderField("Criteria", "Order and Item Criteria", 4),
-					new LabelField(
-						"CriteriaDescription",
-						"Configure the requirements an order must meet for this coupon to be used with it:"
-					),
-					new FieldGroup("Valid date range:",
-						new CouponDatetimeField("StartDate", "Start Date / Time"),
-						new CouponDatetimeField(
-							"EndDate",
-							"End Date / Time (you should set the end time to 23:59:59, if you want to include the entire end day)"
-						)
-					),
-					new CurrencyField("MinOrderValue", "Minimum order subtotal"),
-					new NumericField("UseLimit", "Limit number of uses (0 = unlimited)")
-				)
-			)
-		));
-		if($this->isInDB()){
-			if($this->ForItems){
-				$tabset->push(new Tab("Products",
-					new LabelField("ProductsDescription", "Select specific products that this coupon can be used with"),
-					$products = new GridField("Products", "Products", $this->Products(), new GridFieldConfig_RelationEditor())
-				));
-				$tabset->push(new Tab("Categories",
-					new LabelField("CategoriesDescription", "Select specific product categories that this coupon can be used with"),
-					$categories = new GridField("Categories", "Categories", $this->Categories(), new GridFieldConfig_RelationEditor())
-				));
-//				$products->setPermissions(array('show'));
-//				$categories->setPermissions(array('show'));
-			}
+		$fields = parent::getCMSFields();
 
-			$tabset->push(new Tab("Zones",
-				$zones = new GridField("Zones", "Zones", $this->Zones(), new GridFieldConfig_RelationEditor())
-			));
+		$fields->addFieldToTab(
+			"Root.Main",
+			TextField::create("Code"), 
+			"Active"
+		);
 
-			$maintab->Fields()->push(
-				$grps = new DropdownField("GroupID", "Member Belongs to Group", DataObject::get('Group')->map('ID', 'Title'))
-			);
-			$grps->setHasEmptyDefault(true);
-			$grps->setEmptyString('-- Any Group --');
-
-			if($this->Type == "Percent"){
-				$fields->insertBefore($percent = new NumericField("Percent", "Percentage discount"), "Active");
-				$percent->setTitle("Percent discount (eg 0.05 = 5%, 0.5 = 50%, and 5 = 500%)");
-			}elseif($this->Type == "Amount"){
-				$fields->insertBefore($amount = new NumericField("Amount", "Discount value"), "Active");
-			}
-		}else{
-			$fields->insertBefore(
-				new OptionsetField("Type", "Type of discount",
-					array(
-						"Percent" => "Percentage of subtotal (eg 25%)",
-						"Amount" => "Fixed amount (eg $25.00)"
-					)
-				),
-				"Active"
-			);
-			$fields->insertAfter(
-				new LiteralField("warning", "<p class=\"message good\">More criteria options can be set after an intial save</p>"),
-				"Criteria"
-			);
-		}
-		$this->extend("updateCMSFields", $fields);
 		return $fields;
 	}
 
