@@ -31,7 +31,9 @@ class OrderCoupon extends Discount {
 	public static $code_length = 10;
 
 	public static function get_by_code($code) {
-		return self::get()->filter('Code:nocase', $code)->first();
+		return self::get()
+				->filter('Code:nocase', $code)
+				->first();
 	}
 
 	/**

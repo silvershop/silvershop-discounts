@@ -212,18 +212,18 @@ class Discount extends DataObject{
 		$endDate = strtotime($this->EndDate);
 		$now = time();
 		if($endDate && $endDate < $now){
-			$this->error(_t("OrderCoupon.EXPIRED", "This coupon has already expired."));
+			$this->error(_t("Discount.EXPIRED", "This discount has already expired."));
 			return false;
 		}
 		if($startDate && $startDate > $now){
-			$this->error(_t("OrderCoupon.TOOEARLY", "It is too early to use this coupon."));
+			$this->error(_t("Discount.TOOEARLY", "It is too early to use this coupon."));
 			return false;
 		}
 		//member group
 		$group = $this->Group();
 		$member = (Member::currentUser()) ? Member::currentUser() : $order->Member(); //get member
 		if($group->exists() && (!$member || !$member->inGroup($group))){
-			$this->error(_t("OrderCoupon.GROUPED", "Only specific members can use this coupon."));
+			$this->error(_t("Discount.GROUPED", "Only specific members can use this discount."));
 			return false;
 		}
 		//zone
@@ -241,7 +241,7 @@ class Discount extends DataObject{
 			if(!$currentzones || !$currentzones->exists()){
 				$this->error(_t(
 					"OrderCouponModifier.NOTINZONE",
-					"This coupon can only be used for a specific shipping location."
+					"This discount can only be used for a specific shipping location."
 				));
 				return false;
 			}
@@ -256,7 +256,7 @@ class Discount extends DataObject{
 			if(!$inzone){
 				$this->error(_t(
 					"OrderCouponModifier.NOTINZONE",
-					"This coupon can only be used for a specific shipping location."
+					"This discount can only be used for a specific shipping location."
 				));
 				return false;
 			}

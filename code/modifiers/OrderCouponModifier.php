@@ -73,39 +73,5 @@ class OrderCouponModifier extends OrderModifier {
 		$this->CouponID = $discountCoupon->ID;
 		$this->write();
 	}
-
-	//TODO: remove functions below
-
-	/**
-	* form functions (e. g. showform and getform)
-	*/
-	public static function show_form() {
-		return true;
-	}
-
-	public function getModifierForm($controller) {
-		return self::get_form();
-	}
-	public static function get_form($controller) {
-		return new CouponForm($controller, "CouponForm");
-	}
-
-	/**
-	* Type Functions (IsChargeable, IsDeductable, IsNoChange, IsRemoved)
-	*/
-	public function IsDeductable() {
-		return true;
-	}
-
-	/**
-	 * Gets the order subtotal
-	* @return float
-	*/
-	protected function LiveSubTotalAmount() {
-		if($this->OrderCoupon()) {
-			$order = $this->Order();
-			return $order->SubTotal();
-		}
-		return 0;
-	}
+	
 }
