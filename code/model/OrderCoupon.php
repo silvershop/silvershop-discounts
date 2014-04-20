@@ -58,9 +58,12 @@ class OrderCoupon extends Discount {
 	public function getCMSFields($params = null) {
 		$fields = parent::getCMSFields();
 
-		$fields->addFieldToTab(
-			"Root.Main",
-			TextField::create("Code"), 
+		$fields->addFieldsToTab(
+			"Root.Main", array(
+				TextField::create("Code"),
+				NumericField::create("UseLimit", "Limit number of uses")
+						->setDescription("Note: 0 = unlimited")
+			), 
 			"Active"
 		);
 

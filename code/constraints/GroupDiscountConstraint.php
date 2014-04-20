@@ -2,6 +2,10 @@
 
 class GroupDiscountConstraint extends DiscountConstraint{
 
+	private static $has_one = array(
+		"Group" => "Group"
+	);
+
 	public function updateCMSFields(FieldList $fields) {
 		$fields->addFieldToTab("Root.Main",
 			DropdownField::create("GroupID",
@@ -12,7 +16,7 @@ class GroupDiscountConstraint extends DiscountConstraint{
 		);
 	}
 	
-	public function apply(DataList $list) {
+	public function filter(DataList $list) {
 		$member = Member::currentUser();
 		$groupids = $member->Groups()
 							->map('ID', 'ID')
@@ -25,8 +29,8 @@ class GroupDiscountConstraint extends DiscountConstraint{
 	}
 
 	public function check(Discount $discount) {
-		$group = $this->owner->Group();
-		$member = (Member::currentUser()) ? Member::currentUser() : $order->Member(); //get member
+		$group = $discount->Group();
+		$member = (Member::currentUser()) ? Member::currentUser() : $this->order->Member(); //get member
 		if($group->exists() && (!$member || !$member->inGroup($group))){
 			$this->error(_t(
 				"Discount.GROUPED", 

@@ -10,38 +10,18 @@ class Discount extends DataObject{
 		"Active" => "Boolean",
 
 		"ForItems" => "Boolean",
-		"ForShipping" => "Boolean",
-
-		//Item / order validity criteria
-		//"Cumulative" => "Boolean",
-		"MinOrderValue" => "Currency",
-		"UseLimit" => "Int",
-		"StartDate" => "Datetime",
-		"EndDate" => "Datetime"
-	);
-
-	private static $has_one = array(
-		"Group" => "Group"
-	);
-
-	private static $many_many = array(
-		"Products" => "Product", //for restricting to product(s)
-		"Categories" => "ProductCategory",
-		"Zones" => "Zone"
+		"ForShipping" => "Boolean"
 	);
 
 	private static $defaults = array(
 		"Type" => "Percent",
 		"Active" => true,
-		"UseLimit" => 0,
 		//"Cumulative" => 1,
 		"ForItems" => 1
 	);
 
 	private static $field_labels = array(
-		"DiscountNice" => "Discount",
-		"UseLimit" => "Maximum number of uses",
-		"MinOrderValue" => "Minimum subtotal of order"
+		"DiscountNice" => "Discount"
 	);
 
 	private static $summary_fields = array(
@@ -71,58 +51,11 @@ class Discount extends DataObject{
 					LabelField::create(
 						"CriteriaDescription",
 						"Configure the requirements an order must meet for this coupon to be used with it:"
-					),
-					FieldGroup::create("Valid date range:",
-						CouponDatetimeField::create("StartDate", "Start Date / Time"),
-						CouponDatetimeField::create(
-							"EndDate",
-							"End Date / Time"
-						)
-					)->setDescription(
-						"You should set the end time to 23:59:59, if you want to include the entire end day."
-					),
-					CurrencyField::create("MinOrderValue", "Minimum order subtotal"),
-					NumericField::create("UseLimit", "Limit number of uses")
-						->setDescription("Note: 0 = unlimited")
+					)
 				)
 			)
 		));
 		if($this->isInDB()){
-			if($this->ForItems){
-				$tabset->push(new Tab("Products",
-					LabelField::create("ProductsDescription", "Select specific products that this discount applies to"),
-					GridField::create("Products", "Products", $this->Products(),
-						GridFieldConfig_RelationEditor::create()
-							->removeComponentsByType("GridFieldAddNewButton")
-							->removeComponentsByType("GridFieldEditButton")
-					)
-				));
-				$tabset->push(new Tab("Categories",
-					LabelField::create("CategoriesDescription", "Select specific product categories that this discount applies to"),
-					GridField::create("Categories", "Categories", $this->Categories(),
-						GridFieldConfig_RelationEditor::create()
-							->removeComponentsByType("GridFieldAddNewButton")
-							->removeComponentsByType("GridFieldEditButton")
-					)
-				));
-			}
-
-			$tabset->push(new Tab("Zones",
-				$zones = new GridField("Zones", "Zones", $this->Zones(),
-					GridFieldConfig_RelationEditor::create()
-						->removeComponentsByType("GridFieldAddNewButton")
-						->removeComponentsByType("GridFieldEditButton")
-				)
-			));
-
-			$maintab->Fields()->push(
-				DropdownField::create("GroupID",
-					"Member Belongs to Group",
-					Group::get()->map('ID', 'Title')
-				)->setHasEmptyDefault(true)
-				->setEmptyString('Any or no group')
-			);
-
 			if($this->Type == "Percent"){
 				$fields->insertBefore(
 					NumericField::create("Percent", "Percentage discount")
@@ -161,23 +94,6 @@ class Discount extends DataObject{
 	}
 
 	/**
-	 * We have to tap in here to correct "50" to "0.5" for the percent
-	 * field. This is a common user error and it's nice to just fix it
-	 * for them.
-	 *
-	 * @param string $fieldName Name of the field
-	 * @param mixed $value New field value
-	 * @return DataObject $this
-	 */
-	public function setCastedField($fieldName, $value) {
-		if ($fieldName == 'Percent' && $value > 1){
-			$value /= 100.0;	
-		}
-		
-		return parent::setCastedField($fieldName, $value);
-	}
-
-	/**
 	 * Check if this coupon can be used with a given order
 	 * @param Order $order
 	 * @return boolean
@@ -194,90 +110,16 @@ class Discount extends DataObject{
 			);
 			return false;
 		}
-		//order value
-		if($this->MinOrderValue > 0 && $order->SubTotal() < $this->MinOrderValue){
-			$this->error(
-				sprintf(
-					_t(
-						"Discount.MINORDERVALUE",
-						"Your cart subtotal must be at least %s to use this coupon"
-					),
-					$this->dbObject("MinOrderValue")->Nice()
-				)
-			);
-			return false;
-		}
-		//time period
-		$startDate = strtotime($this->StartDate);
-		$endDate = strtotime($this->EndDate);
-		$now = time();
-		if($endDate && $endDate < $now){
-			$this->error(_t("Discount.EXPIRED", "This discount has already expired."));
-			return false;
-		}
-		if($startDate && $startDate > $now){
-			$this->error(_t("Discount.TOOEARLY", "It is too early to use this coupon."));
-			return false;
-		}
-		//member group
-		$group = $this->Group();
-		$member = (Member::currentUser()) ? Member::currentUser() : $order->Member(); //get member
-		if($group->exists() && (!$member || !$member->inGroup($group))){
-			$this->error(_t("Discount.GROUPED", "Only specific members can use this discount."));
-			return false;
-		}
-		//zone
-		$zones = $this->Zones();
-		if($zones->exists()){
-			$address = $order->getShippingAddress();
-			if(!$address){
-				$this->error(_t(
-					"OrderCouponModifier.NOTINZONE",
-					"This coupon can only be used for a specific shipping location."
-				));
-				return false;
-			}
-			$currentzones = Zone::get_zones_for_address($address);
-			if(!$currentzones || !$currentzones->exists()){
-				$this->error(_t(
-					"OrderCouponModifier.NOTINZONE",
-					"This discount can only be used for a specific shipping location."
-				));
-				return false;
-			}
-			//check if any of currentzones is in zones
-			$inzone = false;
-			foreach($currentzones as $zone){
-				if($zones->find('ID', $zone->ID)){
-					$inzone = true;
-					break;
-				}
-			}
-			if(!$inzone){
-				$this->error(_t(
-					"OrderCouponModifier.NOTINZONE",
-					"This discount can only be used for a specific shipping location."
-				));
+		$constraints = Config::inst()->forClass("Discount")->constraints;
+		foreach($constraints as $constraint){
+			$dc = singleton($constraint)
+				->setOrder($order);
+			if(!$dc->check($this)){
+				//TODO: get/store error
 				return false;
 			}
 		}
-		//item qualification
-		$items = $order->Items();
-		$incart = false; //note that this means an order without items will always be invalid
-		foreach($items as $item){
-			//check at least one item in the cart meets the coupon's criteria
-			if($this->itemMatchesCriteria($item)){
-				$incart = true;
-				break;
-			}
-		}
-		if(!$incart){
-			$this->error(_t(
-				"OrderCouponModifier.PRODUCTNOTINORDER",
-				"No items in the cart match the coupon criteria"
-			));
-			return false;
-		}
+		//TODO: combined constraints
 
 		return true;
 	}
@@ -293,6 +135,12 @@ class Discount extends DataObject{
 			$items = $order->Items();
 			$discountable = 0;
 			foreach($items as $item){
+
+				$constraints = Config::inst()->forClass("Discount")->constraints;
+				foreach($constraints as $constraint){
+					//TODO: finish me
+				}
+
 				if($this->itemMatchesCriteria($item)){
 					$discountable += $item->Total();
 				}
@@ -317,28 +165,20 @@ class Discount extends DataObject{
 	}
 
 	/**
-	 * Check if order item meets criteria of this coupon
-	 * @param OrderItem $item
-	 * @return boolean
+	 * We have to tap in here to correct "50" to "0.5" for the percent
+	 * field. This is a common user error and it's nice to just fix it
+	 * for them.
+	 *
+	 * @param string $fieldName Name of the field
+	 * @param mixed $value New field value
+	 * @return DataObject $this
 	 */
-	public function itemMatchesCriteria(OrderItem $item) {
-		$products = $this->Products();
-		if($products->exists()){
-			if(!$products->find('ID', $item->ProductID)){
-				return false;
-			}
+	public function setCastedField($fieldName, $value) {
+		if ($fieldName == 'Percent' && $value > 1){
+			$value /= 100.0;	
 		}
-		$categories = $this->Categories();
-		if($categories->exists()){
-			$itemproduct = $item->Product(true); //true forces the current version of product to be retrieved.
-			if(!$itemproduct || !$categories->find('ID', $itemproduct->ParentID)){
-				return false;
-			}
-		}
-		$match = true;
-		$this->extend("updateItemCriteria", $item, $match);
-
-		return $match;
+		
+		return parent::setCastedField($fieldName, $value);
 	}
 
 	/**

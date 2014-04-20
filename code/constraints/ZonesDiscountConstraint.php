@@ -8,7 +8,7 @@ class ZonesDiscountConstraint extends DiscountConstraint{
 
 	public function updateCMSFields(FieldList $fields) {
 		$tabset->push(new Tab("Zones",
-			$zones = new GridField("Zones", "Zones", $this->Zones(),
+			$zones = new GridField("Zones", "Zones", $this->owner->Zones(),
 				GridFieldConfig_RelationEditor::create()
 					->removeComponentsByType("GridFieldAddNewButton")
 					->removeComponentsByType("GridFieldEditButton")
@@ -16,17 +16,17 @@ class ZonesDiscountConstraint extends DiscountConstraint{
 		));
 	}
 	
-	public function apply(DataList $list) {
+	public function filter(DataList $list) {
 		//TODO: restrict to zone?
 		return $list;
 	}
 
 	public function check(Discount $discount) {
-		$zones = $this->owner->Zones();
+		$zones = $discount->Zones();
 		if(!$zones->exists()){
 			return true;
 		}
-		$address = $this->order->getShippingAddress();
+		$address = $discount->getShippingAddress();
 		if(!$address){
 			$this->error(_t(
 				"OrderCouponModifier.NOTINZONE",

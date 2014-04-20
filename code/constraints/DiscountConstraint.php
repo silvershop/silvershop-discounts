@@ -6,12 +6,32 @@ abstract class DiscountConstraint extends DataExtension{
 
 	function setOrder(Order $order) {
 		$this->order = $order;
+
+		return $this;
 	}
 
-	abstract function apply(DataList $list);
+	/**
+	 * Add filtering to a Discount DataList so it matches
+	 * this constraint.
+	 * 
+	 * @param  DataList $list the list to constrain
+	 * @return DataList        the updated list
+	 */
+	abstract function filter(DataList $list);
 
 	abstract function check(Discount $discount);
 
+
+	/**
+	 * Set up constraints via _config.php
+	 */
+	public static function set_up_constraints() {
+		$constraints = Config::inst()->forClass("Discount")->constraints;
+
+		foreach($constraints as $constraint){
+			Object::add_extension("Discount", $constraint);
+		}
+	}
 
 	//messaging
 

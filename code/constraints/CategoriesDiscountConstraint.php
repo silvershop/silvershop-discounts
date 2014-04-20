@@ -19,7 +19,7 @@ class CategoriesDiscountConstraint extends DiscountConstraint{
 		}
 	}
 
-	public function apply(DataList $list) {
+	public function filter(DataList $list) {
 		//TODO: filter discounts to match categories
 		return $list;
 	}
@@ -40,7 +40,7 @@ class CategoriesDiscountConstraint extends DiscountConstraint{
 			}
 		}
 		
-		return true;
+		return $incart;
 	}
 
 	public function itemMatchesCriteria(OrderItem $item, Discount $discount) {

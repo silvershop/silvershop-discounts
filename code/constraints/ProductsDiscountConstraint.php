@@ -21,8 +21,7 @@ class ProductsDiscountConstraint extends DiscountConstraint{
 		}
 	}
 	
-	public function apply(DataList $list) {
-
+	public function filter(DataList $list) {
 		$productids = $this->order->Items()
 					->map('ProductID', 'ProductID')
 					->toArray();
@@ -46,7 +45,7 @@ class ProductsDiscountConstraint extends DiscountConstraint{
 			}
 		}
 		
-		return true;
+		return $incart;
 	}
 
 	public function itemMatchesCriteria(OrderItem $item, Discount $discount) {

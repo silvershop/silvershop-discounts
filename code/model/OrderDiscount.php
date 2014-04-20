@@ -18,20 +18,6 @@ class OrderDiscount extends Discount{
 	 */
 	public static function get_matching(Order $order) {
 
-		$now = date('Y-m-d H:i:s');
-		
-
-		$productids = $order->Items()
-							->map('ProductID', 'ProductID')
-							->toArray();
-		
-		//$categoryids
-		
-		$member = Member::currentUser();
-		$groupids = $member->Groups()
-							->map('ID', 'ID')
-							->toArray();
-
 		//get as many matching discounts as possible in a single query
 		$discounts = self::get()
 			->filter("Active", true)
@@ -39,33 +25,14 @@ class OrderDiscount extends Discount{
 			->filterAny(array(
 				"Amount:GreaterThan" => 0,
 				"Percent:GreaterThan" => 0
-			))
-			//order value
-			->filterAny(array(
-				"MinOrderValue" => 0,
-				"MinOrderValue:LessThan" => $order->SubTotal()
-			))
-			//start date is null or < today
-			->where(
-				//to bad ORM filtering for NULL doesn't work :(
-				"(\"Discount\".\"StartDate\" IS NULL) OR (\"Discount\".\"StartDate\" < '$now')"
-			)
-			//end date is null or > today
-			->where(
-				//to bad ROM filtering for NULL doesn't work :(
-				"(\"Discount\".\"EndDate\" IS NULL) OR (\"Discount\".\"EndDate\" > '$now')"
-			)
-			//member is in group (or group doesn't apply)
-			->filterAny(array(
-				"GroupID" => $groupids,
-				"GroupID" => 0
 			));
-			//->leftJoin("")
-		
-			//products/categories match
-			//zone matches
 
-		Debug::show($discounts->sql());
+		$constraints = Config::inst()->forClass("Discount")->constraints;
+		foreach($constraints as $constraint){
+			$discounts = singleton($constraint)
+							->setOrder($order)
+							->filter($discounts);
+		}
 
 		//cull remaining invalid discounts programatically
 		$validdiscounts = new ArrayList();

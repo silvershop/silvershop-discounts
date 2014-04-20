@@ -18,7 +18,8 @@ class DatetimeDiscountConstraint extends DiscountConstraint{
 		);
 	}
 
-	public function apply(DataList $list) {
+	public function filter(DataList $list) {
+		$now = date('Y-m-d H:i:s');
 		//to bad ORM filtering for NULL doesn't work...so we need to use where
 		return $list->where(
 			"(\"Discount\".\"StartDate\" IS NULL) OR (\"Discount\".\"StartDate\" < '$now')"
@@ -30,8 +31,8 @@ class DatetimeDiscountConstraint extends DiscountConstraint{
 
 	public function check(Discount $discount) {
 		//time period
-		$startDate = strtotime($this->StartDate);
-		$endDate = strtotime($this->EndDate);
+		$startDate = strtotime($discount->StartDate);
+		$endDate = strtotime($discount->EndDate);
 		$now = time();
 		if($endDate && $endDate < $now){
 			$this->error(_t("OrderCoupon.EXPIRED", "This coupon has already expired."));

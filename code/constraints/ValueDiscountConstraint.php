@@ -6,13 +6,17 @@ class ValueDiscountConstraint extends DiscountConstraint{
 		"MinOrderValue" => "Currency"
 	);
 
+	private static $field_labels = array(
+		"MinOrderValue" => "Minimum subtotal of order"
+	);
+
 	public function updateCMSFields(FieldList $fields) {
 		$fields->addFieldToTab("Root.Main",
 			CurrencyField::create("MinOrderValue", "Minimum order subtotal")
 		);
 	}
 	
-	public function apply(DataList $list) {
+	public function filter(DataList $list) {
 		return $list->filterAny(array(
 			"MinOrderValue" => 0,
 			"MinOrderValue:LessThan" => $this->order->SubTotal()
@@ -20,7 +24,7 @@ class ValueDiscountConstraint extends DiscountConstraint{
 	}
 
 	public function check(Discount $discount) {
-		if($this->MinOrderValue > 0 && $order->SubTotal() < $this->MinOrderValue){
+		if($discount->MinOrderValue > 0 && $discount->SubTotal() < $discount->MinOrderValue){
 			$this->error(
 				sprintf(
 					_t(
