@@ -1,7 +1,7 @@
 <% require javascript(sapphire/thirdparty/tabstrip/tabstrip.js) %>
 <% require css(sapphire/thirdparty/tabstrip/tabstrip.css) %>
 
-<% require javascript(ecommerce_coupon/javascript/CouponsModelAdmin.js) %>
+<% require javascript(shop_discount/javascript/CouponsModelAdmin.js) %>
 
 <div id="LeftPane">
 	<div id="SearchForm_holder" class="leftbottom">		
