@@ -44,6 +44,10 @@ class ProductsDiscountConstraint extends DiscountConstraint{
 				break;
 			}
 		}
+
+		if(!$incart){
+			$this->error("The required products (categories) are not in the cart.");
+		}
 		
 		return $incart;
 	}

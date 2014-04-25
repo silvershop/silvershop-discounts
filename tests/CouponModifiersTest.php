@@ -27,7 +27,7 @@ class CouponModifiersTest extends SapphireTest{
 		$this->assertEquals($order->GrandTotal(), 2000, "Price without coupon is $2000");
 		$coupon = $this->objFromFixture("OrderCoupon", "40percentoff");
 		$valid = $coupon->valid($order);
-		$this->assertTrue($valid, 'Check the coupon is indeed valid '.$coupon->getMessage());
+		$this->assertTrue($valid, 'valid coupon: '.$coupon->getMessage());
 		$coupon->applyToOrder($order);
 		$this->assertEquals($order->GrandTotal(), 1200, "Half price");
 	}

@@ -17,15 +17,14 @@ class GroupDiscountConstraint extends DiscountConstraint{
 	}
 	
 	public function filter(DataList $list) {
-		$member = Member::currentUser();
-		$groupids = $member->Groups()
-							->map('ID', 'ID')
-							->toArray();
+		$groupids = array(0);
+		if($member = Member::currentUser()){
+			$groupids = $groupids + $member->Groups()
+										->map('ID', 'ID')
+										->toArray();
+		}
 
-		return $list->filterAny(array(
-			"GroupID" => $groupids,
-			"GroupID" => 0
-		));
+		return $list->filter("GroupID", $groupids);
 	}
 
 	public function check(Discount $discount) {

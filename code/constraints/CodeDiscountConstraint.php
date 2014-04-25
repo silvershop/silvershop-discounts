@@ -18,25 +18,34 @@ class CodeDiscountConstraint extends DiscountConstraint{
 	}
 
 	public function filter(DataList $list) {
+		if($coupon = $this->findCoupon()){
+			$code = $coupon->Code;
+			$list = $list
+				->where("(\"Code\" IS NULL) OR (\"Code\" = '$code')");
+		}else{
+			$list = $list->where("\"Code\" IS NULL");
+		}
+
 		return $list;
-			//->filter("Code", ?);
 	}
 
 	public function check(Discount $discount) {
-		if($this->MinOrderValue > 0 && $order->SubTotal() < $this->MinOrderValue){
-			$this->error(
-				sprintf(
-					_t(
-						"Discount.MINORDERVALUE",
-						"Your cart subtotal must be at least %s to use this discount"
-					),
-					$this->dbObject("MinOrderValue")->Nice()
-				)
-			);
+		$coupon = $this->findCoupon();
+		if($discount->Code && (!$coupon || $coupon->Code != $discount->Code)){
+			$this->error("Coupon code doesn't match");
 			return false;
 		}
 
 		return true;
-	}	
+	}
+
+	protected function findCoupon() {
+		$mod = $this->order->getModifier("OrderCouponModifier");
+		if($mod && $coupon = $mod->Coupon()){
+			return $coupon;
+		}
+
+		return null;
+	}
 
 }

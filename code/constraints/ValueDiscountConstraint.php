@@ -27,10 +27,8 @@ class ValueDiscountConstraint extends DiscountConstraint{
 		if($discount->MinOrderValue > 0 && $discount->SubTotal() < $discount->MinOrderValue){
 			$this->error(
 				sprintf(
-					_t(
-						"Discount.MINORDERVALUE",
-						"Your cart subtotal must be at least %s to use this discount"
-					),
+					_t("Discount.MINORDERVALUE",
+						"Your cart subtotal must be at least %s to use this discount"),
 					$this->dbObject("MinOrderValue")->Nice()
 				)
 			);

@@ -34,6 +34,8 @@ abstract class DiscountConstraint extends DataExtension{
 	}
 
 	//messaging
+	protected $message;
+	protected $messagetype;
 
 	protected function message($messsage, $type = "good") {
 		$this->message = $messsage;
