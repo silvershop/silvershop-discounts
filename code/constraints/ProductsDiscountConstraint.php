@@ -3,6 +3,9 @@
 class ProductsDiscountConstraint extends DiscountConstraint{
 
 	//TODO: all products vs some products
+	private static $db = array(
+		'ExactProducts' => 'Boolean'
+	);
 
 	private static $many_many = array(
 		"Products" => "Product"

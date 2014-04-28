@@ -19,3 +19,4 @@ Discount:
     - ZonesDiscountConstraint
     - ProductsDiscountConstraint
     - CategoriesDiscountConstraint
+    - CodeDiscountConstraint

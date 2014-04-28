@@ -3,9 +3,16 @@
 abstract class DiscountConstraint extends DataExtension{
 
 	protected $order;
+	protected $context;
 
 	function setOrder(Order $order) {
 		$this->order = $order;
+
+		return $this;
+	}
+
+	function setContext(array $context) {
+		$this->context = $context;
 
 		return $this;
 	}

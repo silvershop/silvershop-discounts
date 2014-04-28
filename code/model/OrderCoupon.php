@@ -5,10 +5,6 @@
  */
 class OrderCoupon extends Discount {
 
-	private static $db = array(
-		"Code" => "Varchar(25)"
-	);
-
 	private static $has_one = array(
 		//used to link to gift voucher purchase
 		"GiftVoucher" => "GiftVoucher_OrderItem"
@@ -52,24 +48,6 @@ class OrderCoupon extends Discount {
 		return $code;
 	}
 
-	protected $message = null;
-	protected $messagetype = null;
-
-	public function getCMSFields($params = null) {
-		$fields = parent::getCMSFields();
-
-		$fields->addFieldsToTab(
-			"Root.Main", array(
-				TextField::create("Code"),
-				NumericField::create("UseLimit", "Limit number of uses")
-						->setDescription("Note: 0 = unlimited")
-			), 
-			"Active"
-		);
-
-		return $fields;
-	}
-
 	/**
 	 * Autogenerate the code, if needed
 	 */
@@ -95,31 +73,6 @@ class OrderCoupon extends Discount {
 		}
 		$this->error(_t("OrderCoupon.CANTAPPLY", "Could not apply"));
 		return false;
-	}
-
-	/**
-	 * Check if this coupon can be used with a given order
-	 * @param Order $order
-	 * @return boolean
-	 */
-	public function valid($order) {
-		if(!parent::valid($order)){
-			return false;
-		}
-		if($this->UseLimit > 0 && $this->getUseCount($order) >= $this->UseLimit) {
-			$this->error(_t(
-				"OrderCoupon.LIMITREACHED",
-				"Limit of $this->UseLimit uses for this code has been reached."
-			));
-			return false;
-		}
-		$valid = true;
-		$this->extend("updateValidation", $order, $valid, $error);
-		if(!$valid){
-			$this->error($error);
-		}
-
-		return $valid;
 	}
 
 	/**

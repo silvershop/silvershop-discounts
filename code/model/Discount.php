@@ -94,11 +94,45 @@ class Discount extends DataObject{
 	}
 
 	/**
+	 * Get the smallest possible list of discounts that can apply
+	 * to a given order.
+	 * @param  Order  $order order to check against
+	 * @return DataList matching discounts
+	 */
+	public static function get_matching(Order $order, $context = array()) {
+
+		//get as many matching discounts as possible in a single query
+		$discounts = self::get()
+			->filter("Active", true)
+			//amount or percent > 0
+			->filterAny(array(
+				"Amount:GreaterThan" => 0,
+				"Percent:GreaterThan" => 0
+			));
+		$constraints = self::config()->constraints;
+		foreach($constraints as $constraint){
+			$discounts = singleton($constraint)
+							->setOrder($order)
+							->setContext($context)
+							->filter($discounts);
+		}
+		//cull remaining invalid discounts programatically
+		$validdiscounts = new ArrayList();
+		foreach ($discounts as $discount) {
+			if($discount->valid($order, $context)){
+				$validdiscounts->push($discount);
+			}
+		}
+
+		return $validdiscounts;
+	}
+
+	/**
 	 * Check if this coupon can be used with a given order
 	 * @param Order $order
 	 * @return boolean
 	 */
-	public function valid($order) {
+	public function valid($order, $context = array()) {
 		if(empty($order)){
 			$this->error(_t("Discount.NOORDER", "Order has not been started."));
 			return false;
@@ -110,58 +144,18 @@ class Discount extends DataObject{
 			);
 			return false;
 		}
-		$constraints = Config::inst()->forClass("Discount")->constraints;
+		$constraints = self::config()->constraints;
 		foreach($constraints as $constraint){
 			$dc = singleton($constraint)
-				->setOrder($order);
+				->setOrder($order)
+				->setContext($context);
 			if(!$dc->check($this)){
-				//TODO: get/store error
+				$this->error($dc->getMessage());
 				return false;
 			}
 		}
-		//TODO: combined constraints
 
 		return true;
-	}
-
-	/**
-	 * Work out the discount for a given order.
-	 * @param Order $order
-	 * @return double - discount amount
-	 */
-	public function orderDiscount(Order $order) {
-		$discount = 0;
-		if($this->ForItems){
-			$items = $order->Items();
-			$discountable = 0;
-			foreach($items as $item){
-
-				$constraints = Config::inst()->forClass("Discount")->constraints;
-				foreach($constraints as $constraint){
-					//TODO: finish me
-				}
-
-				if($this->itemMatchesCriteria($item)){
-					$discountable += $item->Total();
-				}
-			}
-			if($discountable){
-				$discountvalue = $this->getDiscountValue($discountable);
-				//prevent discount being greater than what is possible
-				$discount += ($discountvalue > $discountable) ? $discountable : $discountvalue;
-			}
-		}
-		if($this->ForShipping && class_exists('ShippingFrameworkModifier')){
-			if($shipping = $order->getModifier("ShippingFrameworkModifier")){
-				$discount += $this->getDiscountValue($shipping->Amount);
-			}
-		}
-		//ensure discount never goes above Amount
-		if($this->Type == "Amount" && $discount > $this->Amount){
-			$discount = $this->Amount;
-		}
-
-		return $discount;
 	}
 
 	/**
@@ -189,10 +183,14 @@ class Discount extends DataObject{
 	public function getDiscountValue($value) {
 		$discount = 0;
 		if($this->Amount) {
-			$discount += abs($this->Amount);
+			$discount += $this->Amount;
 		}
 		if($this->Percent) {
 			$discount += $value * $this->Percent;
+		}
+		//prevent discounting more than the discountable amount
+		if($discount > $value){
+			$discount = $value;
 		}
 
 		return $discount;
@@ -206,6 +204,10 @@ class Discount extends DataObject{
 
 		return $this->dbObject("Amount")->Nice();
 	}
+
+	//validation messaging functions
+	protected $message;
+	protected $messagetype;
 
 	protected function message($messsage, $type = "good") {
 		$this->message = $messsage;

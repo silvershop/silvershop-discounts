@@ -22,9 +22,8 @@ class OrderDiscountModifier extends OrderModifier{
 	}
 
 	function getDiscount() {
-		$discounts = OrderDiscount::get_matching($this->Order());
-
-		//apply best discount to each order line?
+		$calculator = new SS\Shop\Discount\Calculator($this->Order());
+		return $calculator->calculate();
 	}
 
 }

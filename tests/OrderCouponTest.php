@@ -3,11 +3,14 @@
  * Tests coupons
  * @package shop-discount
  */
-class OrderCouponTest extends FunctionalTest{
+
+use SS\Shop\Discount\Calculator;
+
+class OrderCouponTest extends SapphireTest{
 
 	protected static $fixture_file = array(
-		'shop_discount/tests/fixtures/OrderCoupons.yml',
 		'shop/tests/fixtures/shop.yml',
+		'shop_discount/tests/fixtures/OrderCoupons.yml',
 		'shop/tests/fixtures/Zones.yml',
 		'shop/tests/fixtures/Addresses.yml'
 	);
@@ -18,21 +21,32 @@ class OrderCouponTest extends FunctionalTest{
 		$this->placedorder = $this->objFromFixture("Order", "unpaid");
 		$this->cart = $this->objFromFixture("Order", "cart");
 		$this->othercart = $this->objFromFixture("Order", "othercart");
+
+		ShopTest::publish_products($this);
 	}
 
+	/**
+	 * @group testme
+	 */
 	public function testPercent() {
 		$coupon = $this->objFromFixture('OrderCoupon', '40percentoff');
-		$this->assertTrue($coupon->valid($this->cart));
-		$this->assertEquals($coupon->getDiscountValue(10), 4, "40% off value");
-		$this->assertEquals($coupon->orderDiscount($this->placedorder), 200, "40% off order");
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertTrue($coupon->valid($this->cart, $context), $coupon->getMessage());
+		$this->assertEquals(4, $coupon->getDiscountValue(10), "40% off value");
+		$calculator = $this->getCalculator($this->placedorder, $coupon);
+		$this->assertEquals(200, $calculator->calculate(), "40% off order");
 	}
 
+	/**
+	 * @group testme
+	 */
 	public function testAmount() {
 		$coupon = $this->objFromFixture('OrderCoupon', '10dollarsoff');
-		$this->assertTrue($coupon->valid($this->cart));
+		$this->assertTrue($coupon->valid($this->cart), $coupon->getMessage());
 		$this->assertEquals($coupon->getDiscountValue(1000), 10, "$10 off fixed value");
-		$this->assertEquals($coupon->orderDiscount($this->placedorder), 10, "$10 off order");
-		//TODO: test ammount that is greater than order value
+		$calculator = $this->getCalculator($this->placedorder, $coupon);
+		$this->assertEquals(60, $calculator->calculate(), "$10 off each item: $60 total");
+		//TODO: test ammount that is greater than item value
 	}
 
 	public function testProductsDiscount() {
@@ -170,6 +184,10 @@ class OrderCouponTest extends FunctionalTest{
 		//add conflicting coupon
 			//check that only conflicting coupon exists
 			//check message given
+	}
+
+	protected function getCalculator($order, $coupon){
+		return new Calculator($order, array("CouponCode" => $coupon->Code));
 	}
 
 }

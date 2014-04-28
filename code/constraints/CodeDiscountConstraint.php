@@ -18,8 +18,7 @@ class CodeDiscountConstraint extends DiscountConstraint{
 	}
 
 	public function filter(DataList $list) {
-		if($coupon = $this->findCoupon()){
-			$code = $coupon->Code;
+		if($code = $this->findCouponCode()){
 			$list = $list
 				->where("(\"Code\" IS NULL) OR (\"Code\" = '$code')");
 		}else{
@@ -30,8 +29,8 @@ class CodeDiscountConstraint extends DiscountConstraint{
 	}
 
 	public function check(Discount $discount) {
-		$coupon = $this->findCoupon();
-		if($discount->Code && (!$coupon || $coupon->Code != $discount->Code)){
+		$code = $this->findCouponCode();
+		if($discount->Code && ($code != $discount->Code)){
 			$this->error("Coupon code doesn't match");
 			return false;
 		}
@@ -39,13 +38,8 @@ class CodeDiscountConstraint extends DiscountConstraint{
 		return true;
 	}
 
-	protected function findCoupon() {
-		$mod = $this->order->getModifier("OrderCouponModifier");
-		if($mod && $coupon = $mod->Coupon()){
-			return $coupon;
-		}
-
-		return null;
+	protected function findCouponCode() {
+		return isset($this->context['CouponCode']) ? $this->context['CouponCode'] : null;
 	}
 
 }

@@ -14,10 +14,10 @@ OrderCoupon:
         Amount: 10
         Active: 1
     ordersabove200:
-        Title: $10 off
-        Code: TENDOLLARSOFF
+        Title: above 200
+        Code: ABOVE200
         Type: Amount
-        Amount: 10
+        Amount: 35
         Active: 1
         MinOrderValue: 200
     products20percentoff:

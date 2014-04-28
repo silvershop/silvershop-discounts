@@ -9,13 +9,13 @@ OrderDiscount:
   5dollarsoff:
       Title: $5 off
       Type: Amount
-      Amount: 10
+      Amount: 5
       Active: 0
   ordersabove200:
       Title: $10 off
       Type: Amount
       Amount: 10
-      Active: 1
+      Active: 0
       MinOrderValue: 200
   products20percentoff:
       Title: 20% off selected products
@@ -36,20 +36,14 @@ OrderDiscount:
       Type: Percent
       Percent: 0.9
       Active: 0
-  unreleasedcoupon:
-      Title: Unreleased $10 off
-      Code: 0444444440
-      Type: Amount
-      Amount: 10
-      StartDate: 2200-01-01 12:00:00
-  expiredcoupon:
+  expired:
       Title: Save lots
       Type: Percent
       Percent: 0.8
       Active: 1
       StartDate:
       EndDate: 12/12/1990
-  inactivecoupon:
+  inactive:
       Title: Not active
       Type: Amount
       Amount: 10

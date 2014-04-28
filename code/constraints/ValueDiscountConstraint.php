@@ -24,12 +24,12 @@ class ValueDiscountConstraint extends DiscountConstraint{
 	}
 
 	public function check(Discount $discount) {
-		if($discount->MinOrderValue > 0 && $discount->SubTotal() < $discount->MinOrderValue){
+		if($discount->MinOrderValue > 0 && $this->order->SubTotal() < $discount->MinOrderValue){
 			$this->error(
 				sprintf(
 					_t("Discount.MINORDERVALUE",
 						"Your cart subtotal must be at least %s to use this discount"),
-					$this->dbObject("MinOrderValue")->Nice()
+					$discount->dbObject("MinOrderValue")->Nice()
 				)
 			);
 			return false;
