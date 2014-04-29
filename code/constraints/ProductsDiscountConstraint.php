@@ -2,7 +2,6 @@
 
 class ProductsDiscountConstraint extends DiscountConstraint{
 
-	//TODO: all products vs some products
 	private static $db = array(
 		'ExactProducts' => 'Boolean'
 	);
@@ -15,6 +14,7 @@ class ProductsDiscountConstraint extends DiscountConstraint{
 		if($this->owner->isInDB() && $this->owner->ForItems){
 			$fields->fieldByname("Root")->push(new Tab("Products",
 				LabelField::create("ProductsDescription", "Select specific products that this discount applies to"),
+				CheckboxField::create("ExactProducts", "All products must be present in cart."),
 				GridField::create("Products", "Products", $this->Products(),
 					GridFieldConfig_RelationEditor::create()
 						->removeComponentsByType("GridFieldAddNewButton")
@@ -25,9 +25,9 @@ class ProductsDiscountConstraint extends DiscountConstraint{
 	}
 	
 	public function filter(DataList $list) {
-		$productids = $this->order->Items()
-					->map('ProductID', 'ProductID')
-					->toArray();
+		// $productids = $this->order->Items()
+		// 			->map('ProductID', 'ProductID')
+		// 			->toArray();
 		//todo update discount list to narrow to products
 		return $list;
 	}
@@ -38,16 +38,12 @@ class ProductsDiscountConstraint extends DiscountConstraint{
 		if(!$products->exists()){
 			return true;
 		}
-		$items = $this->order->Items();
-		$incart = false; //note that this means an order without items will always be invalid
-		foreach($items as $item){
-			//check at least one item in the cart meets the discount's criteria
-			if($this->itemMatchesCriteria($item, $discount)){
-				$incart = true;
-				break;
-			}
-		}
-
+		$constraintproductids = $products->map('ID','ID')->toArray();
+		$cartproductids = $this->order->Items()->map('ProductID','ProductID')->toArray();
+		$intersection = array_intersect($constraintproductids, $cartproductids);
+		$incart = $discount->ExactProducts ?
+					$constraintproductids === $intersection :
+					count($intersection) > 0;
 		if(!$incart){
 			$this->error("The required products (categories) are not in the cart.");
 		}
@@ -55,10 +51,10 @@ class ProductsDiscountConstraint extends DiscountConstraint{
 		return $incart;
 	}
 
-	public function itemMatchesCriteria(OrderItem $item, Discount $discount) {
+	public function itemMatchesProductCriteria(OrderItem $item, Discount $discount) {
 		$products = $discount->Products();
 		$itemproduct = $item->Product(true); //true forces the current version of product to be retrieved.
-		if(!$products->find('ID', $item->ProductID)){
+		if($products->exists() && !$products->find('ID', $item->ProductID)){
 			return false;
 		}
 

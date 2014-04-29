@@ -7,8 +7,7 @@ use SS\Shop\Discount\PriceInfo;
 class CalculatorTest extends SapphireTest{
 	
 	protected static $fixture_file = array(
-		'shop_discount/tests/fixtures/OrderCoupons.yml',
-		'shop_discount/tests/fixtures/OrderDiscounts.yml',
+		'shop_discount/tests/fixtures/Discounts.yml',
 		'shop/tests/fixtures/shop.yml',
 		'shop/tests/fixtures/Zones.yml',
 		'shop/tests/fixtures/Addresses.yml'
@@ -27,6 +26,7 @@ class CalculatorTest extends SapphireTest{
 		$this->othercart = $this->objFromFixture("Order", "othercart");
 		$this->megacart = $this->objFromFixture("Order", "megacart");
 		$this->emptycart = $this->objFromFixture("Order", "emptycart");
+		$this->modifiedcart = $this->objFromFixture("Order", "modifiedcart");
 	}
 
 	function testBasicItemDiscount() {
@@ -34,24 +34,18 @@ class CalculatorTest extends SapphireTest{
 		$discount = $this->objFromFixture("OrderDiscount", "10percentoff");
 		$discount->Active = 1;
 		$discount->write();
-
 		//check that discount works as expected
 		$this->assertEquals(1, $discount->getDiscountValue(10), "10% of 10 is 1");
-
 		//check that discount matches order
 		$matching = Discount::get_matching($this->cart);
 		$this->assertDOSEquals(array(
 			array("Title" => "10% off")
 		), $matching);
-
 		//check calculator
 		$calculator = new Calculator($this->cart);
 		$this->assertEquals(0.8, $calculator->calculate(), "10% of $8");
 	}
 
-	/**
-	 * @group testme
-	 */
 	function testProductDiscount() {
 		$discount = $this->objFromFixture("OrderDiscount", "products20percentoff");
 		$discount->Active = 1;
@@ -60,7 +54,6 @@ class CalculatorTest extends SapphireTest{
 		$discount->Products()->add($this->socks);
 		$discount->Products()->add($this->tshirt);
 		$discount->write();
-
 		//should work for megacart
 		//20 * socks($8) = 160 ...20% off each = 32
 		//10 * tshirt($25) = 250 ..20% off each  = 50
@@ -68,11 +61,25 @@ class CalculatorTest extends SapphireTest{
 		//total discount: 82
 		$calculator = new Calculator($this->megacart);
 		$this->assertEquals(82, $calculator->calculate(), "20% off selected products");
-
-		//should fail for cart
-		//should fail for modifiedcart
+		//no discount for cart
+		$calculator = new Calculator($this->cart);
+		$this->assertEquals(0, $calculator->calculate(), "20% off selected products");		
+		//no discount for modifiedcart
+		$calculator = new Calculator($this->modifiedcart);
+		$this->assertEquals(0, $calculator->calculate(), "20% off selected products");
 		
-		//TODO partial match
+		//partial match
+		$discount->ExactProducts = 0;
+		$discount->write();
+		//total discount: 82
+		$calculator = new Calculator($this->megacart);
+		$this->assertEquals(82, $calculator->calculate(), "20% off selected products");
+		//discount for cart: 32 (just socks)
+		$calculator = new Calculator($this->cart);
+		$this->assertEquals(1.6, $calculator->calculate(), "20% off selected products");			
+		//no discount for modified cart
+		$calculator = new Calculator($this->modifiedcart);
+		$this->assertEquals(0, $calculator->calculate(), "20% off selected products");
 	}
 
 	function testMultipleDiscounts() {
@@ -82,7 +89,6 @@ class CalculatorTest extends SapphireTest{
 		$discount2 = $this->objFromFixture("OrderDiscount", "5dollarsoff");
 		$discount2->Active = 1;
 		$discount2->write();
-
 		//check that discount matches order
 		$matching = Discount::get_matching($this->cart);
 		$this->assertDOSEquals(array(
@@ -92,7 +98,6 @@ class CalculatorTest extends SapphireTest{
 
 		$calculator = new Calculator($this->emptycart);
 		$this->assertEquals(0, $calculator->calculate(), "nothing in cart");
-
 		//check that best discount was chosen
 		$calculator = new Calculator($this->cart);
 		$this->assertEquals(5, $calculator->calculate(), "$5 off $8 is best discount");
@@ -114,7 +119,6 @@ class CalculatorTest extends SapphireTest{
 		$discount->Active = 1;
 		$discount->write();
 		$coupon = $this->objFromFixture("OrderCoupon", "10dollarsoff");
-
 		//total discount calculation
 		//20 * socks($8) = 160 ...$10 off each ($8max) = 160
 		//10 * tshirt($25) = 250 ..$10 off each  = 100

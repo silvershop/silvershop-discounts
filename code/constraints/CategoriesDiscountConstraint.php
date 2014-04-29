@@ -34,7 +34,7 @@ class CategoriesDiscountConstraint extends DiscountConstraint{
 		$incart = false; //note that this means an order without items will always be invalid
 		foreach($items as $item){
 			//check at least one item in the cart meets the discount's criteria
-			if($this->itemMatchesCriteria($item, $discount)){
+			if($this->itemMatchesCategoryCriteria($item, $discount)){
 				$incart = true;
 				break;
 			}
@@ -47,7 +47,7 @@ class CategoriesDiscountConstraint extends DiscountConstraint{
 		return $incart;
 	}
 
-	public function itemMatchesCriteria(OrderItem $item, Discount $discount) {
+	public function itemMatchesCategoryCriteria(OrderItem $item, Discount $discount) {
 		$categories = $discount->Categories();
 		if($categories->exists()){
 			$itemproduct = $item->Product(true); //true forces the current version of product to be retrieved.

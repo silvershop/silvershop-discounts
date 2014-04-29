@@ -20,13 +20,20 @@ class Calculator{
 	 */
 	public function calculate() {
 		$total = 0;
-
-		//TODO: possibly loop over discounts instead
-
-		//items
 		$items = $this->createPriceInfoList($this->order->Items());
+		//loop through discounts to apply
+		foreach($this->discounts as $discount){
+			//perform actions
+			$action = $discount->Type == "Percent" ?
+				new \ItemPercentDiscount($items, $discount) :
+				new \ItemFixedDiscount($items, $discount);
+			$action->perform();
+			if($discount->Terminating){
+				break;
+			}
+		}
+		//work out discount
 		foreach($items as $item){
-			$this->setItemDiscount($item);
 			$discount = $item->getBestDiscount();
 			//prevent discounting more than original price
 			if($discount > $item->getOriginalPrice()){
@@ -34,31 +41,8 @@ class Calculator{
 			}
 			$total += $discount * $item->getQuantity();
 		}
-		//TODO
-			//order-level discounts
-			//shipping discounts
-
-		//TODO Other discounting strategies?
-			//compounding (all) discounts
-			//apply first discount
-			//apply last discount
 
 		return $total;
-	}
-
-	/**
-	 * Update item priceinfo to include discount(s) 
-	 * @param PriceInfo $iteminfo [description]
-	 */
-	protected function setItemDiscount(ItemPriceInfo $iteminfo) {
-		foreach($this->discounts as $discount){
-
-			//TODO: check if discount can apply to this item
-			
-			$amount = $discount->getDiscountValue($iteminfo->getOriginalPrice());
-			$adjustment = new Adjustment($amount, $discount);
-			$iteminfo->adjustPrice($adjustment);
-		}
 	}
 
 	protected function createPriceInfoList(\DataList $list) {

@@ -12,14 +12,11 @@ class OrderDiscountTest extends SapphireTest{
 	public function setUp() {
 		parent::setUp();
 		ShopTest::setConfiguration();
-
-		$this->cart = $order = $this->objFromFixture("Order", "cart");
+		$this->cart = $this->objFromFixture("Order", "cart");
 	}
 
 	/**
 	 * Check that available discounts are matched to the current order.
-	 * 
-	 * @return [type] [description]
 	 */
 	public function testManyMatches() {
 		$this->makeDiscountsActive(array(
