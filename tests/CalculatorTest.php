@@ -104,7 +104,6 @@ class CalculatorTest extends SapphireTest{
 
 		$calculator = new Calculator($this->othercart);
 		$this->assertEquals(20, $calculator->calculate(), "10% off $400 is best discount");
-
 		//total discount calculation
 		//20 * socks($8) = 160 ...$5 off each = 100
 		//10 * tshirt($25) = 250 ..$5 off each  = 50
@@ -128,7 +127,6 @@ class CalculatorTest extends SapphireTest{
 			'CouponCode' => 'TENDOLLARSOFF'
 		));
 		$this->assertEquals(300, $calculator->calculate(), "complex savings example");
-
 		//no coupon in context
 		$calculator = new Calculator($this->megacart);
 		$this->assertEquals(81, $calculator->calculate(), "complex savings example");

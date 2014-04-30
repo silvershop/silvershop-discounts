@@ -26,7 +26,7 @@ class ZonesDiscountConstraint extends DiscountConstraint{
 		if(!$zones->exists()){
 			return true;
 		}
-		$address = $discount->getShippingAddress();
+		$address = $this->order->getShippingAddress();
 		if(!$address){
 			$this->error(_t(
 				"OrderCouponModifier.NOTINZONE",

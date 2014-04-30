@@ -76,23 +76,6 @@ class OrderCoupon extends Discount {
 	}
 
 	/**
-	* How many times the coupon has been used
-	* @param string $order - ignore this order when counting uses
-	* @return int
-	*/
-	public function getUseCount($order = null) {
-		$filter = "\"Order\".\"Paid\" IS NOT NULL";
-		if($order){
-			$filter .= " AND \"OrderAttribute\".\"OrderID\" != ".$order->ID;
-		}
-
-		return OrderCouponModifier::get()
-			->where($filter)
-			->innerJoin('Order', '"OrderAttribute"."OrderID" = "Order"."ID"')
-			->count();
-	}
-
-	/**
 	* Forces codes to be alpha-numeric, without spaces, and uppercase
 	*/
 	public function setCode($code) {
@@ -109,10 +92,9 @@ class OrderCoupon extends Discount {
 	}
 
 	public function canEdit($member = null) {
-		//TODO: reintroduce this code, once table fields have been fixed to paginate in read-only state
-		/*if($this->getUseCount() && !$this->Active) {
+		if($this->getUseCount() && !$this->Active) {
 			return false;
-		}*/
+		}
 		return true;
 	}
 

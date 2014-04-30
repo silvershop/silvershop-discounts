@@ -16,7 +16,6 @@ class Discount extends DataObject{
 	private static $defaults = array(
 		"Type" => "Percent",
 		"Active" => true,
-		//"Cumulative" => 1,
 		"ForItems" => 1
 	);
 
@@ -203,6 +202,23 @@ class Discount extends DataObject{
 		}
 
 		return $this->dbObject("Amount")->Nice();
+	}
+
+	/**
+	* How many times the coupon has been used
+	* @param string $order - ignore this order when counting uses
+	* @return int
+	*/
+	public function getUseCount($order = null) {
+		$filter = "\"Order\".\"Paid\" IS NOT NULL";
+		if($order){
+			$filter .= " AND \"OrderAttribute\".\"OrderID\" != ".$order->ID;
+		}
+
+		return OrderDiscountModifier::get()
+			->where($filter)
+			->innerJoin('Order', '"OrderAttribute"."OrderID" = "Order"."ID"')
+			->count();
 	}
 
 	//validation messaging functions

@@ -22,6 +22,7 @@ class UseLimitDiscountConstraint extends DiscountConstraint{
 	}
 
 	public function check(Discount $discount) {
+		
 		return true;
 	}
 

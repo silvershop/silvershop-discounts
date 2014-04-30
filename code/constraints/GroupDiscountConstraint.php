@@ -18,7 +18,7 @@ class GroupDiscountConstraint extends DiscountConstraint{
 	
 	public function filter(DataList $list) {
 		$groupids = array(0);
-		if($member = Member::currentUser()){
+		if($member = $this->getMember()){
 			$groupids = $groupids + $member->Groups()
 										->map('ID', 'ID')
 										->toArray();
@@ -29,17 +29,20 @@ class GroupDiscountConstraint extends DiscountConstraint{
 
 	public function check(Discount $discount) {
 		$group = $discount->Group();
-		$member = (Member::currentUser()) ? Member::currentUser() : $this->order->Member(); //get member
+		$member = $this->getMember();
 		if($group->exists() && (!$member || !$member->inGroup($group))){
 			$this->error(_t(
 				"Discount.GROUPED", 
 				"Only specific members can use this discount."
 			));
-
 			return false;
 		}
 
 		return true;
 	}
 	
+	public function getMember(){
+		return isset($this->context['Member']) ? $this->context['Member'] : $this->order->Member();
+	}
+
 }

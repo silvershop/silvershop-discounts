@@ -23,16 +23,16 @@ class Calculator{
 		$items = $this->createPriceInfoList($this->order->Items());
 		//loop through discounts to apply
 		foreach($this->discounts as $discount){
-			//perform actions
-			$action = $discount->Type == "Percent" ?
-				new \ItemPercentDiscount($items, $discount) :
-				new \ItemFixedDiscount($items, $discount);
-			$action->perform();
+			foreach($this->getActionsForDiscount($items, $discount) as $action){
+				if($result = $action->perform()){
+					$total += $result;
+				}
+			}
 			if($discount->Terminating){
 				break;
 			}
 		}
-		//work out discount
+		//add up discounts
 		foreach($items as $item){
 			$discount = $item->getBestDiscount();
 			//prevent discounting more than original price
@@ -42,7 +42,35 @@ class Calculator{
 			$total += $discount * $item->getQuantity();
 		}
 
+		//cart-level discounts
+
 		return $total;
+	}
+
+	protected function getActionsForDiscount($items, $discount) {
+		$actions = array();
+		//perform actions
+		if($discount->ForItems){
+			if($discount->Type == "Percent"){
+				$actions[] = new \ItemPercentDiscount($items, $discount);
+			}else{
+				$actions[] = new \ItemFixedDiscount($items, $discount);
+			}
+		}
+
+		//TODO: cart-level discounts
+
+		if($discount->ForShipping && class_exists('ShippingFrameworkModifier') &&
+			$shipping = $this->order->getModifier("ShippingFrameworkModifier")
+		){
+			if($discount->Type == "Percent"){
+				$actions[] = new \SubtotalDiscountAction($shipping->Amount, $discount);
+			}else{
+				$actions[] = new \SubtotalDiscountAction($shipping->Amount, $discount);
+			}
+		}
+
+		return $actions;
 	}
 
 	protected function createPriceInfoList(\DataList $list) {

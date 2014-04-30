@@ -3,7 +3,7 @@
 class OrderDiscountTest extends SapphireTest{
 	
 	protected static $fixture_file = array(
-		'shop_discount/tests/fixtures/OrderDiscounts.yml',
+		'shop_discount/tests/fixtures/Discounts.yml',
 		'shop/tests/fixtures/shop.yml',
 		'shop/tests/fixtures/Zones.yml',
 		'shop/tests/fixtures/Addresses.yml'

@@ -6,6 +6,10 @@ class OrderDiscountModifier extends OrderModifier{
 		"Type" => "Deductable"
 	);
 
+	private static $many_many = array(
+		"Discounts" => "Discount"
+	);
+
 	private static $singular_name = "Discount";
 	private static $plural_name = "Discounts";
 
