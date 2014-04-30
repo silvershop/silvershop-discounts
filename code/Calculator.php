@@ -42,7 +42,7 @@ class Calculator{
 			$total += $discount * $item->getQuantity();
 		}
 
-		//cart-level discounts
+		//TODO: cart-level discounts
 
 		return $total;
 	}

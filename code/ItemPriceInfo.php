@@ -39,6 +39,7 @@ class ItemPriceInfo extends PriceInfo{
 		}
 		$val .= "\n";
 		$val .= implode(",", $this->getAdjustments());
+		$val .= "\n\n";
 
 		return $val;
 	}

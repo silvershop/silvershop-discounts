@@ -6,16 +6,7 @@ class CodeDiscountConstraint extends DiscountConstraint{
 		"Code" => "Varchar(25)"
 	);
 
-	public function updateCMSFields(FieldList $fields) {
-		$fields->addFieldsToTab(
-			"Root.Main", array(
-				TextField::create("Code"),
-				NumericField::create("UseLimit", "Limit number of uses")
-						->setDescription("Note: 0 = unlimited")
-			), 
-			"Active"
-		);
-	}
+	//cms field is added in OrderCoupon class
 
 	public function filter(DataList $list) {
 		if($code = $this->findCouponCode()){
@@ -29,8 +20,8 @@ class CodeDiscountConstraint extends DiscountConstraint{
 	}
 
 	public function check(Discount $discount) {
-		$code = $this->findCouponCode();
-		if($discount->Code && ($code != $discount->Code)){
+		$code = strtolower($this->findCouponCode());
+		if($discount->Code && ($code != strtolower($discount->Code))){
 			$this->error("Coupon code doesn't match");
 			return false;
 		}

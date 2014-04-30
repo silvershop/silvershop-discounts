@@ -7,9 +7,6 @@ LeftAndMain:
 Product_OrderItem:
   extensions:
     - DiscountedOrderItem
-CheckoutPage_Controller:
-  extensions:
-    - CouponFormCheckoutDecorator
 Discount:
   constraints:
     - DatetimeDiscountConstraint

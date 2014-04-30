@@ -10,7 +10,7 @@ class CategoriesDiscountConstraint extends DiscountConstraint{
 		if($this->owner->isInDB()){
 			$fields->fieldByName("Root")->push(new Tab("Categories",
 				LabelField::create("CategoriesDescription", "Select specific product categories that this discount applies to"),
-				GridField::create("Categories", "Categories", $this->Categories(),
+				GridField::create("Categories", "Categories", $this->owner->Categories(),
 					GridFieldConfig_RelationEditor::create()
 						->removeComponentsByType("GridFieldAddNewButton")
 						->removeComponentsByType("GridFieldEditButton")

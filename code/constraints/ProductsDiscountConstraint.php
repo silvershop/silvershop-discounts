@@ -15,7 +15,7 @@ class ProductsDiscountConstraint extends DiscountConstraint{
 			$fields->fieldByname("Root")->push(new Tab("Products",
 				LabelField::create("ProductsDescription", "Select specific products that this discount applies to"),
 				CheckboxField::create("ExactProducts", "All products must be present in cart."),
-				GridField::create("Products", "Products", $this->Products(),
+				GridField::create("Products", "Products", $this->owner->Products(),
 					GridFieldConfig_RelationEditor::create()
 						->removeComponentsByType("GridFieldAddNewButton")
 						->removeComponentsByType("GridFieldEditButton")
