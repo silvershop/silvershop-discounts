@@ -205,20 +205,28 @@ class Discount extends DataObject{
 	}
 
 	/**
-	* How many times the coupon has been used
+	* Get the number of times a discount has been used
 	* @param string $order - ignore this order when counting uses
-	* @return int
+	* @return int count
 	*/
-	public function getUseCount($order = null) {
-		$filter = "\"Order\".\"Paid\" IS NOT NULL";
-		if($order){
-			$filter .= " AND \"OrderAttribute\".\"OrderID\" != ".$order->ID;
-		}
+	public function getUseCount() {
+		return $this->getAppliedOrders()->count();
+	}
 
-		return OrderDiscountModifier::get()
-			->where($filter)
-			->innerJoin('Order', '"OrderAttribute"."OrderID" = "Order"."ID"')
-			->count();
+	/**
+	 * Get the orders that this discount has been used on.
+	 * @return DataList list of orders
+	 */
+	public function getAppliedOrders() {
+		return Order::get()
+			->where("\"Order\".\"Paid\" IS NOT NULL")
+			->innerJoin("OrderAttribute", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"")
+			->leftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"Product_OrderItemID\" = \"OrderAttribute\".\"ID\"")
+			->leftJoin("OrderDiscountModifier_Discounts", "\"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\" = \"OrderAttribute\".\"ID\"")
+			->filterAny(array(
+				"Product_OrderItem_Discounts.DiscountID" => $this->ID,
+				"OrderDiscountModifier_Discounts.DiscountID" => $this->ID
+			));
 	}
 
 	//validation messaging functions

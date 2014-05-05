@@ -2,8 +2,12 @@
 
 class DiscountedOrderItem extends DataExtension {
 
-	public static $db = array(
+	private static $db = array(
 		'Discount' => 'Currency'
+	);
+
+	private static $many_many = array(
+		'Discounts' => 'Discount'
 	);
 
 }
