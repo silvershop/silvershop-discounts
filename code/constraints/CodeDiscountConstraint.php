@@ -22,7 +22,7 @@ class CodeDiscountConstraint extends DiscountConstraint{
 	public function check(Discount $discount) {
 		$code = strtolower($this->findCouponCode());
 		if($discount->Code && ($code != strtolower($discount->Code))){
-			$this->error("Coupon code doesn't match");
+			$this->error("Coupon code doesn't match $code");
 			return false;
 		}
 

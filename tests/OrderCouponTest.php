@@ -89,9 +89,6 @@ class OrderCouponTest extends SapphireTest{
 		$this->assertTrue($coupon->valid($this->placedorder, $context), "$500 order is enough");
 	}
 
-	/**
-	 * @group testme
-	 */
 	public function testUseLimit() {
 		$coupon = $this->objFromFixture("OrderCoupon", "used");
 		$context = array("CouponCode" => $coupon->Code);

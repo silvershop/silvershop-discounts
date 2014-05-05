@@ -71,22 +71,6 @@ class OrderCoupon extends Discount {
 		parent::onBeforeWrite();
 	}
 
-	/*
-	 * Assign this coupon to a OrderCouponModifier on the given order
-	 */
-	public function applyToOrder(Order $order) {
-		$modifier = $order->getModifier('OrderCouponModifier', true);
-		if($modifier){
-			$modifier->setCoupon($this);
-			$modifier->write();
-			$order->calculate(); //makes sure prices are up-to-date
-			$order->write();
-			$this->message(_t("OrderCoupon.APPLIED", "Coupon applied."), "good");
-			return true;
-		}
-		$this->error(_t("OrderCoupon.CANTAPPLY", "Could not apply"));
-		return false;
-	}
 
 	/**
 	* Forces codes to be alpha-numeric, without spaces, and uppercase

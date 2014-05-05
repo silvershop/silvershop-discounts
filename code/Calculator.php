@@ -63,11 +63,7 @@ class Calculator{
 		if($discount->ForShipping && class_exists('ShippingFrameworkModifier') &&
 			$shipping = $this->order->getModifier("ShippingFrameworkModifier")
 		){
-			if($discount->Type == "Percent"){
-				$actions[] = new \SubtotalDiscountAction($shipping->Amount, $discount);
-			}else{
-				$actions[] = new \SubtotalDiscountAction($shipping->Amount, $discount);
-			}
+			$actions[] = new \SubtotalDiscountAction($shipping->Amount, $discount);
 		}
 
 		return $actions;
