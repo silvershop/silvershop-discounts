@@ -43,6 +43,7 @@ class Discount extends DataObject{
 	private static $unpaid_use_timeout = 10;
 
 	public function getCMSFields($params = null) {
+		//fields that shouldn't be changed once coupon is used
 		$fields = new FieldList(array(
 			$tabset = new TabSet("Root",
 				$maintab = new Tab("Main",
@@ -64,13 +65,13 @@ class Discount extends DataObject{
 		if($this->isInDB()){
 			if($this->Type == "Percent"){
 				$fields->insertBefore(
-					NumericField::create("Percent", "Percentage discount")
+					$percent = NumericField::create("Percent", "Percentage discount")
 						->setDescription("e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%"), 
 					"Active"
 				);
 			}elseif($this->Type == "Amount"){
 				$fields->insertBefore(
-					NumericField::create("Amount", "Discount value"),
+					$amount = NumericField::create("Amount", "Discount value"),
 					"Active"
 				);
 			}
@@ -95,6 +96,18 @@ class Discount extends DataObject{
 			);
 		}
 		$this->extend("updateCMSFields", $fields);
+
+		if($this->isUsed()){
+			$fields->addFieldToTab("Root.Orders",
+				GridField::create(
+					"Orders",
+					"Orders that this discount has been used with",
+					$this->getAppliedOrders(),
+					GridFieldConfig_RecordViewer::create()
+						->removeComponentsByType("GridFieldViewButton")
+				)
+			);
+		}
 
 		return $fields;
 	}
@@ -220,6 +233,10 @@ class Discount extends DataObject{
 		return $this->getAppliedOrders(true)->count();
 	}
 
+	public function isUsed(){
+		return (boolean)$this->getUseCount();
+	}
+
 	/**
 	 * Get the orders that this discount has been used on.
 	 * @return DataList list of orders
@@ -249,13 +266,10 @@ class Discount extends DataObject{
 	}
 
 	public function canDelete($member = null) {
-		return $this->canEdit();
+		return !$this->isUsed();
 	}
 
 	public function canEdit($member = null) {
-		if($this->getUseCount()) {
-			return false;
-		}
 		return true;
 	}
 
