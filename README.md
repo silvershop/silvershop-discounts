@@ -2,9 +2,14 @@
 
 Allows creating discounts for products / orders.
 
- * gift vouchers/cards
- * discount coupons
- * credit notes
+ * Discount by various criteria, including:
+  * Time
+  * User group
+  * Product/Category
+  * Uses
+  * Order value
+ * Coupon codes
+ * Gift voucher products
 
 Discounts can be applied to all products (ie order subtotal), or to individual products.
 
