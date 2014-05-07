@@ -32,6 +32,10 @@ class Calculator{
 		$total = 0;
 		$items = $this->createPriceInfoList($this->order->Items());
 		$discountmodifier = $this->order->getModifier("OrderDiscountModifier", true);
+		if($this->linkdiscounts){
+			//clear any existing linked discounts
+			$discountmodifier->Discounts()->removeAll();
+		}
 		//loop through discounts to apply
 		foreach($this->discounts as $discount){
 			foreach($this->getActionsForDiscount($items, $discount) as $action){
@@ -61,10 +65,14 @@ class Calculator{
 			}
 			$total += $discountamount * $iteminfo->getQuantity();
 			//link up selected discounts
-			if($this->linkdiscounts && $bestadjustment = $iteminfo->getBestAdjustment()){
-				$iteminfo->getItem()->Discounts()->add(
-					$bestadjustment->getAdjuster()
-				);
+			if($this->linkdiscounts){
+				//remove any existing linked discounts
+				$iteminfo->getItem()->Discounts()->removeAll();
+				if($bestadjustment = $iteminfo->getBestAdjustment()){
+					$iteminfo->getItem()->Discounts()->add(
+						$bestadjustment->getAdjuster()
+					);
+				}
 			}
 		}
 
