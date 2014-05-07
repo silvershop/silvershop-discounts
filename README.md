@@ -14,6 +14,7 @@ Allows creating discounts for products / orders.
  * Shipping discount
 
 Discounts can be applied to individual products or shipping.
+Discounts can be globally enabled/disabled.
 
 ## Requirements
 
