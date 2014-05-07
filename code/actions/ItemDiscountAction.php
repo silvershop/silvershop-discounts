@@ -23,4 +23,8 @@ abstract class ItemDiscountAction extends Action{
 			$this->discount->itemMatchesCategoryCriteria($info->getItem(), $this->discount);
 	}
 
+	function isForItems(){
+		return true;
+	}
+
 }

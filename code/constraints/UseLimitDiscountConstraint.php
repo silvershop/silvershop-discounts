@@ -25,6 +25,7 @@ class UseLimitDiscountConstraint extends DiscountConstraint{
 	public function check(Discount $discount) {
 		if($discount->UseLimit){
 			if($discount->UseCount >= $discount->UseLimit){
+				$this->error("This discount has reached it's maximum number of uses.");
 				return false;
 			}
 		}

@@ -18,4 +18,8 @@ class SubtotalDiscountAction extends Action{
 		return $amount;
 	}
 
+	function isForItems(){
+		return false;
+	}
+
 }

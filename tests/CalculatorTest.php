@@ -41,6 +41,9 @@ class CalculatorTest extends SapphireTest{
 		$this->assertDOSEquals(array(
 			array("Title" => "10% off")
 		), $matching);
+		//check valid
+		$valid = $discount->valid($this->cart);
+		$this->assertTrue($valid, "discount is valid");
 		//check calculator
 		$calculator = new Calculator($this->cart);
 		$this->assertEquals(0.8, $calculator->calculate(), "10% of $8");

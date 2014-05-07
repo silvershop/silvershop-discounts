@@ -6,11 +6,21 @@ class Calculator{
 	
 	protected $order;
 	protected $discounts;
+	protected $linkdiscounts = true;
 
 	public function __construct(\Order $order, $context = array()) {
 		$this->order = $order;
 		//get qualifying discounts for this order
 		$this->discounts = \Discount::get_matching($this->order, $context);
+	}
+
+	/**
+	 * Specify whether the calculator should link discounts to order/items
+	 * during calculation.
+	 * @param boolean $dolink [description]
+	 */
+	public function setLinkDiscounts($dolink = true) {
+		$this->linkdiscounts = $dolink;
 	}
 
 	/**
@@ -21,35 +31,49 @@ class Calculator{
 	public function calculate() {
 		$total = 0;
 		$items = $this->createPriceInfoList($this->order->Items());
+		$discountmodifier = $this->order->getModifier("OrderDiscountModifier", true);
 		//loop through discounts to apply
 		foreach($this->discounts as $discount){
 			foreach($this->getActionsForDiscount($items, $discount) as $action){
-				if($result = $action->perform()){
-					$total += $result;
+				//perform item-specific discount actions
+				if($action->isForItems()){
+					$action->perform(); //iteminfo objects will be updated
+				}
+				//perform cart-level discount actions
+				else{
+					//add result to discount total
+					$total += $action->perform();
+					if($this->linkdiscounts){
+						$discountmodifier->Discounts()->add($discount);
+					}
 				}
 			}
 			if($discount->Terminating){
 				break;
 			}
 		}
-		//add up discounts
-		foreach($items as $item){
-			$discount = $item->getBestDiscount();
+		//add up item discounts
+		foreach($items as $iteminfo){
+			$discountamount = $iteminfo->getBestDiscount();
 			//prevent discounting more than original price
-			if($discount > $item->getOriginalPrice()){
-				$discount = $item->getOriginalPrice();
+			if($discountamount > $iteminfo->getOriginalPrice()){
+				$discountamount = $iteminfo->getOriginalPrice();
 			}
-			$total += $discount * $item->getQuantity();
+			$total += $discountamount * $iteminfo->getQuantity();
+			//link up selected discounts
+			if($this->linkdiscounts && $bestadjustment = $iteminfo->getBestAdjustment()){
+				$iteminfo->getItem()->Discounts()->add(
+					$bestadjustment->getAdjuster()
+				);
+			}
 		}
-
-		//TODO: cart-level discounts
 
 		return $total;
 	}
 
 	protected function getActionsForDiscount($items, $discount) {
 		$actions = array();
-		//perform actions
+		//get item-level actions
 		if($discount->ForItems){
 			if($discount->Type == "Percent"){
 				$actions[] = new \ItemPercentDiscount($items, $discount);
@@ -57,9 +81,7 @@ class Calculator{
 				$actions[] = new \ItemFixedDiscount($items, $discount);
 			}
 		}
-
-		//TODO: cart-level discounts
-
+		//get cart-level actions
 		if($discount->ForShipping && class_exists('ShippingFrameworkModifier') &&
 			$shipping = $this->order->getModifier("ShippingFrameworkModifier")
 		){
