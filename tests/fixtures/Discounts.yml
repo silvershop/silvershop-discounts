@@ -87,6 +87,10 @@ OrderDiscount:
       Title: Used
       Active: 1
       UseLimit: 1
+  paymentused:
+      Title: Payment Used
+      Active: 1
+      UseLimit: 1
 
 OrderCoupon:
     40percentoff:
@@ -209,10 +213,21 @@ Order:
         Status: Paid
         Paid: 2000-01-01 12:00:00
         Placed: 2000-01-01 12:02:00
+    paymentstarted:
+        Status: Cart
 OrderDiscountModifier:
     limited:
         OrderID: =>Order.limitedcoupon
-        Discounts: =>OrderCoupon.limited
+        Discounts: =>OrderCoupon.limited,=>OrderDiscount.limited
     used:
         OrderID: =>Order.usedcoupon
-        Discounts: =>OrderCoupon.used
+        Discounts: =>OrderCoupon.used,=>OrderDiscount.used
+    paymentstarted:
+        OrderID: =>Order.paymentstarted
+        Discounts: =>OrderDiscount.paymentused
+
+Payment:
+  paymentstarted_recent:
+    Created: #now
+    OrderID: =>Order.paymentstarted
+

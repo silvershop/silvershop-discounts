@@ -17,7 +17,7 @@ class Calculator{
 	/**
 	 * Specify whether the calculator should link discounts to order/items
 	 * during calculation.
-	 * @param boolean $dolink [description]
+	 * @param boolean $dolink
 	 */
 	public function setLinkDiscounts($dolink = true) {
 		$this->linkdiscounts = $dolink;

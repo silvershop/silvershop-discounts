@@ -35,6 +35,13 @@ class Discount extends DataObject{
 
 	private static $default_sort = "EndDate DESC, StartDate DESC";
 
+	/**
+	 * Number of minutes ago to include for carts with paymetn start
+	 * in the {@link getAppliedOrders()} function
+	 * @var integer
+	 */
+	private static $unpaid_use_timeout = 10;
+
 	public function getCMSFields($params = null) {
 		$fields = new FieldList(array(
 			$tabset = new TabSet("Root",
@@ -210,16 +217,15 @@ class Discount extends DataObject{
 	* @return int count
 	*/
 	public function getUseCount() {
-		return $this->getAppliedOrders()->count();
+		return $this->getAppliedOrders(true)->count();
 	}
 
 	/**
 	 * Get the orders that this discount has been used on.
 	 * @return DataList list of orders
 	 */
-	public function getAppliedOrders() {
-		return Order::get()
-			->where("\"Order\".\"Paid\" IS NOT NULL")
+	public function getAppliedOrders($includeunpaid = false) {
+		$orders =  Order::get()
 			->innerJoin("OrderAttribute", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"")
 			->leftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"Product_OrderItemID\" = \"OrderAttribute\".\"ID\"")
 			->leftJoin("OrderDiscountModifier_Discounts", "\"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\" = \"OrderAttribute\".\"ID\"")
@@ -227,6 +233,30 @@ class Discount extends DataObject{
 				"Product_OrderItem_Discounts.DiscountID" => $this->ID,
 				"OrderDiscountModifier_Discounts.DiscountID" => $this->ID
 			));
+		if($includeunpaid){
+			$minutes = self::config()->unpaid_use_timeout;
+			$timeouttime = date('Y-m-d H:i:s', strtotime("-{$minutes} minutes"));
+			$orders = $orders->leftJoin("Payment", "\"Payment\".\"OrderID\" = \"Order\".\"ID\"")
+				->where(
+					"(\"Order\".\"Paid\" IS NOT NULL) OR ".
+					"(\"Payment\".\"Created\" > '$timeouttime')"
+				);
+		}else{
+			$orders = $orders->where("\"Order\".\"Paid\" IS NOT NULL");
+		}
+
+		return $orders;
+	}
+
+	public function canDelete($member = null) {
+		return $this->canEdit();
+	}
+
+	public function canEdit($member = null) {
+		if($this->getUseCount()) {
+			return false;
+		}
+		return true;
 	}
 
 	//validation messaging functions

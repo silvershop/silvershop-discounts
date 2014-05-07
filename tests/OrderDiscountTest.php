@@ -27,9 +27,7 @@ class OrderDiscountTest extends SapphireTest{
 			array("Title" => "10% off"),
 			array("Title" => "$5 off"),
 		), $matches);
-
 		//check best match is chosen
-		//
 	}
 
 	public function testPercent() {
@@ -45,31 +43,40 @@ class OrderDiscountTest extends SapphireTest{
 			array("Title" => "$5 off")
 		), OrderDiscount::get_matching($this->cart));
 	}
-
-	//test start, end dates
-
-	//test group
 	
 	public function testProducts() {
 		$discount = $this->makeDiscountActive("products20percentoff");
 		$discount->Products()->add($this->objFromFixture("Product", "tshirt"));
-
 		$this->assertFalse($discount->valid($this->cart));
 		//no products match
 		$this->assertDOSEquals(array(), OrderDiscount::get_matching($this->cart));
-
 		//add product discount list
-		
 		$discount->Products()->add($this->objFromFixture("Product", "tshirt"));
-
 		$this->assertFalse($discount->valid($this->cart));
 		//no products match
 		$this->assertDOSEquals(array(), OrderDiscount::get_matching($this->cart));
 	}
 
-	//test categories
+	public function testUseCount(){
+		//check that order with payment started counts as a use
+		$discount = $this->objFromFixture("OrderDiscount", "paymentused");
+		$payment = $this->objFromFixture("Payment", "paymentstarted_recent");
 
-	//test zone matches
+		//set timeout to 60 minutes
+		Discount::config()->unpaid_use_timeout = 60;
+
+		//set payment to be created 20 min ago
+		$payment->Created = date('Y-m-d H:i:s', strtotime("-20 minutes"));
+		$payment->write();
+
+		$this->assertEquals(1, $discount->getUseCount());
+
+		//set payment ot be created 2 days ago
+		$payment->Created = date('Y-m-d H:i:s', strtotime("-2 days"));
+		$payment->write();
+
+		$this->assertEquals(0, $discount->getUseCount());
+	}
 
 	protected function makeDiscountActive($fixturename) {
 		$discount = $this->objFromFixture("OrderDiscount", $fixturename);
