@@ -8,10 +8,12 @@ Allows creating discounts for products / orders.
   * Product/Category
   * Number of uses
   * Order value
+  * Shipping zone
  * Coupon codes
  * Gift voucher products
+ * Shipping discount
 
-Discounts can be applied to all products (ie order subtotal), or to individual products.
+Discounts can be applied to individual products or shipping.
 
 ## Requirements
 
