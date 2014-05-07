@@ -24,7 +24,7 @@ class OrderCoupon extends Discount {
 
 	private static $singular_name = "Coupon";
 	private static $plural_name = "Coupons";
-	public static $code_length = 10;
+	public static $generated_code_length = 10;
 
 	public static function get_by_code($code) {
 		return self::get()
@@ -37,7 +37,7 @@ class OrderCoupon extends Discount {
 	* @return string the new code
 	*/
 	public static function generate_code($length = null) {
-		$length = ($length) ? $length : self::$code_length;
+		$length = ($length) ? $length : self::$generated_code_length;
 		$code = null;
 		do{
 			$code = strtoupper(substr(md5(microtime()), 0, $length));
@@ -71,13 +71,11 @@ class OrderCoupon extends Discount {
 		parent::onBeforeWrite();
 	}
 
-
 	/**
-	* Forces codes to be alpha-numeric, without spaces, and uppercase
+	* Forces codes to be alpha-numeric, uppercase, and trimmed
 	*/
 	public function setCode($code) {
-		$code = preg_replace('/[^0-9a-zA-Z]+/', '', $code);
-//		$code = trim(preg_replace('/\s+/', "", $code)); //gets rid of any white spaces
+		$code = trim(preg_replace('/[^0-9a-zA-Z]+/', '', $code));
 		$this->setField("Code", strtoupper($code));
 	}
 
