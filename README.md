@@ -22,11 +22,26 @@ via composer:
 	composer require burnbright/silverstripe-shop-discount dev-master
 ```
 
- * Add $CouponForm to your checkout page template to display the coupon entry form.
- * Add the appropriate modifier to your order modifiers yaml config
+If you are using the stepped checkout, add the `CheckoutStep_Discount` checkout step:
+
+```yaml
+CheckoutPage:
+	steps:
+		'contactdetails' : 'CheckoutStep_ContactDetails'
+		'shippingaddress' : 'CheckoutStep_Address'
+		'billingaddress' : 'CheckoutStep_Address'
+		'shippingmethod' : 'CheckoutStep_ShippingMethod'
+		'discount' : 'CheckoutStep_Discount' #here!
+		'paymentmethod' : 'CheckoutStep_PaymentMethod'
+		'summary' : 'CheckoutStep_Summary'
+```
+ 
+ Add the `OrderDiscountModifier` modifier to your order modifiers yaml config:
 
 ```yaml
 Order:
 	modifiers:
-		- OrderCouponModifier
+		- Blah
+		- OrderDiscountModifier #here!
+		- Blah
 ```
