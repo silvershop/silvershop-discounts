@@ -1,7 +1,5 @@
 <?php
 
-define('ECOMMERCE_COUPON_DIR', 'shop_discount');
-Object::add_extension("CheckoutPage_Controller", "CouponFormCheckoutDecorator");
-DataObject::add_extension("Product_OrderItem", "DiscountedOrderItem");
+define('SHOP_DISCOUNT_DIR', 'shop_discount');
 
-//SS_Report::register('ReportAdmin', 'CouponReport',3);
+DiscountConstraint::set_up_constraints();

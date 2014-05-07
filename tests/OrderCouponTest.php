@@ -3,11 +3,14 @@
  * Tests coupons
  * @package shop-discount
  */
-class OrderCouponTest extends FunctionalTest{
+
+use SS\Shop\Discount\Calculator;
+
+class OrderCouponTest extends SapphireTest{
 
 	protected static $fixture_file = array(
-		'shop_discount/tests/fixtures/OrderCoupons.yml',
 		'shop/tests/fixtures/shop.yml',
+		'shop_discount/tests/fixtures/Discounts.yml',
 		'shop/tests/fixtures/Zones.yml',
 		'shop/tests/fixtures/Addresses.yml'
 	);
@@ -15,6 +18,13 @@ class OrderCouponTest extends FunctionalTest{
 	public function setUp() {
 		parent::setUp();
 		ShopTest::setConfiguration();
+		$this->socks = $this->objFromFixture("Product", "socks");
+		$this->socks->publish("Stage", "Live");
+		$this->tshirt = $this->objFromFixture("Product", "tshirt");
+		$this->tshirt->publish("Stage", "Live");
+		$this->mp3player = $this->objFromFixture("Product", "mp3player");
+		$this->mp3player->publish("Stage", "Live");
+
 		$this->placedorder = $this->objFromFixture("Order", "unpaid");
 		$this->cart = $this->objFromFixture("Order", "cart");
 		$this->othercart = $this->objFromFixture("Order", "othercart");
@@ -22,83 +32,99 @@ class OrderCouponTest extends FunctionalTest{
 
 	public function testPercent() {
 		$coupon = $this->objFromFixture('OrderCoupon', '40percentoff');
-		$this->assertTrue($coupon->valid($this->cart));
-		$this->assertEquals($coupon->getDiscountValue(10), 4, "40% off value");
-		$this->assertEquals($coupon->orderDiscount($this->placedorder), 200, "40% off order");
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertTrue($coupon->valid($this->cart, $context), $coupon->getMessage());
+		$this->assertEquals(4, $coupon->getDiscountValue(10), "40% off value");
+		$this->assertEquals(200, $this->calc($this->placedorder, $coupon), "40% off order");
 	}
 
 	public function testAmount() {
 		$coupon = $this->objFromFixture('OrderCoupon', '10dollarsoff');
-		$this->assertTrue($coupon->valid($this->cart));
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertTrue($coupon->valid($this->cart, $context), $coupon->getMessage());
 		$this->assertEquals($coupon->getDiscountValue(1000), 10, "$10 off fixed value");
-		$this->assertEquals($coupon->orderDiscount($this->placedorder), 10, "$10 off order");
-		//TODO: test ammount that is greater than order value
+		$this->assertEquals(60, $this->calc($this->placedorder, $coupon), "$10 off each item: $60 total");
+		//TODO: test amount that is greater than item value
 	}
 
 	public function testProductsDiscount() {
 		$coupon = $this->objFromFixture("OrderCoupon", "products20percentoff");
-		$coupon->Products()->add($this->objFromFixture("Product", "tshirt")); //add product to coupon product list
-		$this->assertEquals($coupon->orderDiscount($this->placedorder), 20);
-		$coupon->Products()->add($this->objFromFixture("Product", "mp3player")); //add another product to coupon product list
-		$this->assertEquals($coupon->orderDiscount($this->placedorder), 100);
+		$context = array("CouponCode" => $coupon->Code);
+		//add product to coupon product list
+		$coupon->Products()->add($this->objFromFixture("Product", "tshirt"));
+		$this->assertEquals($this->calc($this->placedorder, $coupon), 20);
+		//add another product to coupon product list
+		$coupon->Products()->add($this->objFromFixture("Product", "mp3player"));
+		$this->assertEquals($this->calc($this->placedorder, $coupon), 100);
 	}
 
 	public function testCategoryDiscount() {
 		$coupon = $this->objFromFixture("OrderCoupon", "clothing5percent");
 		$coupon->Categories()->add($this->objFromFixture("ProductCategory", "clothing"));
-		$this->socks = $this->objFromFixture("Product", "socks");
-		$this->socks->publish('Stage', 'Live');
-		$this->assertTrue($coupon->valid($this->cart), "Order contains a t-shirt. ".$coupon->getMessage());
-		$this->assertEquals($coupon->orderDiscount($this->cart), 0.4, "5% discount for socks in cart");
-		$this->assertFalse($coupon->valid($this->othercart), "Order does not contain clothing");
-		$this->assertEquals($coupon->orderDiscount($this->othercart), 0, "No discount, because no product in category");
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertTrue($coupon->valid($this->cart, $context), "Order contains a t-shirt. ".$coupon->getMessage());
+		$this->assertEquals($this->calc($this->cart, $coupon), 0.4, "5% discount for socks in cart");
+		$this->assertFalse($coupon->valid($this->othercart, $context), "Order does not contain clothing");
+		$this->assertEquals($this->calc($this->othercart, $coupon), 0, "No discount, because no product in category");
 	}
 
 	public function testZoneDiscount() {
 		$coupon = $this->objFromFixture('OrderCoupon', 'zoned');
-		//add zones to coupon
 		$coupon->Zones()->add($this->objFromFixture('Zone', 'transtasman'));
 		$coupon->Zones()->add($this->objFromFixture('Zone', 'special'));
 		$address = $this->objFromFixture("Address", 'bukhp193eq');
+		$context = array("CouponCode" => $coupon->Code);
 		$this->cart->ShippingAddressID = $address->ID; //set address
-		$this->assertFalse($coupon->valid($this->cart), "check order is out of zone");
+		$this->assertFalse($coupon->valid($this->cart, $context), "check order is out of zone");
 		$address = $this->objFromFixture("Address", 'sau5024');
 		$this->othercart->ShippingAddressID = $address->ID; //set address
-		$valid = $coupon->valid($this->othercart);
+		$valid = $coupon->valid($this->othercart, $context);
 		$this->assertTrue($valid, "check order is in zone");
 	}
 
 	public function testMinOrderValue() {
 		$coupon = $this->objFromFixture("OrderCoupon", "ordersabove200");
-		$this->assertFalse($coupon->valid($this->cart), "$8 order isn't enough");
-		$this->assertTrue($coupon->valid($this->placedorder), "$500 order is enough");
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertFalse($coupon->valid($this->cart, $context), "$8 order isn't enough");
+		$this->assertTrue($coupon->valid($this->placedorder, $context), "$500 order is enough");
 	}
 
 	public function testUseLimit() {
 		$coupon = $this->objFromFixture("OrderCoupon", "used");
-		$this->assertFalse($coupon->valid($this->cart), "Coupon is already used");
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertFalse($coupon->valid($this->cart, $context), "Coupon is already used");
 		$coupon = $this->objFromFixture("OrderCoupon", "limited");
-		$this->assertTrue($coupon->valid($this->cart), "Coupon has been used, but can continue to be used");
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertTrue($coupon->valid($this->cart, $context), "Coupon has been used, but can continue to be used");
 	}
 
 	public function testMemberGroup() {
 		$group = $this->objFromFixture("Group", "resellers");
 		$coupon = $this->objFromFixture("OrderCoupon", "grouped");
 		$coupon->GroupID = $group->ID;
-		$this->assertFalse($coupon->valid($this->cart), "Invalid for memberless order");
-		$this->assertTrue($coupon->valid($this->othercart), "Valid because member is in resellers group");
+		$coupon->write();
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertFalse($coupon->valid($this->cart, $context), "Invalid for memberless order");
+		$context = array(
+			"CouponCode" => $coupon->Code,
+			"Member" => $this->objFromFixture("Member", "bobjones")
+		);
+		$this->assertTrue($coupon->valid($this->othercart, $context), "Valid because member is in resellers group");
 	}
 
 	public function testInactiveCoupon() {
 		$inactivecoupon = $this->objFromFixture('OrderCoupon', 'inactivecoupon');
-		$this->assertFalse($inactivecoupon->valid($this->cart), "Coupon is not set to active");
+		$context = array("CouponCode" => $inactivecoupon->Code);
+		$this->assertFalse($inactivecoupon->valid($this->cart, $context), "Coupon is not set to active");
 	}
 
 	public function testDates() {
 		$unreleasedcoupon = $this->objFromFixture('OrderCoupon', 'unreleasedcoupon');
-		$this->assertFalse($unreleasedcoupon->valid($this->cart), "Coupon is un released (start date has not arrived)");
+		$context = array("CouponCode" => $unreleasedcoupon->Code);
+		$this->assertFalse($unreleasedcoupon->valid($this->cart, $context), "Coupon is un released (start date has not arrived)");
 		$expiredcoupon = $this->objFromFixture('OrderCoupon', 'expiredcoupon');
-		$this->assertFalse($expiredcoupon->valid($this->cart), "Coupon has expired (end date has passed)");
+		$context = array("CouponCode" => $expiredcoupon->Code);
+		$this->assertFalse($expiredcoupon->valid($this->cart, $context), "Coupon has expired (end date has passed)");
 	}
 
 	public function testFreeShipping() {
@@ -111,8 +137,9 @@ class OrderCouponTest extends FunctionalTest{
 		));
 		$shipping->write();
 		$order->Modifiers()->add($shipping);
-		$this->assertTrue($coupon->valid($order), "Free shipping coupon is valid");
-		$this->assertEquals($coupon->orderDiscount($order), 12.34, "Shipping discount");
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertTrue($coupon->valid($order, $context), "Free shipping coupon is valid");
+		$this->assertEquals($this->calc($order, $coupon), 12.34, "Shipping discount");
 	}
 
 	public function testShippingAmountDiscount() {
@@ -125,8 +152,9 @@ class OrderCouponTest extends FunctionalTest{
 		));
 		$shipping->write();
 		$order->Modifiers()->add($shipping);
-		$this->assertTrue($coupon->valid($order), "10 dollars off shipping discount is valid");
-		$this->assertEquals($coupon->orderDiscount($order), 10, "$10 discount");
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertTrue($coupon->valid($order, $context), "10 dollars off shipping discount is valid");
+		$this->assertEquals($this->calc($order, $coupon), 10, "$10 discount");
 	}
 
 	public function testShippingPercentDiscount() {
@@ -139,8 +167,9 @@ class OrderCouponTest extends FunctionalTest{
 		));
 		$shipping->write();
 		$order->Modifiers()->add($shipping);
-		$this->assertTrue($coupon->valid($order), "30% off shipping discount is valid");
-		$this->assertEquals($coupon->orderDiscount($order), 3, "30% discount on $10 of shipping");
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertTrue($coupon->valid($order, $context), "30% off shipping discount is valid");
+		$this->assertEquals($this->calc($order, $coupon), 3, "30% discount on $10 of shipping");
 	}
 
 	public function testShipingAndItems() {
@@ -154,22 +183,19 @@ class OrderCouponTest extends FunctionalTest{
 		));
 		$shipping->write();
 		$order->Modifiers()->add($shipping);
-		$this->assertTrue($coupon->valid($order), "Shipping and items coupon is valid");
-		$this->assertEquals($coupon->orderDiscount($order), 20, "$20 discount");
+		$context = array("CouponCode" => $coupon->Code);
+		$this->assertTrue($coupon->valid($order, $context), "Shipping and items coupon is valid");
+		$this->assertEquals($this->calc($order, $coupon), 40, "$20 discount");
 
 		//TODO:  test when subtotal & shipping are both < 20
 	}
 
-	public function testCumulative() {
-		$order = $this->cart;
-		//$coupon->applyToOrder($order);
-		//add coupon
-			//check that it remains
-		//add non-conflicting
-			//check that both remain
-		//add conflicting coupon
-			//check that only conflicting coupon exists
-			//check message given
+	protected function getCalculator($order, $coupon) {
+		return new Calculator($order, array("CouponCode" => $coupon->Code));
+	}
+
+	protected function calc($order, $coupon) {
+		return $this->getCalculator($order, $coupon)->calculate();
 	}
 
 }

@@ -1,3 +1,97 @@
+OrderDiscount:
+  10percentoff:
+    Title: 10% off
+    Type: Percent
+    Percent: 0.10
+    Active: 0
+    StartDate: 2000-01-01 12:00:00
+    EndDate: 2200-01-01 12:00:00
+  5dollarsoff:
+      Title: $5 off
+      Type: Amount
+      Amount: 5
+      Active: 0
+  ordersabove200:
+      Title: $10 off
+      Type: Amount
+      Amount: 10
+      Active: 0
+      MinOrderValue: 200
+  products20percentoff:
+      Title: 20% off selected products
+      Percent: 0.2
+      Active: 0
+  clothing5percent:
+      Title: 5% off clothing
+      Type: Percent
+      Percent: 0.05
+      Active: 0
+  zoned:
+      Title: Zoned Coupon
+      Type: Percent
+      Percent: 0.16
+      Active: 0
+  grouped:
+      Title: Special Members Coupon
+      Type: Percent
+      Percent: 0.9
+      Active: 0
+  expired:
+      Title: Save lots
+      Type: Percent
+      Percent: 0.8
+      Active: 1
+      StartDate:
+      EndDate: 12/12/1990
+  inactive:
+      Title: Not active
+      Type: Amount
+      Amount: 10
+      Active: 0
+  noncumulative:
+      Title: Non cumulative
+      Type: Percent
+      Percent: 0.1
+      Active: 0
+  freeshipping:
+      Title: Free shipping
+      ForShipping: 1
+      ForItems: 0
+      Percent: 1
+      Active: 0
+  10dollarsoffshipping:
+      Title: Save $10 off shipping
+      Type: Amount
+      Amount: 10
+      ForShipping: 1
+      ForItems: 0
+      Active: 0
+  30percentoffshipping:
+      Title: Save $10 off shipping
+      Percent: 0.3
+      ForShipping: 1
+      ForItems: 0
+      Active: 0
+  shippinganditems:
+      Title: Save $20 on order over $50
+      Type: Amount
+      Amount: 20
+      ForShipping: 1
+      ForItems: 1
+      Active: 0
+  limited:
+      Title: Limited
+      Active: 0
+      UseLimit: 10
+  used:
+      Title: Used
+      Active: 1
+      UseLimit: 1
+  paymentused:
+      Title: Payment Used
+      Active: 1
+      UseLimit: 1
+
 OrderCoupon:
     40percentoff:
         Title: 40% off
@@ -14,10 +108,10 @@ OrderCoupon:
         Amount: 10
         Active: 1
     ordersabove200:
-        Title: $10 off
-        Code: TENDOLLARSOFF
+        Title: above 200
+        Code: ABOVE200
         Type: Amount
-        Amount: 10
+        Amount: 35
         Active: 1
         MinOrderValue: 200
     products20percentoff:
@@ -45,7 +139,7 @@ OrderCoupon:
         Active: 1
     unreleasedcoupon:
         Title: Unreleased $10 off
-        Code: 0444444440
+        Code: '0444444440'
         Type: Amount
         Amount: 10
         StartDate: 2200-01-01 12:00:00
@@ -119,10 +213,21 @@ Order:
         Status: Paid
         Paid: 2000-01-01 12:00:00
         Placed: 2000-01-01 12:02:00
-OrderCouponModifier:
+    paymentstarted:
+        Status: Cart
+OrderDiscountModifier:
     limited:
-        CouponID: =>OrderCoupon.limited
         OrderID: =>Order.limitedcoupon
+        Discounts: =>OrderCoupon.limited,=>OrderDiscount.limited
     used:
-        CouponID: =>OrderCoupon.used
         OrderID: =>Order.usedcoupon
+        Discounts: =>OrderCoupon.used,=>OrderDiscount.used
+    paymentstarted:
+        OrderID: =>Order.paymentstarted
+        Discounts: =>OrderDiscount.paymentused
+
+Payment:
+  paymentstarted_recent:
+    Created: #now
+    OrderID: =>Order.paymentstarted
+

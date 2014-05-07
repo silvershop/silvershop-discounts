@@ -4,18 +4,19 @@
  * @package shop-discounts
  **/
 
-class CouponsModelAdmin extends ModelAdmin {
+class DiscountModelAdmin extends ModelAdmin {
 
-	private static $url_segment = 'coupons';
-	private static $menu_title = 'Coupons';
+	private static $url_segment = 'discounts';
+	private static $menu_title = 'Discounts';
 	private static $menu_icon = 'shop_discount/images/icon-coupons.png';
 	private static $menu_priority = 2;
 
 	private static $managed_models = array(
-		"OrderCoupon"
+		"OrderCoupon",
+		"OrderDiscount"
 	);
 	public static $model_importers = array();
-
+	
 	public function GenerateCouponsForm() {
 		$fields = Object::create('OrderCoupon')->scaffoldFormFields();
 		$fields->insertBefore(new HeaderField('generatorhead', 'Generate Coupons'), 'Title');

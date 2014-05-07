@@ -17,6 +17,9 @@
 		"silverstripe/framework": "~3.1",
 		"burnbright/silverstripe-shop": "*"
 	},
+	"require-dev": {
+		"phpunit/PHPUnit": "~3.7"
+	},
 	"extra" : {
 		"installer-name": "shop_discount"
     }
