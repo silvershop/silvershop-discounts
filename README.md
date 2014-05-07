@@ -6,7 +6,7 @@ Allows creating discounts for products / orders.
   * Time
   * User group
   * Product/Category
-  * Uses
+  * Number of uses
   * Order value
  * Coupon codes
  * Gift voucher products
