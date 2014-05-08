@@ -33,7 +33,7 @@ class GiftVoucherProduct extends Product{
 		return $fields;
 	}
 
-	public function canPurchase($member = null) {
+	public function canPurchase($member = null, $quantity = 1) {
 		if(!self::$global_allow_purchase){
 			return false;
 		}
