@@ -27,7 +27,7 @@ class CouponCheckoutComponent extends CheckoutComponent{
 			);
 			throw new ValidationException($result);
 		}
-		return $valid;
+		return $result;
 	}
 
 	public function getData(Order $order) {

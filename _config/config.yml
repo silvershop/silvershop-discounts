@@ -17,3 +17,6 @@ Discount:
     - ProductsDiscountConstraint
     - CategoriesDiscountConstraint
     - CodeDiscountConstraint
+CheckoutPage_Controller:
+  extensions:
+    - CouponFormCheckoutDecorator
