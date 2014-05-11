@@ -19,7 +19,8 @@ class CouponForm extends Form{
 		parent::__construct($controller, $name, $fields, $actions, $validator);
 		$this->loadDataFrom($this->config->getData(), Form::MERGE_IGNORE_FALSEISH);
 
-		if($couponcompoent->getData()['Code']){
+		$storeddata = $couponcompoent->getData($order);
+		if(isset($storeddata['Code'])){
 			$actions->push(
 				FormAction::create('removeCoupon', _t('RemoveCoupon', 'Remove coupon'))
 			);
