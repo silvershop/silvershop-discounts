@@ -25,6 +25,7 @@ class CouponForm extends Form{
 				FormAction::create('removeCoupon', _t('RemoveCoupon', 'Remove coupon'))
 			);
 		}
+		$controller->extend("updateCouponForm", $this, $order);
 	}
 
 	public function applyCoupon($data, $form) {
