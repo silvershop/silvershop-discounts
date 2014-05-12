@@ -99,7 +99,7 @@ class Calculator{
 			if($products->exists()){
 				$newsubtotal = 0;
 				$items = $items
-					->leftJoin("Product_OrderItem", "Product_OrderItem.ID = OrderAttribute.ID")
+					->leftJoin("Product_OrderItem", "\"Product_OrderItem\".\"ID\" = \"OrderAttribute\".\"ID\"")
 					->filter("ProductID", $products->map('ID', 'ID')->toArray());
 				$subtotal = $items->SubTotal();
 			}
