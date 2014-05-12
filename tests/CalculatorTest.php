@@ -160,5 +160,37 @@ class CalculatorTest extends SapphireTest{
 		$this->assertEquals(5, $i->getBestDiscount());
 		$this->assertEquals(array($a1,$a2,$a3), $i->getAdjustments());
 	}
+
+	/**
+	 * @group testme
+	 */
+	function testCartOnly() {
+		//entire cart
+		$discount = $this->objFromFixture("OrderDiscount", "25dollarsoffcart");
+		$discount->Active = 1;
+		$discount->write();
+		$this->assertTrue($discount->valid($this->cart));
+		$calculator = new Calculator($this->cart);
+		$this->assertEquals(8, $calculator->calculate());
+		$calculator = new Calculator($this->othercart);
+		$this->assertEquals(25, $calculator->calculate());
+		$calculator = new Calculator($this->megacart);
+		$this->assertEquals(25, $calculator->calculate());
+		$discount->Active = 0;
+		$discount->write();
+
+		//products subtotal
+		$discount = $this->objFromFixture("OrderDiscount", "50percentoffproductssubtotal");
+		$discount->Active = 1;
+		$discount->write();
+		$discount->Products()->addMany(array(
+			$this->socks,
+			$this->tshirt
+		));
+		$calculator = new Calculator($this->cart);
+		$this->assertEquals(4, $calculator->calculate());
+		$calculator = new Calculator($this->megacart);
+		$this->assertEquals(205, $calculator->calculate());
+	}
 	
 }

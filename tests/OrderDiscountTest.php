@@ -57,24 +57,19 @@ class OrderDiscountTest extends SapphireTest{
 		$this->assertDOSEquals(array(), OrderDiscount::get_matching($this->cart));
 	}
 
-	public function testUseCount(){
+	public function testUseCount() {
 		//check that order with payment started counts as a use
 		$discount = $this->objFromFixture("OrderDiscount", "paymentused");
 		$payment = $this->objFromFixture("Payment", "paymentstarted_recent");
-
 		//set timeout to 60 minutes
 		Discount::config()->unpaid_use_timeout = 60;
-
 		//set payment to be created 20 min ago
 		$payment->Created = date('Y-m-d H:i:s', strtotime("-20 minutes"));
 		$payment->write();
-
 		$this->assertEquals(1, $discount->getUseCount());
-
 		//set payment ot be created 2 days ago
 		$payment->Created = date('Y-m-d H:i:s', strtotime("-2 days"));
 		$payment->write();
-
 		$this->assertEquals(0, $discount->getUseCount());
 	}
 

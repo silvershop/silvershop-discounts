@@ -8,8 +8,8 @@ class Discount extends DataObject{
 		"Amount" => "Currency",
 		"Percent" => "Percentage",
 		"Active" => "Boolean",
-
 		"ForItems" => "Boolean",
+		"ForCart" => "Boolean",
 		"ForShipping" => "Boolean"
 	);
 
@@ -52,7 +52,8 @@ class Discount extends DataObject{
 						->setDescription("Enable/disable all use of this discount."),
 					new FieldGroup("This discount applies to:",
 						CheckboxField::create("ForItems", "Item values"),
-						CheckboxField::create("ForShipping", "Shipping cost")
+						CheckboxField::create("ForCart", "Cart subtotal"),
+						CheckboxField::create("ForShipping", "Shipping subtotal")
 					),
 					HeaderField::create("Criteria", "Order and Item Criteria", 4),
 					LabelField::create(
@@ -119,7 +120,6 @@ class Discount extends DataObject{
 	 * @return DataList matching discounts
 	 */
 	public static function get_matching(Order $order, $context = array()) {
-
 		//get as many matching discounts as possible in a single query
 		$discounts = self::get()
 			->filter("Active", true)

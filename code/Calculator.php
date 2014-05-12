@@ -90,6 +90,23 @@ class Calculator{
 			}
 		}
 		//get cart-level actions
+		if($discount->ForCart){
+			$subtotal = $this->order->SubTotal();
+			//TODO: this stuff should probably be moved into the action
+			$items = $this->order->Items();
+			//reduce subtotal to selected products, if necessary
+			$products = $discount->Products();
+			if($products->exists()){
+				$newsubtotal = 0;
+				$items = $items
+					->leftJoin("Product_OrderItem", "Product_OrderItem.ID = OrderAttribute.ID")
+					->filter("ProductID", $products->map('ID', 'ID')->toArray());
+				$subtotal = $items->SubTotal();
+			}
+			
+			$actions[] = new \SubtotalDiscountAction($subtotal, $discount);
+		}
+		//get shipping actions
 		if($discount->ForShipping && class_exists('ShippingFrameworkModifier') &&
 			$shipping = $this->order->getModifier("ShippingFrameworkModifier")
 		){

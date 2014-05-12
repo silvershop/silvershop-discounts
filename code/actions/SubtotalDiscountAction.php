@@ -5,7 +5,7 @@ class SubtotalDiscountAction extends Action{
 	protected $subtotal;
 	protected $discount;
 
-	function __construct($subtotal , Discount $discount) {
+	function __construct($subtotal, Discount $discount) {
 		$this->subtotal = $subtotal;
 		$this->discount = $discount;
 	}

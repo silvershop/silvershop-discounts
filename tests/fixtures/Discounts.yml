@@ -18,7 +18,7 @@ OrderDiscount:
       Active: 0
       MinOrderValue: 200
   products20percentoff:
-      Title: 20% off selected products
+      Title: 20% off each selected products
       Percent: 0.2
       Active: 0
   clothing5percent:
@@ -91,10 +91,22 @@ OrderDiscount:
       Title: Payment Used
       Active: 1
       UseLimit: 1
+  25dollarsoffcart:
+      Title: $25 off cart total
+      Amount: 25
+      Active: 0
+      ForItems: 0
+      ForCart: 1
+  50percentoffproductssubtotal:
+      Title: 50% off products subtotal
+      Percent: 0.5
+      Active: 0
+      ForItems: 0
+      ForCart: 1
 
 OrderCoupon:
     40percentoff:
-        Title: 40% off
+        Title: 40% off each item
         Code: 5B97AA9D75
         Type: Percent
         Percent: 0.40
@@ -102,7 +114,7 @@ OrderCoupon:
         StartDate: 2000-01-01 12:00:00
         EndDate: 2200-01-01 12:00:00
     10dollarsoff:
-        Title: $10 off
+        Title: $10 off each item
         Code: TENDOLLARSOFF
         Type: Amount
         Amount: 10
@@ -202,7 +214,7 @@ OrderCoupon:
         Title: Used
         Code: USEDCOUPON
         Active: 1
-        UseLimit: 1
+        UseLimit: 1        
 
 Order:
     limitedcoupon:
