@@ -1,8 +1,8 @@
 <?php
 
-use SS\Shop\Discount\Calculator;
-use SS\Shop\Discount\Adjustment;
-use SS\Shop\Discount\PriceInfo;
+use Shop\Discount\Calculator;
+use Shop\Discount\Adjustment;
+use Shop\Discount\PriceInfo;
 
 class CalculatorTest extends SapphireTest{
 	
@@ -161,9 +161,6 @@ class CalculatorTest extends SapphireTest{
 		$this->assertEquals(array($a1,$a2,$a3), $i->getAdjustments());
 	}
 
-	/**
-	 * @group testme
-	 */
 	function testCartOnly() {
 		//entire cart
 		$discount = $this->objFromFixture("OrderDiscount", "25dollarsoffcart");
@@ -191,6 +188,32 @@ class CalculatorTest extends SapphireTest{
 		$this->assertEquals(4, $calculator->calculate());
 		$calculator = new Calculator($this->megacart);
 		$this->assertEquals(205, $calculator->calculate());
+	}
+
+	function testMaxAmount() {
+		$discount = $this->objFromFixture("OrderDiscount", "200maxdiscount");
+		$discount->Active = 1;
+		$discount->write();
+		$calculator = new Calculator($this->megacart);
+		$this->assertEquals(200, $calculator->calculate());
+		$discount->Active = 0;
+		$discount->write();
+
+		//amount item discounts
+		$discount = $this->objFromFixture("OrderDiscount", "20maxdiscountamt");
+		$discount->Active = 1;
+		$discount->write();
+		$calculator = new Calculator($this->megacart);
+		$this->assertEquals(20, $calculator->calculate());
+		$discount->Active = 0;
+		$discount->write();
+
+		//percent cart discounts
+		$discount = $this->objFromFixture("OrderDiscount", "40maxdiscountcart");
+		$discount->Active = 1;
+		$discount->write();
+		$calculator = new Calculator($this->megacart);
+		$this->assertEquals(40, $calculator->calculate());	
 	}
 	
 }

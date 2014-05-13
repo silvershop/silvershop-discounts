@@ -10,7 +10,8 @@ class Discount extends DataObject{
 		"Active" => "Boolean",
 		"ForItems" => "Boolean",
 		"ForCart" => "Boolean",
-		"ForShipping" => "Boolean"
+		"ForShipping" => "Boolean",
+		"MaxAmount" => "Currency"
 	);
 
 	private static $defaults = array(
@@ -51,7 +52,7 @@ class Discount extends DataObject{
 					CheckboxField::create("Active", "Active")
 						->setDescription("Enable/disable all use of this discount."),
 					new FieldGroup("This discount applies to:",
-						CheckboxField::create("ForItems", "Item values"),
+						CheckboxField::create("ForItems", "Individual item values"),
 						CheckboxField::create("ForCart", "Cart subtotal"),
 						CheckboxField::create("ForShipping", "Shipping subtotal")
 					),
@@ -65,19 +66,27 @@ class Discount extends DataObject{
 		));
 		if($this->isInDB()){
 			if($this->Type == "Percent"){
-				$fields->insertBefore(
+				$fields->insertAfter(
 					$percent = NumericField::create("Percent", "Percentage discount")
 						->setDescription("e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%"), 
 					"Active"
 				);
+				$fields->insertAfter(
+					NumericField::create("MaxAmount",
+						_t("MaxAmount", "Maximum Discount")
+					)->setDescription(
+						"Don't allow the total discount amount to be more than this amount. '0' means the maximum discoun isn't limited."
+					),
+					"Active"
+				);
 			}elseif($this->Type == "Amount"){
-				$fields->insertBefore(
+				$fields->insertAfter(
 					$amount = NumericField::create("Amount", "Discount value"),
 					"Active"
 				);
 			}
 		}else{
-			$fields->insertBefore(
+			$fields->insertAfter(
 				new OptionsetField("Type", "Type of discount",
 					array(
 						"Percent" => "Percentage of subtotal (eg 25%)",

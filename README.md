@@ -13,7 +13,7 @@ Allows creating discounts for products / orders.
  * Gift voucher products
  * Shipping discount
 
-Discounts can be applied to individual products or shipping.
+Discounts can be applied to individual products, cart subtotal, or shipping.
 Discounts can be globally enabled/disabled.
 
 ## Requirements

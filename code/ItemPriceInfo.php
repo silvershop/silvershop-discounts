@@ -1,6 +1,6 @@
 <?php
 
-namespace SS\Shop\Discount;
+namespace Shop\Discount;
 
 /**
  * Wrap PriceInfo with order item info
@@ -22,6 +22,10 @@ class ItemPriceInfo extends PriceInfo{
 
 	public function getQuantity() {
 		return $this->quantity;
+	}
+
+	public function getOriginalTotal() {
+		return $this->originalprice * $this->quantity;
 	}
 
 	public function debug() {

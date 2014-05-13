@@ -4,7 +4,7 @@
  * @package shop-discount
  */
 
-use SS\Shop\Discount\Calculator;
+use Shop\Discount\Calculator;
 
 class OrderCouponTest extends SapphireTest{
 

@@ -1,11 +1,11 @@
 <?php
 
-class SubtotalDiscountAction extends Action{
+class SubtotalDiscountAction extends DiscountAction{
 	
 	protected $subtotal;
-	protected $discount;
 
 	function __construct($subtotal, Discount $discount) {
+		parent::__construct($discount);
 		$this->subtotal = $subtotal;
 		$this->discount = $discount;
 	}
@@ -15,6 +15,8 @@ class SubtotalDiscountAction extends Action{
 		if($amount > $this->subtotal){
 			$amount = $this->subtotal;
 		}
+		$amount = $this->limit($amount);
+
 		return $amount;
 	}
 

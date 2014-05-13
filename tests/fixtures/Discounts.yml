@@ -103,6 +103,27 @@ OrderDiscount:
       Active: 0
       ForItems: 0
       ForCart: 1
+  200maxdiscount:
+      Title: $200 max Discount
+      Percent: 0.8
+      Active: 0
+      ForItems: 1
+      MaxAmount: 200
+  20maxdiscountamt:
+      Title: $20 max Discount (using amount)
+      Type: Amount
+      Amount: 10
+      Active: 0
+      ForItems: 1
+      MaxAmount: 20
+  40maxdiscountcart:
+      Title: $20 max Discount (using amount)
+      Type: Amount
+      Percent: 0.8
+      Active: 0
+      ForItems: 0
+      ForCart: 1
+      MaxAmount: 40
 
 OrderCoupon:
     40percentoff:

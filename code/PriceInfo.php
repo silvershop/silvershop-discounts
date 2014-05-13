@@ -1,6 +1,6 @@
 <?php
 
-namespace SS\Shop\Discount;
+namespace Shop\Discount;
 
 /**
  * Represent a price, along with adjustments made to it.

@@ -14,7 +14,7 @@ class UseLimitDiscountConstraint extends DiscountConstraint{
 		$fields->addFieldToTab("Root.Main",
 			NumericField::create("UseLimit", "Limit number of uses")
 				->setDescription("Note: 0 = unlimited")
-		);
+		,"Active");
 	}
 
 	public function filter(DataList $list) {

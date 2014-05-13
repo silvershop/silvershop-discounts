@@ -1,17 +1,20 @@
 <?php
 
-use SS\Shop\Discount\ItemPriceInfo;
+use Shop\Discount\ItemPriceInfo;
 
-abstract class ItemDiscountAction extends Action{
+abstract class ItemDiscountAction extends DiscountAction{
 	
 	//allow defining items to discount
 	//otherwise apply to rule-matching items
 	protected $infoitems;
-	protected $discount;
 
 	function __construct(array $infoitems, Discount $discount){
+		parent::__construct($discount);
 		$this->infoitems = $infoitems;
-		$this->discount = $discount;
+	}
+
+	function isForItems(){
+		return true;
 	}
 
 	/**
@@ -21,10 +24,6 @@ abstract class ItemDiscountAction extends Action{
 	protected function itemQualifies(ItemPriceInfo $info){
 		return $this->discount->itemMatchesProductCriteria($info->getItem(), $this->discount) &&
 			$this->discount->itemMatchesCategoryCriteria($info->getItem(), $this->discount);
-	}
-
-	function isForItems(){
-		return true;
 	}
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace SS\Shop\Discount;
+namespace Shop\Discount;
 
 class Calculator{
 	
@@ -39,15 +39,10 @@ class Calculator{
 		//loop through discounts to apply
 		foreach($this->discounts as $discount){
 			foreach($this->getActionsForDiscount($items, $discount) as $action){
-				//perform item-specific discount actions
-				if($action->isForItems()){
-					$action->perform(); //iteminfo objects will be updated
-				}
-				//perform cart-level discount actions
-				else{
-					//add result to discount total
-					$total += $action->perform();
-					if($this->linkdiscounts){
+				$disamt = $action->perform();
+				if(!$action->isForItems()){
+					$total += $disamt;
+					if($disamt && $this->linkdiscounts){
 						$discountmodifier->Discounts()->add($discount);
 					}
 				}
@@ -56,14 +51,14 @@ class Calculator{
 				break;
 			}
 		}
-		//add up item discounts
+		//add up best item discounts
 		foreach($items as $iteminfo){
 			$discountamount = $iteminfo->getBestDiscount();
 			//prevent discounting more than original price
-			if($discountamount > $iteminfo->getOriginalPrice()){
-				$discountamount = $iteminfo->getOriginalPrice();
+			if($discountamount > $iteminfo->getOriginalTotal()){
+				$discountamount = $iteminfo->getOriginalTotal();
 			}
-			$total += $discountamount * $iteminfo->getQuantity();
+			$total += $discountamount;
 			//link up selected discounts
 			if($this->linkdiscounts){
 				//remove any existing linked discounts
