@@ -10,7 +10,7 @@ abstract class DiscountAction extends Action{
 
 	function __construct(Discount $discount){
 		$this->discount = $discount;
-		$this->remaining = $this->discount->MaxAmount;
+		$this->remaining = (float)$this->discount->MaxAmount;
 		$this->limited = (bool)$this->remaining;
 	}
 
