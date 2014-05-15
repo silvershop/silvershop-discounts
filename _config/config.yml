@@ -17,6 +17,3 @@ Discount:
     - ValueDiscountConstraint
     - UseLimitDiscountConstraint
     - CodeDiscountConstraint
-CheckoutPage_Controller:
-  extensions:
-    - CouponFormCheckoutDecorator

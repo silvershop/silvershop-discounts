@@ -9,8 +9,9 @@ class CheckoutStep_Discount extends CheckoutStep{
 	);
 
 	protected function checkoutconfig() {
-		$config = new CheckoutComponentConfig(ShoppingCart::curr(), false);
-		$config->addComponent(new CouponCheckoutComponent());
+		$config = new CheckoutComponentConfig(ShoppingCart::curr(), true);
+		$config->addComponent($comp = new CouponCheckoutComponent());
+		$comp->setValidWhenBlank(true);
 
 		return $config;
 	}
@@ -21,7 +22,7 @@ class CheckoutStep_Discount extends CheckoutStep{
 		);
 	}
 
-	public function CouponForm() {
+	public function CouponForm() {		
 		$form = new CheckoutForm($this->owner, "CouponForm", $this->checkoutconfig());
 		$form->setActions(new FieldList(
 			FormAction::create("setcoupon", "Continue")

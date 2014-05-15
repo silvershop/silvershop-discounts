@@ -2,6 +2,8 @@
 
 class CouponCheckoutComponent extends CheckoutComponent{
 
+	protected $validwhenblank = false;
+
 	public function getFormFields(Order $order) {
 		$fields = FieldList::create(
 			TextField::create('Code', _t("CouponForm.COUPON", 
@@ -12,11 +14,19 @@ class CouponCheckoutComponent extends CheckoutComponent{
 		return $fields;
 	}
 
+	public function setValidWhenBlank($valid){
+		$this->validwhenblank = $valid;
+	}
+
 	public function validateData(Order $order, array $data) {
 		$result = new ValidationResult();
+		$code = $data['Code'];
+		if($this->validwhenblank && !$code){
+			return $result;
+		}
 		//check the coupon exists, and can be used
-		if($coupon = OrderCoupon::get_by_code($data['Code'])){
-			if(!$coupon->valid($order, array("CouponCode" => $data['Code']))){
+		if($coupon = OrderCoupon::get_by_code($code)){
+			if(!$coupon->valid($order, array("CouponCode" => $code))){
 				$result->error($coupon->getMessage(), "Code");
 				throw new ValidationException($result);
 			}

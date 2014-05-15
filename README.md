@@ -43,8 +43,17 @@ CheckoutPage:
 		'paymentmethod' : 'CheckoutStep_PaymentMethod'
 		'summary' : 'CheckoutStep_Summary'
 ```
- 
- Add the `OrderDiscountModifier` modifier to your order modifiers yaml config:
+
+If you would like to display the coupon form seperately to the checkout form,
+apply the following extension. This will make `CouponForm` available in the checkout template:
+
+```yaml
+CheckoutPage_Controller:
+  extensions:
+    - CouponFormCheckoutDecorator
+```
+
+Add the `OrderDiscountModifier` modifier to your order modifiers yaml config:
 
 ```yaml
 Order:
@@ -53,3 +62,4 @@ Order:
 		- OrderDiscountModifier #here!
 		- Blah
 ```
+
