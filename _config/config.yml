@@ -9,13 +9,13 @@ Product_OrderItem:
     - DiscountedOrderItem
 Discount:
   constraints:
-    - DatetimeDiscountConstraint
-    - UseLimitDiscountConstraint
-    - ValueDiscountConstraint
-    - GroupDiscountConstraint
     - ZonesDiscountConstraint
-    - ProductsDiscountConstraint
     - CategoriesDiscountConstraint
+    - ProductsDiscountConstraint
+    - GroupDiscountConstraint
+    - DatetimeDiscountConstraint
+    - ValueDiscountConstraint
+    - UseLimitDiscountConstraint
     - CodeDiscountConstraint
 CheckoutPage_Controller:
   extensions:

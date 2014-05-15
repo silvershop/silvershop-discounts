@@ -7,13 +7,15 @@ class ZonesDiscountConstraint extends DiscountConstraint{
 	);
 
 	public function updateCMSFields(FieldList $fields) {
-		$fields->fieldByname("Root")->push(new Tab("Zones",
-			$zones = new GridField("Zones", "Zones", $this->owner->Zones(),
-				GridFieldConfig_RelationEditor::create()
-					->removeComponentsByType("GridFieldAddNewButton")
-					->removeComponentsByType("GridFieldEditButton")
-			)
-		));
+		if($this->owner->isInDB()){
+			$fields->fieldByname("Root.Main.Constraints")->push(new Tab("Zones",
+				$zones = new GridField("Zones", "Zones", $this->owner->Zones(),
+					GridFieldConfig_RelationEditor::create()
+						->removeComponentsByType("GridFieldAddNewButton")
+						->removeComponentsByType("GridFieldEditButton")
+				)
+			));
+		}
 	}
 	
 	public function filter(DataList $list) {

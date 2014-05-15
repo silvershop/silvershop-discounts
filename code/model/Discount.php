@@ -51,62 +51,48 @@ class Discount extends DataObject{
 					TextField::create("Title"),
 					CheckboxField::create("Active", "Active")
 						->setDescription("Enable/disable all use of this discount."),
+					SelectionGroup::create("Type",array(
+						new SelectionGroup_Item("Percent",
+							FieldGroup::create(
+								NumericField::create("Percent", "Discount", "0.00")
+									->setDescription("e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%"),
+								CurrencyField::create("MaxAmount",
+									_t("MaxAmount", "Maximum Amount")
+								)->setDescription(
+									"Don't allow the total discount amount to be more than this amount. '0' means the maximum discoun isn't limited."
+								)
+							),
+							"Percent"
+						),
+						new SelectionGroup_Item("Amount",
+							CurrencyField::create("Amount", "Discount", "$0.00"),
+							"Amount"
+						)
+					))->setTitle("Type"),
 					new FieldGroup("This discount applies to:",
 						CheckboxField::create("ForItems", "Individual item values"),
 						CheckboxField::create("ForCart", "Cart subtotal"),
 						CheckboxField::create("ForShipping", "Shipping subtotal")
 					),
-					HeaderField::create("Criteria", "Order and Item Criteria", 4),
-					LabelField::create(
-						"CriteriaDescription",
-						"Configure the requirements an order must meet for this coupon to be used with it:"
-					)
+					new Tab("Main",
+						HeaderField::create("ConstraintsTitle", "Constraints", 3),
+						LabelField::create(
+							"CriteriaDescription",
+							"Configure the requirements an order must meet for this discount to be valid:"
+						)
+					),
+					new TabSet("Constraints")
 				)
 			)
 		));
-		if($this->isInDB()){
-			if($this->Type == "Percent"){
-				$fields->insertAfter(
-					$percent = NumericField::create("Percent", "Percentage discount")
-						->setDescription("e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%"), 
-					"Active"
-				);
-				$fields->insertAfter(
-					NumericField::create("MaxAmount",
-						_t("MaxAmount", "Maximum Discount")
-					)->setDescription(
-						"Don't allow the total discount amount to be more than this amount. '0' means the maximum discoun isn't limited."
-					),
-					"Active"
-				);
-			}elseif($this->Type == "Amount"){
-				$fields->insertAfter(
-					$amount = NumericField::create("Amount", "Discount value"),
-					"Active"
-				);
-			}
-		}else{
-			$fields->insertAfter(
-				new OptionsetField("Type", "Type of discount",
-					array(
-						"Percent" => "Percentage of subtotal (eg 25%)",
-						"Amount" => "Fixed amount (eg $25.00)"
-					)
-				),
-				"Active"
-			);
-			$fields->insertAfter(
-				LiteralField::create(
-					"warning", 
-					"<p class=\"message good\">
-						More criteria options can be set after an intial save
-					</p>"
-				),
-				"UseLimit"
+		if(!$this->isInDB()){
+			$fields->addFieldToTab("Root.Main",
+				LiteralField::create("SaveNote",
+					"<p class=\"message good\">More constraints will show up after you save for the first time.</p>"
+				), "Constraints"
 			);
 		}
-		$this->extend("updateCMSFields", $fields);
-
+		$this->extend("updateCMSFields", $fields, $params);
 		if($this->isUsed()){
 			$fields->addFieldToTab("Root.Orders",
 				GridField::create(
@@ -244,6 +230,11 @@ class Discount extends DataObject{
 
 	public function isUsed(){
 		return (boolean)$this->getUseCount();
+	}
+
+	public function setPercent($value){
+		$value = $value > 100 ? 100 : $value;
+		$this->setField("Percent", $value);
 	}
 
 	/**

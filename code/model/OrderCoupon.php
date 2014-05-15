@@ -34,13 +34,16 @@ class OrderCoupon extends Discount {
 
 	/**
 	* Generates a unique code.
+	* @todo depending on the length, it may be possible that all the possible
+	*       codes have been generated.
 	* @return string the new code
 	*/
-	public static function generate_code($length = null) {
+	public static function generate_code($length = null, $prefix = "") {
 		$length = ($length) ? $length : self::$generated_code_length;
 		$code = null;
+		$generator = Injector::inst()->create('RandomGenerator');
 		do{
-			$code = strtoupper(substr(md5(microtime()), 0, $length));
+			$code = $prefix.strtoupper(substr($generator->randomToken(), 0, $length));
 		}while(
 			self::get()->filter("Code:nocase", $code)->exists()
 		);

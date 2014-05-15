@@ -3,7 +3,6 @@
 /**
  * @package shop-discounts
  **/
-
 class DiscountModelAdmin extends ModelAdmin {
 
 	private static $url_segment = 'discounts';
@@ -16,26 +15,62 @@ class DiscountModelAdmin extends ModelAdmin {
 		"OrderDiscount"
 	);
 	public static $model_importers = array();
-	
+
+	private static $allowed_actions = array(
+		"generatecoupons",
+		"GenerateCouponsForm"
+	);
+
+	public function getEditForm($id = null, $fields = null){
+		$form = parent::getEditForm($id, $fields);
+		if($grid = $form->Fields()->fieldByName("OrderCoupon")){
+			$grid->getConfig()
+				->addComponent(
+					$link = new GridField_LinkComponent("Generate Multiple Coupons", $this->Link()."/generatecoupons"),
+					"GridFieldExportButton"
+				);
+			$link->addExtraClass("ss-ui-action-constructive");
+		}
+
+		return $form;
+	}
+
 	public function GenerateCouponsForm() {
-		$fields = Object::create('OrderCoupon')->scaffoldFormFields();
-		$fields->insertBefore(new HeaderField('generatorhead', 'Generate Coupons'), 'Title');
-		$fields->insertBefore(new NumericField('Number', 'Number of coupons to generate'), 'Title');
+		$fields = Object::create('OrderCoupon')->getCMSFields();
 		$fields->removeByName('Code');
+		$fields->removeByName('GiftVoucherID');
 
-		$fields->fieldByName('StartDate')->getDateField()->setConfig('showcalendar', true);
-		//$fields->fieldByName('StartDate')->getTimeField()->setConfig('showdropdown',true);
-		$fields->fieldByName('EndDate')->getDateField()->setConfig('showcalendar', true);
-		//$fields->fieldByName('EndDate')->getTimeField()->setConfig('showdropdown',true);
-
+		$fields->addFieldsToTab("Root.Main", array(
+			NumericField::create('Number', 'Number of Coupons'),
+			FieldGroup::create("Code",
+				TextField::create("Prefix", "Code Prefix")
+					->setMaxLength(5),
+				DropdownField::create("Length","Code Characters Length",
+					array_combine(range(5,20),range(5,20)),
+					OrderCoupon::config()->generated_code_length
+				)->setDescription("This is in addition to the length of the prefix.")
+			)
+		), "Title");
+		
 		$actions = new FieldList(
 			new FormAction('generate', 'Generate')
 		);
 		$validator = new RequiredFields(array(
 			'Title',
-			'Number'
+			'Number',
+			'Type'
 		));
-		return new Form($this, "GenerateCouponsForm", $fields, $actions, $validator);
+		$form = new Form($this, "GenerateCouponsForm", $fields, $actions, $validator);
+		$form->addExtraClass("cms-edit-form cms-panel-padded center ui-tabs-panel ui-widget-content ui-corner-bottom");
+		$form->setAttribute('data-pjax-fragment', 'CurrentForm');
+		$form->setHTMLID('Form_EditForm');
+		$form->loadDataFrom(array(
+			'Number' => 1,
+			'Active' => 1,
+			'ForCart' => 1,
+			'UseLimit' => 1
+		));
+		return $form;
 	}
 
 	public function generate($data, $form) {
@@ -43,16 +78,26 @@ class DiscountModelAdmin extends ModelAdmin {
 		if(isset($data['Number']) && is_numeric($data['Number'])){
 			$count = (int)$data['Number'];
 		}
+		$prefix = isset($data['Prefix']) ? $data['Prefix'] : "";
+		$length = isset($data['Length']) ? (int)$data['Length'] : 10;
 		for($i = 0; $i < $count; $i++){
 			$coupon = new OrderCoupon();
 			$form->saveInto($coupon);
-			$coupon->Code = OrderCoupon::generate_code();
+			$coupon->Code = OrderCoupon::generate_code(
+				OrderCoupon::config()->generated_code_length,
+				$prefix
+			);
 			$coupon->write();
 		}
+		$this->redirect($this->Link());
+	}
 
-		return _t(
-			"CouponsModelAdmin.GENERATEDCOUPONS",
-			"Generated $count coupons, now click 'Search' to see them"
+	function generatecoupons() {
+		return array(
+			'Title' => 'Generate Coupons',
+			'EditForm' => $this->GenerateCouponsForm(),
+			'SearchForm' => '',
+			'ImportForm' => ''
 		);
 	}
 

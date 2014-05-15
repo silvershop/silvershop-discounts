@@ -8,7 +8,7 @@ class DatetimeDiscountConstraint extends DiscountConstraint{
 	);
 	
 	public function updateCMSFields(FieldList $fields) {
-		$fields->addFieldToTab("Root.Main",
+		$fields->addFieldToTab("Root.Main.Constraints.Main",
 			FieldGroup::create("Valid date range:",
 				CouponDatetimeField::create("StartDate", "Start Date / Time"),
 				CouponDatetimeField::create("EndDate", "End Date / Time")

@@ -11,8 +11,8 @@ class ValueDiscountConstraint extends DiscountConstraint{
 	);
 
 	public function updateCMSFields(FieldList $fields) {
-		$fields->addFieldToTab("Root.Main",
-			CurrencyField::create("MinOrderValue", "Minimum order subtotal")
+		$fields->addFieldToTab("Root.Main.Constraints.Main",
+			CurrencyField::create("MinOrderValue", "Minimum Order Value")
 		);
 	}
 	

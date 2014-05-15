@@ -8,7 +8,7 @@ class CategoriesDiscountConstraint extends DiscountConstraint{
 
 	public function updateCMSFields(FieldList $fields) {
 		if($this->owner->isInDB()){
-			$fields->fieldByName("Root")->push(new Tab("Categories",
+			$fields->fieldByName("Root.Main.Constraints")->push(new Tab("Categories",
 				LabelField::create("CategoriesDescription", "Select specific product categories that this discount applies to"),
 				GridField::create("Categories", "Categories", $this->owner->Categories(),
 					GridFieldConfig_RelationEditor::create()
