@@ -45,10 +45,16 @@ class DiscountReport extends ShopPeriodReport{
 			->selectField('Title', 'Name')
 			->selectField('COUNT("OrderAttribute"."ID")', 'Entered')
 			->selectField('SUM(CASE WHEN ' . $this->periodfield . ' IS NOT NULL THEN 1 ELSE 0 END)', 'Uses')
-			->selectField('SUM(CASE WHEN ' . $this->periodfield . ' IS NOT NULL THEN "OrderDiscountModifier_Discounts"."Amount" ELSE 0 END)', 'Savings');
-		$query->addInnerJoin("OrderDiscountModifier_Discounts", "OrderDiscountModifier_Discounts.ID = Discount.ID");
-		$query->addInnerJoin("OrderAttribute", "\"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\" = \"OrderAttribute\".\"ID\"");
-		$query->addInnerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"");
+			->selectField('SUM(CASE WHEN ' . $this->periodfield . ' IS NOT NULL THEN "OrderDiscountModifier_Discounts"."Amount" ELSE 0 END)', 'Savings')
+
+			->addLeftJoin("Product_OrderItem_Discounts", "Product_OrderItem_Discounts.DiscountID = Discount.ID")
+			->addLeftJoin("OrderDiscountModifier_Discounts", "OrderDiscountModifier_Discounts.DiscountID = Discount.ID")
+			->addInnerJoin("OrderAttribute",(implode(" OR ",array(
+				"\"Product_OrderItem_Discounts\".\"Product_OrderItemID\" = \"OrderAttribute\".\"ID\"",
+				"\"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\" = \"OrderAttribute\".\"ID\""
+			))))
+			->addInnerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"");
+
 		$query->setGroupBy("\"Discount\".\"ID\"");
 		if(!$query->getOrderBy()){
 			$query->setOrderBy("Savings DESC,Title ASC");
