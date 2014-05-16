@@ -1,0 +1,32 @@
+Product:
+  raspberrypi:
+    Title: RaspberryPi
+    BasePrice: 50
+  robot:
+    Title: robot
+
+ProductVariation:
+  robot_30gb:
+    Price: 100
+    Product: =>Product.robot
+  robot_3gb:
+    Price: 10
+    Product: =>Product.robot
+
+SpecificPrice:
+  raspberrypi_constant:
+    Price: 48
+    Product: =>Product.raspberrypi
+  raspberrypi_dateconstrained:
+    Price: 45
+    StartDate: 2010-01-01 00:00:00
+    EndDate: 2110-01-01 00:00:00
+    Product: =>Product.raspberrypi
+  raspberrypi_other:
+    Price: 47
+    Product: =>Product.raspberrypi
+  robot_30gb_specific:
+    Price: 90
+    StartDate: 2010-01-01 00:00:00
+    EndDate: 2110-01-01 00:00:00
+    ProductVariation: =>ProductVariation.robot_30gb

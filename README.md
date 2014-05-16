@@ -63,3 +63,16 @@ Order:
 		- Blah
 ```
 
+## Specific Pricing
+
+Extend `Product` and/or `ProductVariation` with the `SpecificPricingExtension` to introduce a pricing table for each product. This allows admins to set prices according to things like, date, and membership group.
+
+Configure as follows:
+```yaml
+Product:
+  extensions:
+    - SpecificPricingExtension
+ProductVariation:
+  extensions:
+    - SpecificPricingExtension
+```
