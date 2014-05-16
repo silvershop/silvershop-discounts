@@ -10,6 +10,12 @@ class OrderDiscountModifier extends OrderModifier{
 		"Discounts" => "Discount"
 	);
 
+	private static $many_many_extraFields = array(
+		'Discounts' => array(
+			'Amount' => 'Currency'
+		)
+	);
+
 	private static $singular_name = "Discount";
 	private static $plural_name = "Discounts";
 
