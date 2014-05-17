@@ -47,7 +47,7 @@ class DiscountReport extends ShopPeriodReport{
 
 		$query->setGroupBy("\"Discount\".\"ID\"");
 		if(!$query->getOrderBy()){
-			$query->setOrderBy("Savings DESC, Title ASC");
+			$query->setOrderBy("\"Savings\" DESC, \"Title\" ASC");
 		}
 		$query->setLimit("50");
 
