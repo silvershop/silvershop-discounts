@@ -28,27 +28,17 @@ class DiscountReport extends ShopPeriodReport{
 		return $cols;
 	}
 
-	public function getReportField() {
-		$field = parent::getReportField();
-//		$field->addSummary("Total",array(
-//			"Entered"=>"sum",
-//			"Uses"=>"sum",
-//			"Savings"=> array("sum","Currency->Nice")
-//		));
-		return $field;
-	}
-
 	public function query($params) {
 		$query = parent::query($params);
-		$query->setSelect("Discount.*")
-			->selectField($this->periodfield, 'FilterPeriod')
-			->selectField('Title', 'Name')
-			->selectField('COUNT("OrderAttribute"."ID")', 'Entered')
-			->selectField('SUM(CASE WHEN ' . $this->periodfield . ' IS NOT NULL THEN 1 ELSE 0 END)', 'Uses')
-			->selectField('SUM(CASE WHEN ' . $this->periodfield . ' IS NOT NULL THEN "OrderDiscountModifier_Discounts"."Amount" ELSE 0 END)', 'Savings')
+		$query->setSelect("\"Discount\".*")
+			->selectField($this->periodfield, "FilterPeriod")
+			->selectField("Title", "Name")
+			->selectField("COUNT(\"OrderAttribute\".\"ID\")", 'Entered')
+			->selectField("SUM(CASE WHEN " . $this->periodfield . " IS NOT NULL THEN 1 ELSE 0 END)", "Uses")
+			->selectField("SUM(CASE WHEN " . $this->periodfield . " IS NOT NULL THEN \"OrderDiscountModifier_Discounts\".\"Amount\" ELSE 0 END)", "Savings")
 
-			->addLeftJoin("Product_OrderItem_Discounts", "Product_OrderItem_Discounts.DiscountID = Discount.ID")
-			->addLeftJoin("OrderDiscountModifier_Discounts", "OrderDiscountModifier_Discounts.DiscountID = Discount.ID")
+			->addLeftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
+			->addLeftJoin("OrderDiscountModifier_Discounts", "\"OrderDiscountModifier_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
 			->addInnerJoin("OrderAttribute",(implode(" OR ",array(
 				"\"Product_OrderItem_Discounts\".\"Product_OrderItemID\" = \"OrderAttribute\".\"ID\"",
 				"\"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\" = \"OrderAttribute\".\"ID\""
@@ -57,7 +47,7 @@ class DiscountReport extends ShopPeriodReport{
 
 		$query->setGroupBy("\"Discount\".\"ID\"");
 		if(!$query->getOrderBy()){
-			$query->setOrderBy("Savings DESC,Title ASC");
+			$query->setOrderBy("Savings DESC, Title ASC");
 		}
 		$query->setLimit("50");
 
