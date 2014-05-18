@@ -34,7 +34,6 @@ class SpecificPrice extends DataObject{
 			"(\"SpecificPrice\".\"StartDate\" IS NULL) OR (\"SpecificPrice\".\"StartDate\" < '$now')"
 		)
 		->where(
-			//TODO: include the entire last day
 			"(\"SpecificPrice\".\"EndDate\" IS NULL) OR (\"SpecificPrice\".\"EndDate\" > '$nowminusone')"
 		)
 		->filter("GroupID", $groupids);
@@ -44,6 +43,8 @@ class SpecificPrice extends DataObject{
 		$fields = parent::getCMSFields();
 		$fields->removeByName("ProductID");
 		$fields->removeByName("ProductVariationID");
+		$fields->fieldByName("Root.Main.StartDate")->setConfig("showcalendar", true);
+		$fields->fieldByName("Root.Main.EndDate")->setConfig("showcalendar", true);
 		return $fields;
 	}
 
