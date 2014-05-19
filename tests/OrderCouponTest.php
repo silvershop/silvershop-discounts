@@ -40,6 +40,10 @@ class OrderCouponTest extends SapphireTest{
 		$result = $coupon->validate();
 		$this->assertContains('INVALIDMINLENGTH', $result->codeList());
 
+		$coupon = new OrderCoupon();
+		$result = $coupon->validate();
+		$this->assertNotContains('INVALIDMINLENGTH', $result->codeList(), 'Leaving the Code field generates a code');
+
 		$coupon = new OrderCoupon(array('Code' => '12345678'));
 		$result = $coupon->validate();
 		$this->assertNotContains('INVALIDMINLENGTH', $result->codeList());
