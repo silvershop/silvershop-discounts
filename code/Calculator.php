@@ -43,7 +43,12 @@ class Calculator{
 				if(!$action->isForItems()){
 					$total += $disamt;
 					if($disamt && $this->linkdiscounts){
-						$discountmodifier->Discounts()->add($discount);
+						$discountmodifier->Discounts()->add(
+							$discount,
+							array(
+								'DiscountAmount' => $disamt
+							)
+						);
 					}
 				}
 			}
@@ -65,7 +70,10 @@ class Calculator{
 				$iteminfo->getItem()->Discounts()->removeAll();
 				if($bestadjustment = $iteminfo->getBestAdjustment()){
 					$iteminfo->getItem()->Discounts()->add(
-						$bestadjustment->getAdjuster()
+						$bestadjustment->getAdjuster(),
+						array(
+							'DiscountAmount' => $bestadjustment->getValue()
+						)
 					);
 				}
 			}

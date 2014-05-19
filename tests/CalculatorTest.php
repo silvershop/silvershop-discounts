@@ -83,6 +83,11 @@ class CalculatorTest extends SapphireTest{
 		//no discount for modified cart
 		$calculator = new Calculator($this->modifiedcart);
 		$this->assertEquals(0, $calculator->calculate(), "20% off selected products");
+
+		//get individual item discounts
+		$discount = $this->objFromFixture("Product_OrderItem", "megacart_socks")
+						->Discounts()->first();
+		$this->assertEquals(32, $discount->DiscountAmount);
 	}
 
 	function testMultipleDiscounts() {

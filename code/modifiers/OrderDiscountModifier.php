@@ -12,7 +12,7 @@ class OrderDiscountModifier extends OrderModifier{
 
 	private static $many_many_extraFields = array(
 		'Discounts' => array(
-			'Amount' => 'Currency'
+			'DiscountAmount' => 'Currency'
 		)
 	);
 

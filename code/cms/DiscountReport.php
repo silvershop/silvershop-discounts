@@ -35,7 +35,7 @@ class DiscountReport extends ShopPeriodReport{
 			->selectField("\"Title\"", "Name")
 			->selectField("COUNT(\"OrderAttribute\".\"ID\")", 'Entered')
 			->selectField("SUM(CASE WHEN " . $this->periodfield . " IS NOT NULL THEN 1 ELSE 0 END)", "Uses")
-			->selectField("SUM(CASE WHEN " . $this->periodfield . " IS NOT NULL THEN \"OrderDiscountModifier_Discounts\".\"Amount\" ELSE 0 END)", "Savings")
+			->selectField("SUM(CASE WHEN " . $this->periodfield . " IS NOT NULL THEN \"OrderDiscountModifier_Discounts\".\"DiscountAmount\" ELSE 0 END)", "Savings")
 			->addLeftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
 			->addLeftJoin("OrderDiscountModifier_Discounts", "\"OrderDiscountModifier_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
 			->addInnerJoin("OrderAttribute",(implode(" OR ",array(
