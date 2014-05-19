@@ -24,7 +24,7 @@ class OrderCoupon extends Discount {
 
 	private static $singular_name = "Coupon";
 	private static $plural_name = "Coupons";
-	public static $generated_code_length = 10;
+	private static $generated_code_length = 10;
 
 	public static function get_by_code($code) {
 		return self::get()
@@ -39,7 +39,7 @@ class OrderCoupon extends Discount {
 	* @return string the new code
 	*/
 	public static function generate_code($length = null, $prefix = "") {
-		$length = ($length) ? $length : self::$generated_code_length;
+		$length = ($length) ? $length : $this->config()->generated_code_length;
 		$code = null;
 		$generator = Injector::inst()->create('RandomGenerator');
 		do{
