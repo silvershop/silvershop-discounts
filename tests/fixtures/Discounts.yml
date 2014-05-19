@@ -80,7 +80,7 @@ OrderDiscount:
       ForItems: 1
       Active: 0
   limited:
-      Title: Limited
+      Title: Limited Discount
       Active: 0
       UseLimit: 10
   used:
@@ -227,7 +227,7 @@ OrderCoupon:
         ForItems: 1
         Active: 1
     limited:
-        Title: Limited
+        Title: Limited Coupon
         Code: LIMITED
         Active: 1
         UseLimit: 10
@@ -248,10 +248,21 @@ Order:
         Placed: 2000-01-01 12:02:00
     paymentstarted:
         Status: Cart
+
+Product_OrderItem:
+  limitedcoupon_blah:
+    UnitPrice: 30
+    Quantity: 3
+    Order: =>Order.limitedcoupon
+  limitedcoupon_foo:
+    UnitPrice: 20
+    Quantity: 1
+    Order: =>Order.limitedcoupon
+
 OrderDiscountModifier:
     limited:
         OrderID: =>Order.limitedcoupon
-        Discounts: =>OrderCoupon.limited,=>OrderDiscount.limited
+        #Discounts: defined below
     used:
         OrderID: =>Order.usedcoupon
         Discounts: =>OrderCoupon.used,=>OrderDiscount.used
@@ -259,8 +270,27 @@ OrderDiscountModifier:
         OrderID: =>Order.paymentstarted
         Discounts: =>OrderDiscount.paymentused
 
+OrderDiscountModifier_Discounts:
+  limitedcouponmodifier:
+    DiscountAmount: 20
+    OrderDiscountModifierID: =>OrderDiscountModifier.limited
+    DiscountID: =>OrderCoupon.limited
+  limiteddiscountmodifier:
+    DiscountAmount: 40
+    OrderDiscountModifierID: =>OrderDiscountModifier.limited
+    DiscountID: =>OrderDiscount.limited
+
+Product_OrderItem_Discounts:
+  limitedcouponitem:
+    DiscountAmount: 2
+    Product_OrderItemID: =>Product_OrderItem.limitedcoupon_blah
+    DiscountID:  =>OrderCoupon.limited
+  limiteddiscountitem:
+    DiscountAmount: 4
+    Product_OrderItemID: =>Product_OrderItem.limitedcoupon_blah
+    DiscountID:  =>OrderDiscount.limited
+
 Payment:
   paymentstarted_recent:
     Created: #now
     OrderID: =>Order.paymentstarted
-

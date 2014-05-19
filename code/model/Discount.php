@@ -14,6 +14,11 @@ class Discount extends DataObject{
 		"MaxAmount" => "Currency"
 	);
 
+	private static $belongs_many_many = array(
+		'OrderItems' => 'Product_OrderItem',
+		'DiscountModifiers' => 'OrderDiscountModifier'
+	);
+
 	private static $defaults = array(
 		"Type" => "Percent",
 		"Active" => true,
@@ -265,13 +270,31 @@ class Discount extends DataObject{
 		return $orders;
 	}
 
+	/**
+	 * Get the total amount saved through the use of this discount,
+	 * accross all paid orders.
+	 * @return float amount saved
+	 */
+	public function getSavingsTotal() {
+		$itemsavings = $this->OrderItems()
+						->innerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"")
+						->where("\"Order\".\"Paid\" IS NOT NULL")
+						->sum("DiscountAmount");
+		$modifiersavings = $this->DiscountModifiers()
+						->innerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"")
+						->where("\"Order\".\"Paid\" IS NOT NULL")
+						->sum("DiscountAmount");
+		
+		return $itemsavings + $modifiersavings;
+	}
+
+
 	public function canView($member = null) {
 		return true;
 	}
 
 	public function canCreate($member = null) {
 		return true;
-	}
 
 	public function canDelete($member = null) {
 		return !$this->isUsed();

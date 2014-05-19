@@ -220,5 +220,12 @@ class CalculatorTest extends SapphireTest{
 		$calculator = new Calculator($this->megacart);
 		$this->assertEquals(40, $calculator->calculate());	
 	}
+
+	function testSavingsTotal() {
+		$discount = $this->objFromFixture("OrderDiscount", "limited");
+		$this->assertEquals(44, $discount->getSavingsTotal());
+		$discount = $this->objFromFixture("OrderCoupon", "limited");
+		$this->assertEquals(22, $discount->getSavingsTotal());
+	}
 	
 }
