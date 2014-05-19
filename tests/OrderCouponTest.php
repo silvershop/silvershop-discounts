@@ -18,6 +18,9 @@ class OrderCouponTest extends SapphireTest{
 	public function setUp() {
 		parent::setUp();
 		ShopTest::setConfiguration();
+
+		Config::inst()->update('OrderCoupon', 'minimum_code_length', null);
+
 		$this->socks = $this->objFromFixture("Product", "socks");
 		$this->socks->publish("Stage", "Live");
 		$this->tshirt = $this->objFromFixture("Product", "tshirt");
@@ -28,6 +31,24 @@ class OrderCouponTest extends SapphireTest{
 		$this->placedorder = $this->objFromFixture("Order", "unpaid");
 		$this->cart = $this->objFromFixture("Order", "cart");
 		$this->othercart = $this->objFromFixture("Order", "othercart");
+	}
+
+	public function testMinimumLengthCode() {
+		Config::inst()->update('OrderCoupon', 'minimum_code_length', 8);
+
+		$coupon = new OrderCoupon(array('Code' => '1234567'));
+		$result = $coupon->validate();
+		$this->assertContains('INVALIDMINLENGTH', $result->codeList());
+
+		$coupon = new OrderCoupon(array('Code' => '12345678'));
+		$result = $coupon->validate();
+		$this->assertNotContains('INVALIDMINLENGTH', $result->codeList());
+
+		Config::inst()->update('OrderCoupon', 'minimum_code_length', null);
+
+		$coupon = new OrderCoupon(array('Code' => '1'));
+		$result = $coupon->validate();
+		$this->assertNotContains('INVALIDMINLENGTH', $result->codeList());
 	}
 
 	public function testPercent() {

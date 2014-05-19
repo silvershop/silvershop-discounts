@@ -25,6 +25,7 @@ class OrderCoupon extends Discount {
 	private static $singular_name = "Coupon";
 	private static $plural_name = "Coupons";
 	public static $generated_code_length = 10;
+	private static $minimum_code_length = null;
 
 	public static function get_by_code($code) {
 		return self::get()
@@ -62,6 +63,24 @@ class OrderCoupon extends Discount {
 			"Active"
 		);
 		return $fields;
+	}
+
+	public function validate() {
+		$result = parent::validate();
+
+		$minLength = $this->config()->minimum_code_length;
+		if($minLength !== null && (strlen($this->getField('Code')) < $minLength)) {
+			$result->error(
+				_t(
+					'OrderCoupon.INVALIDMINLENGTH',
+					'Coupon code must be at least {length} characters in length',
+					array('length' => $this->config()->minimum_code_length)
+				),
+				'INVALIDMINLENGTH'
+			);
+		}
+
+		return $result;
 	}
 
 	/**
