@@ -44,4 +44,16 @@ class OrderDiscountModifier extends OrderModifier{
 		return Session::get("cart.couponcode");
 	}
 
+	public function getSubTitle(){
+		return $this->getUsedCodes();
+	}
+
+	public function getUsedCodes(){
+		return implode(",",
+			$this->Order()->Discounts()
+				->filter("Code:not", "")
+				->map('ID','Title')->toArray()
+		);
+	}
+
 }

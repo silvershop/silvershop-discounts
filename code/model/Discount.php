@@ -98,16 +98,18 @@ class Discount extends DataObject{
 			);
 		}
 		$this->extend("updateCMSFields", $fields, $params);
-		if($this->isUsed()){
-			$fields->addFieldToTab("Root.Orders",
+		if($count = $this->getUseCount()){
+			$fields->addFieldsToTab("Root.Usage", array(
+				HeaderField::create("UseCount", sprintf("This discount has been used $count time%s.", $count > 1 ? "s" : "")),
+				HeaderField::create("TotalSavings", sprintf("A total of %s has been saved by customers using this discount.", $this->SavingsTotal),"3"),
 				GridField::create(
 					"Orders",
-					"Orders that this discount has been used with",
+					"Orders",
 					$this->getAppliedOrders(),
 					GridFieldConfig_RecordViewer::create()
 						->removeComponentsByType("GridFieldViewButton")
 				)
-			);
+			));
 		}
 
 		return $fields;
@@ -295,6 +297,7 @@ class Discount extends DataObject{
 
 	public function canCreate($member = null) {
 		return true;
+	}
 
 	public function canDelete($member = null) {
 		return !$this->isUsed();

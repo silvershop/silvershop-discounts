@@ -119,6 +119,11 @@ class CalculatorTest extends SapphireTest{
 		//total discount: 190
 		$calculator = new Calculator($this->megacart);
 		$this->assertEquals(190, $calculator->calculate(), "complex savings example");
+
+		$this->assertDOSEquals(array(
+			array("Title" => "10% off"),
+			array("Title" => "$5 off")
+		), $this->megacart->Discounts());
 	}
 
 	function testCouponAndDiscount() {
@@ -218,7 +223,7 @@ class CalculatorTest extends SapphireTest{
 		$discount->Active = 1;
 		$discount->write();
 		$calculator = new Calculator($this->megacart);
-		$this->assertEquals(40, $calculator->calculate());	
+		$this->assertEquals(40, $calculator->calculate());
 	}
 
 	function testSavingsTotal() {

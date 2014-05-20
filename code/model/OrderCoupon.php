@@ -15,8 +15,8 @@ class OrderCoupon extends Discount {
 	);
 
 	private static $summary_fields = array(
-		"Code",
 		"Title",
+		"Code",
 		"DiscountNice",
 		"StartDate",
 		"EndDate"

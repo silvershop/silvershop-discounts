@@ -4,6 +4,10 @@ Name: shopdiscount
 LeftAndMain:
   extra_requirements_css:
     - shop_discount/css/OrderCouponAdmin.css
+Order:
+  extensions:
+    - DiscountedOrderExtension
+
 Product_OrderItem:
   extensions:
     - DiscountedOrderItem

@@ -14,9 +14,8 @@ class DiscountReport extends ShopPeriodReport{
 			"Code" => "Code",
 			"DiscountNice" => "Discount",
 			"Entered" => "Entered",
-			"Uses" => "Uses",
-			"Savings" => "Savings",
-			"SavingsTotal" => "SavingsTotal"
+			"UseCount" => "Uses",
+			"SavingsTotal" => "Total Savings"
 		);
 	}
 
@@ -34,24 +33,15 @@ class DiscountReport extends ShopPeriodReport{
 		$query->setSelect("\"Discount\".*")
 			->selectField($this->periodfield, "FilterPeriod")
 			->selectField("\"Title\"", "Name")
-			->selectField("COUNT(\"OrderAttribute\".\"ID\")", 'Entered')
-			->selectField("SUM(CASE WHEN " . $this->periodfield . " IS NOT NULL THEN 1 ELSE 0 END)", "Uses")
-			->selectField("SUM(CASE WHEN " . $this->periodfield . " IS NOT NULL THEN (\"OrderDiscountModifier_Discounts\".\"DiscountAmount\" + \"Product_OrderItem_Discounts\".\"DiscountAmount\") ELSE 0 END)", "Savings")
+			->selectField("COUNT(DISTINCT \"Order\".\"ID\")", 'Entered')
 			->addLeftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
 			->addLeftJoin("OrderDiscountModifier_Discounts", "\"OrderDiscountModifier_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
 			->addInnerJoin("OrderAttribute",(implode(" OR ",array(
 				"\"Product_OrderItem_Discounts\".\"Product_OrderItemID\" = \"OrderAttribute\".\"ID\"",
 				"\"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\" = \"OrderAttribute\".\"ID\""
 			))))
-			->addInnerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"")
-			->addWhere("\"Order\".\"Paid\" IS NOT NULL");
-
-
-
+			->addInnerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"");
 		$query->setGroupBy("\"Discount\".\"ID\"");
-		if(!$query->getOrderBy()){
-			$query->setOrderBy("\"Savings\" DESC, \"Title\" ASC");
-		}
 		$query->setLimit("50");
 
 		return $query;
