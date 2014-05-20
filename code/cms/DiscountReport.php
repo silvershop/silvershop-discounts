@@ -31,7 +31,6 @@ class DiscountReport extends ShopPeriodReport{
 	public function query($params) {
 		$query = parent::query($params);
 		$query->setSelect("\"Discount\".*")
-			->selectField($this->periodfield, "FilterPeriod")
 			->selectField("\"Title\"", "Name")
 			->selectField("COUNT(DISTINCT \"Order\".\"ID\")", 'Entered')
 			->addLeftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
