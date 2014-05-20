@@ -104,6 +104,14 @@ class OrderCoupon extends Discount {
 		$this->setField("Code", strtoupper($code));
 	}
 
+	public function canView($member = null) {
+		return true;
+	}
+
+	public function canCreate($member = null) {
+		return true;
+	}
+
 	public function canDelete($member = null) {
 		if($this->getUseCount()) {
 			return false;
