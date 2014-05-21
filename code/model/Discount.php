@@ -167,6 +167,7 @@ class Discount extends DataObject{
 	public function getDefaultSearchContext() {
 		$context = parent::getDefaultSearchContext();
 		$fields = $context->getFields();
+		$fields->push(CheckboxField::create("HasBeenUsed"));
 		//add date range filtering
 		$fields->push(ToggleCompositeField::create("StartDate", "Start Date",array(
 			DateField::create("StartDateFrom", "From")
@@ -180,8 +181,20 @@ class Discount extends DataObject{
 			DateField::create("EndDateTo", "To")
 						->setConfig('showcalendar', true)
 		)));
-
-		$fields->push(CheckboxField::create("HasBeenUsed"));
+		//must be enabled in config, because some sites may have many products = slow load time, or memory maxes out
+		//future solution is using an ajaxified field
+		if(self::config()->filter_by_product){
+			$fields->push(
+				ListboxField::create("Products", "Products", Product::get()->map()->toArray())
+					->setMultiple(true)
+			);
+		}
+		if(self::config()->filter_by_category){
+			$fields->push(
+				ListboxField::create("Categories", "Categories", ProductCategory::get()->map()->toArray())
+					->setMultiple(true)
+			);
+		}
 		if($field = $fields->fieldByName("Code")){
 			$field->setDescription("This can be a partial match.");
 		}

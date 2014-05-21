@@ -51,7 +51,16 @@ class DiscountModelAdmin extends ModelAdmin {
 					"\"OrderAttribute\".\"ID\" = \"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\""
 				)));
 		}
-
+		if(isset($params['Products'])) {
+			$list = $list
+				->innerJoin("Discount_Products", "Discount_Products.DiscountID = Discount.ID")
+				->filter("Discount_Products.ProductID", $params['Products']);
+		}
+		if(isset($params['Categories'])) {
+			$list = $list
+				->innerJoin("Discount_Categories", "Discount_Categories.DiscountID = Discount.ID")
+				->filter("Discount_Categories.ProductCategoryID", $params['Categories']);
+		}		
 		$this->extend('updateList', $list);
 
 		return $list;
