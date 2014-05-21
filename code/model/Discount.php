@@ -36,6 +36,10 @@ class Discount extends DataObject{
 		"EndDate"
 	);
 
+	private static $searchable_fields = array(
+		"Title"
+	);
+
 	private static $singular_name = "Discount";
 	private static $plural_name = "Discounts";
 
@@ -48,6 +52,39 @@ class Discount extends DataObject{
 	 */
 	private static $unpaid_use_timeout = 10;
 
+	/**
+	 * Get the smallest possible list of discounts that can apply
+	 * to a given order.
+	 * @param  Order  $order order to check against
+	 * @return DataList matching discounts
+	 */
+	public static function get_matching(Order $order, $context = array()) {
+		//get as many matching discounts as possible in a single query
+		$discounts = self::get()
+			->filter("Active", true)
+			//amount or percent > 0
+			->filterAny(array(
+				"Amount:GreaterThan" => 0,
+				"Percent:GreaterThan" => 0
+			));
+		$constraints = self::config()->constraints;
+		foreach($constraints as $constraint){
+			$discounts = singleton($constraint)
+							->setOrder($order)
+							->setContext($context)
+							->filter($discounts);
+		}
+		//cull remaining invalid discounts programatically
+		$validdiscounts = new ArrayList();
+		foreach ($discounts as $discount) {
+			if($discount->valid($order, $context)){
+				$validdiscounts->push($discount);
+			}
+		}
+
+		return $validdiscounts;
+	}
+
 	public function getCMSFields($params = null) {
 		//fields that shouldn't be changed once coupon is used
 		$fields = new FieldList(array(
@@ -56,12 +93,12 @@ class Discount extends DataObject{
 					TextField::create("Title"),
 					CheckboxField::create("Active", "Active")
 						->setDescription("Enable/disable all use of this discount."),
-					SelectionGroup::create("Type",array(
+					$typefield = SelectionGroup::create("Type",array(
 						new SelectionGroup_Item("Percent",
-							FieldGroup::create(
-								NumericField::create("Percent", "Discount", "0.00")
+							$percentgroup = FieldGroup::create(
+								$percentfield = NumericField::create("Percent", "Discount", "0.00")
 									->setDescription("e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%"),
-								CurrencyField::create("MaxAmount",
+								$maxamountfield = CurrencyField::create("MaxAmount",
 									_t("MaxAmount", "Maximum Amount")
 								)->setDescription(
 									"Don't allow the total discount amount to be more than this amount. '0' means the maximum discoun isn't limited."
@@ -70,7 +107,7 @@ class Discount extends DataObject{
 							"Percent"
 						),
 						new SelectionGroup_Item("Amount",
-							CurrencyField::create("Amount", "Discount", "$0.00"),
+							$amountfield = CurrencyField::create("Amount", "Discount", "$0.00"),
 							"Amount"
 						)
 					))->setTitle("Type"),
@@ -112,40 +149,51 @@ class Discount extends DataObject{
 			));
 		}
 
-		return $fields;
-	}
-
-	/**
-	 * Get the smallest possible list of discounts that can apply
-	 * to a given order.
-	 * @param  Order  $order order to check against
-	 * @return DataList matching discounts
-	 */
-	public static function get_matching(Order $order, $context = array()) {
-		//get as many matching discounts as possible in a single query
-		$discounts = self::get()
-			->filter("Active", true)
-			//amount or percent > 0
-			->filterAny(array(
-				"Amount:GreaterThan" => 0,
-				"Percent:GreaterThan" => 0
-			));
-		$constraints = self::config()->constraints;
-		foreach($constraints as $constraint){
-			$discounts = singleton($constraint)
-							->setOrder($order)
-							->setContext($context)
-							->filter($discounts);
-		}
-		//cull remaining invalid discounts programatically
-		$validdiscounts = new ArrayList();
-		foreach ($discounts as $discount) {
-			if($discount->valid($order, $context)){
-				$validdiscounts->push($discount);
+		if($this->Type && $this->{$this->Type}){
+			$valuefield = $this->Type == "Percent" ? $percentfield : $amountfield;
+			$fields->removeByName("Type");
+			$fields->insertAfter($valuefield, "Active");
+			$fields->replaceField($this->Type,
+				$valuefield->performReadonlyTransformation()
+			);
+			if($this->Type == "Percent"){
+				$fields->insertAfter($maxamountfield, "Percent");
 			}
 		}
 
-		return $validdiscounts;
+		return $fields;
+	}
+
+	public function getDefaultSearchContext() {
+		$context = parent::getDefaultSearchContext();
+		$fields = $context->getFields();
+		//add date range filtering
+		$fields->push(ToggleCompositeField::create("StartDate", "Start Date",array(
+			DateField::create("StartDateFrom", "From")
+						->setConfig('showcalendar', true),
+			DateField::create("StartDateTo", "To")
+						->setConfig('showcalendar', true)
+		)));
+		$fields->push(ToggleCompositeField::create("EndDate", "End Date",array(
+			DateField::create("EndDateFrom", "From")
+						->setConfig('showcalendar', true),
+			DateField::create("EndDateTo", "To")
+						->setConfig('showcalendar', true)
+		)));
+
+		$fields->push(CheckboxField::create("HasBeenUsed"));
+		if($field = $fields->fieldByName("Code")){
+			$field->setDescription("This can be a partial match.");
+		}
+		//get the array, to maniplulate name, and fullname seperately
+		$filters = $context->getFilters();
+		$filters['StartDateFrom'] = GreaterThanOrEqualFilter::create('StartDate');
+		$filters['StartDateTo'] = LessThanOrEqualFilter::create('StartDate');
+		$filters['EndDateFrom'] = GreaterThanOrEqualFilter::create('EndDate');
+		$filters['EndDateTo'] = LessThanOrEqualFilter::create('EndDate');
+		$context->setFilters($filters);
+
+		return $context;
 	}
 
 	/**

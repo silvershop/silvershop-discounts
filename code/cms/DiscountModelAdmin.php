@@ -35,10 +35,33 @@ class DiscountModelAdmin extends ModelAdmin {
 		return $form;
 	}
 
+	/**
+	 * Update results list, to include custom search filters
+	 */
+	public function getList() {
+		$context = $this->getSearchContext();
+		$params = $this->request->requestVar('q');
+		$list = $context->getResults($params);
+		if(isset($params['HasBeenUsed'])) {
+			$list = $list
+				->leftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
+				->leftJoin("OrderDiscountModifier_Discounts", "\"OrderDiscountModifier_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
+				->innerJoin("OrderAttribute", implode(" OR ", array(
+					"\"OrderAttribute\".\"ID\" = \"Product_OrderItem_Discounts\".\"Product_OrderItemID\"",
+					"\"OrderAttribute\".\"ID\" = \"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\""
+				)));
+		}
+
+		$this->extend('updateList', $list);
+
+		return $list;
+	}
+
 	public function GenerateCouponsForm() {
 		$fields = Object::create('OrderCoupon')->getCMSFields();
 		$fields->removeByName('Code');
 		$fields->removeByName('GiftVoucherID');
+		$fields->removeByName('SaveNote');
 
 		$fields->addFieldsToTab("Root.Main", array(
 			NumericField::create('Number', 'Number of Coupons'),

@@ -11,6 +11,7 @@ class OrderCoupon extends Discount {
 	);
 
 	private static $searchable_fields = array(
+		"Title",
 		"Code"
 	);
 
@@ -57,21 +58,30 @@ class OrderCoupon extends Discount {
 		$fields = parent::getCMSFields();
 		$fields->addFieldsToTab(
 			"Root.Main", array(
-				TextField::create("Code")->setMaxLength(25),
-				NumericField::create("UseLimit", "Limit number of uses")
+				$codefield = TextField::create("Code")->setMaxLength(25),
+				$uselimitfield = NumericField::create("UseLimit", "Limit number of uses")
 						->setDescription("Note: 0 = unlimited")
 			), 
 			"Active"
 		);
+		if($this->owner->Code && $codefield){
+			$fields->replaceField("Code",
+				$codefield->performReadonlyTransformation()
+			);
+		}
+		if($this->owner->Code && $uselimitfield){
+			$fields->replaceField("UseLimit",
+				$uselimitfield->performReadonlyTransformation()
+			);
+		}
+
 		return $fields;
 	}
 
 	public function validate() {
 		$result = parent::validate();
-
 		$minLength = $this->config()->minimum_code_length;
 		$code = $this->getField('Code');
-
 		if($minLength && $code && strlen($code) < $minLength) {
 			$result->error(
 				_t(
