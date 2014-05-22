@@ -35,8 +35,8 @@ class OrderCouponTest extends SapphireTest{
 
 	public function testMinimumLengthCode() {
 		Config::inst()->update('OrderCoupon', 'minimum_code_length', 8);
-
-		$coupon = new OrderCoupon(array('Code' => '1234567'));
+		$coupon = new OrderCoupon();
+		$coupon->Code = '1234567';
 		$result = $coupon->validate();
 		$this->assertContains('INVALIDMINLENGTH', $result->codeList());
 
