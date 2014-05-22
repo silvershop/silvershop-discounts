@@ -82,7 +82,7 @@ class OrderCoupon extends Discount {
 		$result = parent::validate();
 		$minLength = $this->config()->minimum_code_length;
 		$code = $this->getField('Code');
-		if($minLength && $code && strlen($code) < $minLength) {
+		if($minLength && $code && $this->isChanged('Code') && strlen($code) < $minLength) {
 			$result->error(
 				_t(
 					'OrderCoupon.INVALIDMINLENGTH',

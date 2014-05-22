@@ -170,15 +170,15 @@ class Discount extends DataObject{
 		$fields->push(CheckboxField::create("HasBeenUsed"));
 		//add date range filtering
 		$fields->push(ToggleCompositeField::create("StartDate", "Start Date",array(
-			DateField::create("StartDateFrom", "From")
+			DateField::create("q[StartDateFrom]", "From")
 						->setConfig('showcalendar', true),
-			DateField::create("StartDateTo", "To")
+			DateField::create("q[StartDateTo]", "To")
 						->setConfig('showcalendar', true)
 		)));
 		$fields->push(ToggleCompositeField::create("EndDate", "End Date",array(
-			DateField::create("EndDateFrom", "From")
+			DateField::create("q[EndDateFrom]", "From")
 						->setConfig('showcalendar', true),
-			DateField::create("EndDateTo", "To")
+			DateField::create("q[EndDateTo]", "To")
 						->setConfig('showcalendar', true)
 		)));
 		//must be enabled in config, because some sites may have many products = slow load time, or memory maxes out
