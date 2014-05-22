@@ -140,13 +140,15 @@ OrderCoupon:
         Type: Amount
         Amount: 10
         Active: 1
-    ordersabove200:
-        Title: above 200
-        Code: ABOVE200
+    orders200plus:
+        Title: Orders 200 and more
+        Code: 200PLUS
         Type: Amount
         Amount: 35
         Active: 1
-        MinOrderValue: 200
+        ForItems: 0
+        ForCart: 1
+        MinOrderValue: 200     
     products20percentoff:
         Title: Selected products
         Code: PRODUCTS

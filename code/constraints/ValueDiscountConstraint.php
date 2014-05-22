@@ -19,7 +19,7 @@ class ValueDiscountConstraint extends DiscountConstraint{
 	public function filter(DataList $list) {
 		return $list->filterAny(array(
 			"MinOrderValue" => 0,
-			"MinOrderValue:LessThan" => $this->order->SubTotal()
+			"MinOrderValue:LessThanOrEqual" => $this->order->SubTotal()
 		));
 	}
 

@@ -108,10 +108,15 @@ class OrderCouponTest extends SapphireTest{
 	}
 
 	public function testMinOrderValue() {
-		$coupon = $this->objFromFixture("OrderCoupon", "ordersabove200");
+		$coupon = $this->objFromFixture("OrderCoupon", "orders200plus");
 		$context = array("CouponCode" => $coupon->Code);
 		$this->assertFalse($coupon->valid($this->cart, $context), "$8 order isn't enough");
+		$this->assertTrue($coupon->valid($this->othercart, $context), "$200 is enough");
 		$this->assertTrue($coupon->valid($this->placedorder, $context), "$500 order is enough");
+
+		$this->assertEquals(0, $this->calc($this->cart, $coupon));
+		$this->assertEquals(35, $this->calc($this->othercart, $coupon));
+		$this->assertEquals(35, $this->calc($this->placedorder, $coupon));
 	}
 
 	public function testUseLimit() {
