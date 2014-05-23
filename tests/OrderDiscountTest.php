@@ -73,6 +73,19 @@ class OrderDiscountTest extends SapphireTest{
 		$this->assertEquals(0, $discount->getUseCount());
 	}
 
+	public function testMembership() {
+		$discount = $this->makeDiscountActive("membership");
+		$member = $this->objFromFixture("Member", "joebloggs");
+		$discount->Members()->add($member);
+		$this->assertFalse($discount->valid($this->cart), "Invalid, because no member");
+		$context = array(
+			"Member" => $this->objFromFixture("Member", "bobjones")
+		);
+		$this->assertFalse($discount->valid($this->cart, $context), "Invalid because wrong member present");
+		$context = array("Member" => $member);
+		$this->assertTrue($discount->valid($this->cart, $context), "Valid because correct member present".$discount->getMessage());
+	}
+
 	protected function makeDiscountActive($fixturename) {
 		$discount = $this->objFromFixture("OrderDiscount", $fixturename);
 		$discount->Active = true;

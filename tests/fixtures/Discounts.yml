@@ -1,129 +1,134 @@
 OrderDiscount:
-  10percentoff:
-    Title: 10% off
-    Type: Percent
-    Percent: 0.10
-    Active: 0
-    StartDate: 2000-01-01 12:00:00
-    EndDate: 2200-01-01 12:00:00
-  5dollarsoff:
-      Title: $5 off
-      Type: Amount
-      Amount: 5
-      Active: 0
-  ordersabove200:
-      Title: $10 off
-      Type: Amount
-      Amount: 10
-      Active: 0
-      MinOrderValue: 200
-  products20percentoff:
-      Title: 20% off each selected products
-      Percent: 0.2
-      Active: 0
-  clothing5percent:
-      Title: 5% off clothing
-      Type: Percent
-      Percent: 0.05
-      Active: 0
-  zoned:
-      Title: Zoned Coupon
-      Type: Percent
-      Percent: 0.16
-      Active: 0
-  grouped:
-      Title: Special Members Coupon
-      Type: Percent
-      Percent: 0.9
-      Active: 0
-  expired:
-      Title: Save lots
-      Type: Percent
-      Percent: 0.8
-      Active: 1
-      StartDate:
-      EndDate: 12/12/1990
-  inactive:
-      Title: Not active
-      Type: Amount
-      Amount: 10
-      Active: 0
-  noncumulative:
-      Title: Non cumulative
-      Type: Percent
-      Percent: 0.1
-      Active: 0
-  freeshipping:
-      Title: Free shipping
-      ForShipping: 1
-      ForItems: 0
-      Percent: 1
-      Active: 0
-  10dollarsoffshipping:
-      Title: Save $10 off shipping
-      Type: Amount
-      Amount: 10
-      ForShipping: 1
-      ForItems: 0
-      Active: 0
-  30percentoffshipping:
-      Title: Save $10 off shipping
-      Percent: 0.3
-      ForShipping: 1
-      ForItems: 0
-      Active: 0
-  shippinganditems:
-      Title: Save $20 on order over $50
-      Type: Amount
-      Amount: 20
-      ForShipping: 1
-      ForItems: 1
-      Active: 0
-  limited:
-      Title: Limited Discount
-      Active: 0
-      UseLimit: 10
-  used:
-      Title: Used
-      Active: 1
-      UseLimit: 1
-  paymentused:
-      Title: Payment Used
-      Active: 1
-      UseLimit: 1
-  25dollarsoffcart:
-      Title: $25 off cart total
-      Amount: 25
-      Active: 0
-      ForItems: 0
-      ForCart: 1
-  50percentoffproductssubtotal:
-      Title: 50% off products subtotal
-      Percent: 0.5
-      Active: 0
-      ForItems: 0
-      ForCart: 1
-  200maxdiscount:
-      Title: $200 max Discount
-      Percent: 0.8
-      Active: 0
-      ForItems: 1
-      MaxAmount: 200
-  20maxdiscountamt:
-      Title: $20 max Discount (using amount)
-      Type: Amount
-      Amount: 10
-      Active: 0
-      ForItems: 1
-      MaxAmount: 20
-  40maxdiscountcart:
-      Title: $20 max Discount (using amount)
-      Type: Amount
-      Percent: 0.8
-      Active: 0
-      ForItems: 0
-      ForCart: 1
-      MaxAmount: 40
+    10percentoff:
+        Title: 10% off
+        Type: Percent
+        Percent: 0.10
+        Active: 0
+        StartDate: 2000-01-01 12:00:00
+        EndDate: 2200-01-01 12:00:00
+    5dollarsoff:
+        Title: $5 off
+        Type: Amount
+        Amount: 5
+        Active: 0
+    ordersabove200:
+        Title: $10 off
+        Type: Amount
+        Amount: 10
+        Active: 0
+        MinOrderValue: 200
+    products20percentoff:
+        Title: 20% off each selected products
+        Percent: 0.2
+        Active: 0
+    clothing5percent:
+        Title: 5% off clothing
+        Type: Percent
+        Percent: 0.05
+        Active: 0
+    zoned:
+        Title: Zoned Coupon
+        Type: Percent
+        Percent: 0.16
+        Active: 0
+    membership:
+        Title: Membership Coupon
+        Type: Amount
+        Amount: 1.33
+        Active: 0
+    grouped:
+        Title: Special Members Coupon
+        Type: Percent
+        Percent: 0.9
+        Active: 0
+    expired:
+        Title: Save lots
+        Type: Percent
+        Percent: 0.8
+        Active: 1
+        StartDate:
+        EndDate: 12/12/1990
+    inactive:
+        Title: Not active
+        Type: Amount
+        Amount: 10
+        Active: 0
+    noncumulative:
+        Title: Non cumulative
+        Type: Percent
+        Percent: 0.1
+        Active: 0
+    freeshipping:
+        Title: Free shipping
+        ForShipping: 1
+        ForItems: 0
+        Percent: 1
+        Active: 0
+    10dollarsoffshipping:
+        Title: Save $10 off shipping
+        Type: Amount
+        Amount: 10
+        ForShipping: 1
+        ForItems: 0
+        Active: 0
+    30percentoffshipping:
+        Title: Save $10 off shipping
+        Percent: 0.3
+        ForShipping: 1
+        ForItems: 0
+        Active: 0
+    shippinganditems:
+        Title: Save $20 on order over $50
+        Type: Amount
+        Amount: 20
+        ForShipping: 1
+        ForItems: 1
+        Active: 0
+    limited:
+        Title: Limited Discount
+        Active: 0
+        UseLimit: 10
+    used:
+        Title: Used
+        Active: 1
+        UseLimit: 1
+    paymentused:
+        Title: Payment Used
+        Active: 1
+        UseLimit: 1
+    25dollarsoffcart:
+        Title: $25 off cart total
+        Amount: 25
+        Active: 0
+        ForItems: 0
+        ForCart: 1
+    50percentoffproductssubtotal:
+        Title: 50% off products subtotal
+        Percent: 0.5
+        Active: 0
+        ForItems: 0
+        ForCart: 1
+    200maxdiscount:
+        Title: $200 max Discount
+        Percent: 0.8
+        Active: 0
+        ForItems: 1
+        MaxAmount: 200
+    20maxdiscountamt:
+        Title: $20 max Discount (using amount)
+        Type: Amount
+        Amount: 10
+        Active: 0
+        ForItems: 1
+        MaxAmount: 20
+    40maxdiscountcart:
+        Title: $20 max Discount (using amount)
+        Type: Amount
+        Percent: 0.8
+        Active: 0
+        ForItems: 0
+        ForCart: 1
+        MaxAmount: 40
 
 OrderCoupon:
     40percentoff:
@@ -252,14 +257,14 @@ Order:
         Status: Cart
 
 Product_OrderItem:
-  limitedcoupon_blah:
-    UnitPrice: 30
-    Quantity: 3
-    Order: =>Order.limitedcoupon
-  limitedcoupon_foo:
-    UnitPrice: 20
-    Quantity: 1
-    Order: =>Order.limitedcoupon
+    limitedcoupon_blah:
+        UnitPrice: 30
+        Quantity: 3
+        Order: =>Order.limitedcoupon
+    limitedcoupon_foo:
+        UnitPrice: 20
+        Quantity: 1
+        Order: =>Order.limitedcoupon
 
 OrderDiscountModifier:
     limited:
@@ -273,26 +278,26 @@ OrderDiscountModifier:
         Discounts: =>OrderDiscount.paymentused
 
 OrderDiscountModifier_Discounts:
-  limitedcouponmodifier:
-    DiscountAmount: 20
-    OrderDiscountModifierID: =>OrderDiscountModifier.limited
-    DiscountID: =>OrderCoupon.limited
-  limiteddiscountmodifier:
-    DiscountAmount: 40
-    OrderDiscountModifierID: =>OrderDiscountModifier.limited
-    DiscountID: =>OrderDiscount.limited
+    limitedcouponmodifier:
+        DiscountAmount: 20
+        OrderDiscountModifierID: =>OrderDiscountModifier.limited
+        DiscountID: =>OrderCoupon.limited
+    limiteddiscountmodifier:
+        DiscountAmount: 40
+        OrderDiscountModifierID: =>OrderDiscountModifier.limited
+        DiscountID: =>OrderDiscount.limited
 
 Product_OrderItem_Discounts:
-  limitedcouponitem:
-    DiscountAmount: 2
-    Product_OrderItemID: =>Product_OrderItem.limitedcoupon_blah
-    DiscountID:  =>OrderCoupon.limited
-  limiteddiscountitem:
-    DiscountAmount: 4
-    Product_OrderItemID: =>Product_OrderItem.limitedcoupon_blah
-    DiscountID:  =>OrderDiscount.limited
+    limitedcouponitem:
+        DiscountAmount: 2
+        Product_OrderItemID: =>Product_OrderItem.limitedcoupon_blah
+        DiscountID:  =>OrderCoupon.limited
+    limiteddiscountitem:
+        DiscountAmount: 4
+        Product_OrderItemID: =>Product_OrderItem.limitedcoupon_blah
+        DiscountID:  =>OrderDiscount.limited
 
 Payment:
-  paymentstarted_recent:
-    Created: #now
-    OrderID: =>Order.paymentstarted
+    paymentstarted_recent:
+        Created: #now
+        OrderID: =>Order.paymentstarted

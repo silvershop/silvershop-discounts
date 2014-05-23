@@ -17,6 +17,7 @@ Discount:
     - CategoriesDiscountConstraint
     - ProductsDiscountConstraint
     - GroupDiscountConstraint
+    - MembershipDiscountConstraint
     - DatetimeDiscountConstraint
     - ValueDiscountConstraint
     - UseLimitDiscountConstraint
