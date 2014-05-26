@@ -1,0 +1,19 @@
+Product:
+  producta:
+    Title: ProductA
+  productb:
+    Title: ProductB
+
+Member:
+  joe:
+    FirstName: Joe
+  hubert:
+    FirstName: Hubert
+
+PartialUseDiscount:
+  partial:
+    Amount: 90
+  constrained:
+    Amount: 50
+    Products: =>Product.producta,=>Product.productb
+    Members: =>Member.joe

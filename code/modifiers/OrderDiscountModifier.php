@@ -29,7 +29,9 @@ class OrderDiscountModifier extends OrderModifier{
 		if($code = Session::get("cart.couponcode")){
 			$context['CouponCode'] = $code;
 		}
-		$calculator = new Shop\Discount\Calculator($this->Order(), $context);
+		$order = $this->Order();
+		$order->extend("updateDiscountContext", $context);
+		$calculator = new Shop\Discount\Calculator($order, $context);
 		return $calculator->calculate();
 	}
 

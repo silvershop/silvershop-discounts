@@ -148,8 +148,7 @@ class Discount extends DataObject{
 				)
 			));
 		}
-
-		if($this->Type && $this->{$this->Type}){
+		if($this->Type && (double)$this->{$this->Type}){
 			$valuefield = $this->Type == "Percent" ? $percentfield : $amountfield;
 			$fields->removeByName("Type");
 			$fields->insertAfter($valuefield, "Active");
