@@ -15,6 +15,12 @@ class CalculatorTest extends SapphireTest{
 
 	function setUp(){
 		parent::setUp();
+		ShopTest::setConfiguration();
+
+		Order::config()->modifiers = array(
+			"OrderDiscountModifier"
+		);
+
 		$this->socks = $this->objFromFixture("Product", "socks");
 		$this->socks->publish("Stage", "Live");
 		$this->tshirt = $this->objFromFixture("Product", "tshirt");
@@ -231,6 +237,17 @@ class CalculatorTest extends SapphireTest{
 		$this->assertEquals(44, $discount->getSavingsTotal());
 		$discount = $this->objFromFixture("OrderCoupon", "limited");
 		$this->assertEquals(22, $discount->getSavingsTotal());
+	}
+
+	function testProcessDiscountedOrder() {
+		$discount = $this->objFromFixture("OrderDiscount", "25dollarsoffcart");
+		$discount->Active = 1;
+		$discount->write();
+		$cart = $this->objFromFixture("Order", "payablecart");
+		$this->assertEquals(16, $cart->calculate());
+		$processor = new OrderProcessor($cart);
+		$processor->placeOrder();
+		$this->assertEquals(16, Order::get()->byID($cart->ID)->GrandTotal());
 	}
 	
 }

@@ -19,13 +19,6 @@ class OrderDiscountModifier extends OrderModifier{
 	private static $singular_name = "Discount";
 	private static $plural_name = "Discounts";
 
-	/**
-	 * @see OrderModifier::required()
-	 */
-	public function required() {
-		return false;
-	}
-
 	public function value($incoming) {
 		$this->Amount = $this->getDiscount();
 		return $this->Amount;
