@@ -324,7 +324,7 @@ class Discount extends DataObject{
 			$orders = $orders->leftJoin("Payment", "\"Payment\".\"OrderID\" = \"Order\".\"ID\"")
 				->where(
 					"(\"Order\".\"Paid\" IS NOT NULL) OR ".
-					"(\"Payment\".\"Created\" > '$timeouttime')"
+					"(\"Payment\".\"Created\" > '$timeouttime' AND \"Payment\".\"Status\" NOT IN('Refunded', 'Void'))"
 				);
 		}else{
 			$orders = $orders->where("\"Order\".\"Paid\" IS NOT NULL");
