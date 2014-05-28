@@ -14,6 +14,9 @@ class PartialUseDiscountTest extends SapphireTest{
 		$this->assertNull($discount->createRemainder(90));
 		$remainderdiscount = $discount->createRemainder(40);
 		$this->assertEquals(50, $remainderdiscount->Amount, "Subtract $40 from $90 discount");
+
+		$discount->Active = false;
+		$discount->write();
 		$this->assertNull($discount->createRemainder(30), "Cannot recreate remainder");
 
 		//TODO: check basic relationships match, e.g. group

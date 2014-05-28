@@ -41,9 +41,6 @@ class PartialUseDiscount extends Discount{
 			$remainder->Code = "";
 			$remainder->write();
 		}
-		//deactivate this
-		$this->Active = false;
-		$this->write();
 
 		return $remainder;
 	}

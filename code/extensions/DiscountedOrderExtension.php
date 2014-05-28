@@ -24,6 +24,9 @@ class DiscountedOrderExtension extends DataExtension{
 			//only bother creating a remainder discount, if savings have been made
 			if($savings = $discount->getSavingsForOrder($this->owner)){
 				$discount->createRemainder($savings);
+				//deactivate discounts
+				$discount->Active = false;
+				$discount->write();
 			}
 		}
 	}
