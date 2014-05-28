@@ -14,7 +14,8 @@ class PartialUseDiscount extends Discount{
 		'Type' => 'Amount',
 		'ForCart' => 1,
 		'ForItems' => 0,
-		'ForShipping' => 0
+		'ForShipping' => 0,
+		'UseLimit' => 1
 	);
 
 	/**
@@ -24,18 +25,22 @@ class PartialUseDiscount extends Discount{
 	 * @return PartialUseDiscount  new 'remainder' discount
 	 */
 	function createRemainder($used) {
-		//don't produce remainder if total amount is used up
-		if(!$this->Active || $used >= $this->Amount || $this->Child()->exists()){
+		//don't recreate or do stuff with inactive discount
+		if(!$this->Active || $this->Child()->exists()){
 			return null;
 		}
-		//duplicate dataobject and update accordingly
-		$remainder = $this->duplicate();
-		//TODO: there may be some relationships that shouldn't be copied?
-		$remainder->Amount = $this->Amount - $used;
-		$remainder->ParentID = $this->ID;
-		//remove old code
-		$remainder->Code = "";
-		$remainder->write();
+		$remainder = null;
+		//only create remainder if used less than amount
+		if($used < $this->Amount){
+			//duplicate dataobject and update accordingly
+			$remainder = $this->duplicate();
+			//TODO: there may be some relationships that shouldn't be copied?
+			$remainder->Amount = $this->Amount - $used;
+			$remainder->ParentID = $this->ID;
+			//unset old code
+			$remainder->Code = "";
+			$remainder->write();
+		}
 		//deactivate this
 		$this->Active = false;
 		$this->write();

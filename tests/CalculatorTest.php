@@ -239,6 +239,16 @@ class CalculatorTest extends SapphireTest{
 		$this->assertEquals(22, $discount->getSavingsTotal());
 	}
 
+	function testOrderSavingsTotal() {
+		$discount = $this->objFromFixture("OrderDiscount", "limited");
+		$order = $this->objFromFixture("Order", "limitedcoupon");
+		$this->assertEquals(44, $discount->getSavingsforOrder($order));
+
+		$discount = $this->objFromFixture("OrderCoupon", "limited");
+		$order = $this->objFromFixture("Order", "limitedcoupon");
+		$this->assertEquals(22, $discount->getSavingsforOrder($order));
+	}
+
 	function testProcessDiscountedOrder() {
 		$discount = $this->objFromFixture("OrderDiscount", "25dollarsoffcart");
 		$discount->Active = 1;

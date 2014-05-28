@@ -350,6 +350,21 @@ class Discount extends DataObject{
 		return $itemsavings + $modifiersavings;
 	}
 
+	public function getSavingsForOrder(Order $order) {
+		$itemsavings = OrderAttribute::get()
+			->innerJoin("Product_OrderItem_Discounts", "OrderAttribute.ID = Product_OrderItem_Discounts.Product_OrderItemID")
+			->filter("Product_OrderItem_Discounts.DiscountID", $this->ID)
+			->filter("OrderAttribute.OrderID", $order->ID)
+			->sum("DiscountAmount");
+		$modifiersavings = OrderAttribute::get()
+			->innerJoin("OrderDiscountModifier_Discounts", "OrderAttribute.ID = OrderDiscountModifier_Discounts.OrderDiscountModifierID")
+			->filter("OrderDiscountModifier_Discounts.DiscountID", $this->ID)
+			->filter("OrderAttribute.OrderID", $order->ID)
+			->sum("DiscountAmount");	
+
+		return $itemsavings + $modifiersavings;
+	}
+
 
 	public function canView($member = null) {
 		return true;

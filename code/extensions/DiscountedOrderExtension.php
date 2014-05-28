@@ -16,4 +16,16 @@ class DiscountedOrderExtension extends DataExtension{
 			->filter("OrderAttribute.OrderID", $this->owner->ID);
 	}
 
+	/**
+	 * Remove any partial discounts
+	 */
+	function onPlaceOrder() {
+		foreach($this->owner->Discounts()->filter("ClassName", "PartialUseDiscount") as $discount) {
+			//only bother creating a remainder discount, if savings have been made
+			if($savings = $discount->getSavingsForOrder($this->owner)){
+				$discount->createRemainder($savings);
+			}
+		}
+	}
+
 }
