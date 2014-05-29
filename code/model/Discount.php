@@ -350,14 +350,20 @@ class Discount extends DataObject{
 		return $itemsavings + $modifiersavings;
 	}
 
+	/**
+	 * Get the amount saved on the given order with this discount.
+	 * 
+	 * @param  Order  $order order to match against
+	 * @return double  savings amount
+	 */
 	public function getSavingsForOrder(Order $order) {
 		$itemsavings = OrderAttribute::get()
-			->innerJoin("Product_OrderItem_Discounts", "OrderAttribute.ID = Product_OrderItem_Discounts.Product_OrderItemID")
+			->innerJoin("Product_OrderItem_Discounts", "\"OrderAttribute\".\"ID\" = \"Product_OrderItem_Discounts\".\"Product_OrderItemID\"")
 			->filter("Product_OrderItem_Discounts.DiscountID", $this->ID)
 			->filter("OrderAttribute.OrderID", $order->ID)
 			->sum("DiscountAmount");
 		$modifiersavings = OrderAttribute::get()
-			->innerJoin("OrderDiscountModifier_Discounts", "OrderAttribute.ID = OrderDiscountModifier_Discounts.OrderDiscountModifierID")
+			->innerJoin("OrderDiscountModifier_Discounts", "\"OrderAttribute\".\"ID\" = \"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\"")
 			->filter("OrderDiscountModifier_Discounts.DiscountID", $this->ID)
 			->filter("OrderAttribute.OrderID", $order->ID)
 			->sum("DiscountAmount");	
