@@ -71,6 +71,11 @@ class OrderDiscountTest extends SapphireTest{
 		$payment->Created = date('Y-m-d H:i:s', strtotime("-2 days"));
 		$payment->write();
 		$this->assertEquals(0, $discount->getUseCount());
+		//failed payments should be ignored
+		$payment->Created = date('Y-m-d H:i:s', strtotime("-20 minutes"));
+		$payment->Status = 'Void';
+		$payment->write();
+		$this->assertEquals(0, $discount->getUseCount());
 	}
 
 	public function testMembership() {

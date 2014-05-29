@@ -306,6 +306,9 @@ class Discount extends DataObject{
 
 	/**
 	 * Get the orders that this discount has been used on.
+	 * 
+	 * @param $includeunpaid include orders where the payment process has started
+	 * less than 'unpaid_use_timeout' minutes ago.
 	 * @return DataList list of orders
 	 */
 	public function getAppliedOrders($includeunpaid = false) {
