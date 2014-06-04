@@ -15,11 +15,15 @@ class SpecificPriceTest extends SapphireTest{
 	function testProductPrice() {
 		$product = $this->objFromFixture("Product", "raspberrypi");
 		$this->assertEquals(45, $product->sellingPrice());
+		$this->assertTrue($product->IsReduced());
+		$this->assertEquals(5, $product->getTotalReduction());
 	}
 
 	function testProductVariationPrice() {
 		$variation = $this->objFromFixture("ProductVariation", "robot_30gb");
 		$this->assertEquals(90, $variation->sellingPrice());
+		$this->assertTrue($variation->IsReduced());
+		$this->assertEquals(10, $variation->getTotalReduction());
 	}
 
 }
