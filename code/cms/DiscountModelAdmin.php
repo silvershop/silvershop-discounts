@@ -12,7 +12,8 @@ class DiscountModelAdmin extends ModelAdmin {
 
 	private static $managed_models = array(
 		"OrderCoupon",
-		"OrderDiscount"
+		"OrderDiscount",
+		"PartialUseDiscount"
 	);
 	public static $model_importers = array();
 
