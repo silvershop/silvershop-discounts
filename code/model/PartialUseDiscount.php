@@ -47,7 +47,13 @@ class PartialUseDiscount extends Discount{
 		//only create remainder if used less than amount
 		if($used < $this->Amount){
 			//duplicate dataobject and update accordingly
-			$remainder = $this->duplicate();
+			$remainder = $this->duplicate(false);
+			$remainder->write();
+			//delete any relationships that might be sitting in DB for whatever reason
+			$remainder->deleteRelationships();
+			//create proper new relationships
+			$this->duplicateManyManyRelations($this, $remainder);
+
 			//TODO: there may be some relationships that shouldn't be copied?
 			$remainder->Amount = $this->Amount - $used;
 			$remainder->ParentID = $this->ID;
@@ -69,6 +75,16 @@ class PartialUseDiscount extends Discount{
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Delete complex relations
+	 */
+	protected function deleteRelationships() {
+		if ($this->many_many()) foreach($this->many_many() as $name => $type) {
+			//many_many include belongs_many_many
+			$this->{$name}()->removeAll();
+		}
 	}
 
 }
