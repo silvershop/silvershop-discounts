@@ -40,6 +40,7 @@ class Calculator{
 		foreach($this->discounts as $discount){
 			foreach($this->getActionsForDiscount($items, $discount) as $action){
 				$disamt = $action->perform();
+				//apply cart-level discounts
 				if(!$action->isForItems()){
 					$total += $disamt;
 					if($disamt && $this->linkdiscounts){
@@ -56,7 +57,7 @@ class Calculator{
 				break;
 			}
 		}
-		//add up best item discounts
+		//add up best item-level discounts
 		foreach($items as $iteminfo){
 			$discountamount = $iteminfo->getBestDiscount();
 			//prevent discounting more than original price

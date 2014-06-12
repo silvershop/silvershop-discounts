@@ -39,7 +39,6 @@ class CategoriesDiscountConstraint extends DiscountConstraint{
 				break;
 			}
 		}
-
 		if(!$incart){
 			$this->error("The required products (categories) are not in the cart.");
 		}
@@ -47,17 +46,27 @@ class CategoriesDiscountConstraint extends DiscountConstraint{
 		return $incart;
 	}
 
+	/**
+	 * This function is used by ItemDiscountAction, and the check function above.
+	 */
 	public function itemMatchesCategoryCriteria(OrderItem $item, Discount $discount) {
-		$categories = $discount->Categories();
-		if($categories->exists()){
-			$itemproduct = $item->Product(true); //true forces the current version of product to be retrieved.
-			if(!$itemproduct || !$categories->find('ID', $itemproduct->ParentID)){
+		$discountcategoryids = $discount->Categories()->getIDList();
+		if(empty($discountcategoryids)){
 
-				return false;
-			}
+			return true;
 		}
+		//get category ids from buyable
+		$buyable = $item->Buyable();
+		if(!method_exists($buyable, "getCategoryIDs")){
 
-		return true;
+			return false;
+		}
+		$ids = array_intersect(
+			$buyable->getCategoryIDs(),
+			$discountcategoryids
+		);
+
+		return !empty($ids);
 	}
 
 }
