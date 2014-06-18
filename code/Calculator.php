@@ -6,21 +6,13 @@ class Calculator{
 	
 	protected $order;
 	protected $discounts;
-	protected $linkdiscounts = true;
+
+	protected $log = array();
 
 	public function __construct(\Order $order, $context = array()) {
 		$this->order = $order;
 		//get qualifying discounts for this order
 		$this->discounts = \Discount::get_matching($this->order, $context);
-	}
-
-	/**
-	 * Specify whether the calculator should link discounts to order/items
-	 * during calculation.
-	 * @param boolean $dolink
-	 */
-	public function setLinkDiscounts($dolink = true) {
-		$this->linkdiscounts = $dolink;
 	}
 
 	/**
@@ -30,85 +22,77 @@ class Calculator{
 	 */
 	public function calculate() {
 		$total = 0;
-		$items = $this->createPriceInfoList($this->order->Items());
+		//info items wrap OrderItems, see ItemPriceInfo
+		$infoitems = $this->createPriceInfoList($this->order->Items());
 		$discountmodifier = $this->order->getModifier("OrderDiscountModifier", true);
-		if($this->linkdiscounts){
-			//clear any existing linked discounts
-			$discountmodifier->Discounts()->removeAll();
-		}
+		
+		//clear any existing linked discounts
+		$discountmodifier->Discounts()->removeAll();
+		
 		//loop through discounts to apply
 		foreach($this->discounts as $discount){
-			foreach($this->getActionsForDiscount($items, $discount) as $action){
-				$disamt = $action->perform();
+			foreach($this->getActionsForDiscount($infoitems, $discount) as $action){
+				$amount = $action->perform();
 				//apply cart-level discounts
 				if(!$action->isForItems()){
-					$total += $disamt;
-					if($disamt && $this->linkdiscounts){
+					$total += $amount;
+					if($amount){
 						$discountmodifier->Discounts()->add(
 							$discount,
 							array(
-								'DiscountAmount' => $disamt
+								'DiscountAmount' => $amount
 							)
 						);
+						$this->logDiscountAmount("Cart", $amount, $discount);
 					}
 				}
 			}
-			if($discount->Terminating){
-				break;
-			}
 		}
 		//add up best item-level discounts
-		foreach($items as $iteminfo){
-			$discountamount = $iteminfo->getBestDiscount();
+		foreach($infoitems as $infoitem){
+			$bestadjustment = $infoitem->getBestAdjustment();
+			if(!$bestadjustment){
+				continue;
+			}
+			$amount = $bestadjustment->getValue();
 			//prevent discounting more than original price
-			if($discountamount > $iteminfo->getOriginalTotal()){
-				$discountamount = $iteminfo->getOriginalTotal();
+			if($amount > $infoitem->getOriginalTotal()){
+				$amount = $infoitem->getOriginalTotal();
 			}
-			$total += $discountamount;
-			//link up selected discounts
-			if($this->linkdiscounts){
-				//remove any existing linked discounts
-				$iteminfo->getItem()->Discounts()->removeAll();
-				if($bestadjustment = $iteminfo->getBestAdjustment()){
-					$iteminfo->getItem()->Discounts()->add(
-						$bestadjustment->getAdjuster(),
-						array(
-							'DiscountAmount' => $bestadjustment->getValue()
-						)
-					);
-				}
-			}
+			$total += $amount;
+			//remove any existing linked discounts
+			$infoitem->getItem()->Discounts()->removeAll();
+			$infoitem->getItem()->Discounts()->add(
+				$bestadjustment->getAdjuster(),
+				array(
+					'DiscountAmount' => $amount
+				)
+			);
+			$this->logDiscountAmount("Item", $amount, $bestadjustment->getAdjuster());
 		}
 
 		return $total;
 	}
 
-	protected function getActionsForDiscount($items, $discount) {
+	/**
+	 * Get the actions from a given discount
+	 */
+	protected function getActionsForDiscount($infoitems, $discount) {
 		$actions = array();
 		//get item-level actions
 		if($discount->ForItems){
 			if($discount->Type == "Percent"){
-				$actions[] = new \ItemPercentDiscount($items, $discount);
+				$actions[] = new \ItemPercentDiscount($infoitems, $discount);
 			}else{
-				$actions[] = new \ItemFixedDiscount($items, $discount);
+				$actions[] = new \ItemFixedDiscount($infoitems, $discount);
 			}
 		}
 		//get cart-level actions
 		if($discount->ForCart){
-			$subtotal = $this->order->SubTotal();
-			//TODO: this stuff should probably be moved into the action
-			$items = $this->order->Items();
-			//reduce subtotal to selected products, if necessary
-			$products = $discount->Products();
-			if($products->exists()){
-				$newsubtotal = 0;
-				$items = $items
-					->leftJoin("Product_OrderItem", "\"Product_OrderItem\".\"ID\" = \"OrderAttribute\".\"ID\"")
-					->filter("ProductID", $products->map('ID', 'ID')->toArray());
-				$subtotal = $items->SubTotal();
-			}
-			
-			$actions[] = new \SubtotalDiscountAction($subtotal, $discount);
+			$actions[] = new \SubtotalDiscountAction(
+				$this->getDiscountableAmount($discount),
+				$discount
+			);
 		}
 		//get shipping actions
 		if($discount->ForShipping && class_exists('ShippingFrameworkModifier') &&
@@ -120,12 +104,50 @@ class Calculator{
 		return $actions;
 	}
 
+	/**
+	 * Work out the total discountable amount for a given discount
+	 */
+	protected function getDiscountableAmount($discount){
+		$amount = 0;
+		foreach($this->order->Items() as $item){
+			if(
+				$discount->itemMatchesCategoryCriteria($item, $discount) &&
+				$discount->itemMatchesProductCriteria($item, $discount)
+			){
+				$amount += method_exists($item, "DiscountableAmount") ?
+							$item->DiscountableAmount() :
+							$item->Total();
+			}
+		}
+
+		return $amount;
+	}
+
 	protected function createPriceInfoList(\DataList $list) {
 		$output = array();
 		foreach($list as $item){
 			$output[] = new ItemPriceInfo($item);
 		}
 		return $output;
+	}
+
+	/**
+	 * Store details about discounts for loggging / debubgging
+	 * @param  [type]   $level    [description]
+	 * @param  [type]   $amount   [description]
+	 * @param  Discount $discount [description]
+	 * @return [type]             [description]
+	 */
+	public function logDiscountAmount($level, $amount, \Discount $discount) {
+		$this->log[] = array(
+			"Level" => $level,
+			"Amount" => $amount,
+			"Discount" => $discount->Title
+		);
+	}
+
+	public function getLog(){
+		return $this->log;
 	}
 
 }

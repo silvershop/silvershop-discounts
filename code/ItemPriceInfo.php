@@ -13,7 +13,11 @@ class ItemPriceInfo extends PriceInfo{
 	public function __construct(\OrderItem $item) {
 		$this->item = $item;
 		$this->quantity = $item->Quantity;
-		parent::__construct($item->UnitPrice());
+		$originalprice = method_exists($item, "DiscountableAmount") ?
+							$item->DiscountableAmount() :
+							$item->UnitPrice();
+
+		parent::__construct($originalprice);
 	}
 
 	public function getItem(){
