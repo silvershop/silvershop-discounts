@@ -3,7 +3,6 @@
 class CouponFormTest extends FunctionalTest{
 
 	protected static $fixture_file = array(
-		'shop_discount/tests/fixtures/Discounts.yml',
 		'shop/tests/fixtures/shop.yml'
 	);
 
@@ -15,6 +14,14 @@ class CouponFormTest extends FunctionalTest{
 	}
 	
 	function testCouponForm() {
+
+		OrderCoupon::create(array(
+			"Title" => "40% off each item",
+			"Code" => "5B97AA9D75",
+			"Type" => "Percent",
+			"Percent" => 0.40
+		))->write();
+
 		$checkoutpage = $this->objFromFixture("CheckoutPage", "checkout");
 		$checkoutpage->publish("Stage", "Live");
 		$controller = new CheckoutPage_Controller($checkoutpage);

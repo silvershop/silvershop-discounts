@@ -9,10 +9,7 @@ use Shop\Discount\Calculator;
 class OrderCouponTest extends SapphireTest{
 
 	protected static $fixture_file = array(
-		'shop/tests/fixtures/shop.yml',
-		'shop_discount/tests/fixtures/Discounts.yml',
-		'shop/tests/fixtures/Zones.yml',
-		'shop/tests/fixtures/Addresses.yml'
+		'shop/tests/fixtures/shop.yml'
 	);
 
 	public function setUp() {
@@ -56,15 +53,31 @@ class OrderCouponTest extends SapphireTest{
 	}
 
 	public function testPercent() {
-		$coupon = $this->objFromFixture('OrderCoupon', '40percentoff');
+		$coupon = OrderCoupon::create(array(
+			"Title" => "40% off each item",
+			"Code" => "5B97AA9D75",
+			"Type" => "Percent",
+			"Percent" => 0.40,
+			"StartDate" => "2000-01-01 12:00:00",
+			"EndDate" => "2200-01-01 12:00:00"
+		));
+		$coupon->write();
 		$context = array("CouponCode" => $coupon->Code);
 		$this->assertTrue($coupon->valid($this->cart, $context), $coupon->getMessage());
 		$this->assertEquals(4, $coupon->getDiscountValue(10), "40% off value");
 		$this->assertEquals(200, $this->calc($this->placedorder, $coupon), "40% off order");
 	}
-
+	
 	public function testAmount() {
-		$coupon = $this->objFromFixture('OrderCoupon', '10dollarsoff');
+		$coupon = OrderCoupon::create(array(
+			"Title" => "$10 off each item",
+			"Code" => "TENDOLLARSOFF",
+			"Type" => "Amount",
+			"Amount" => 10,
+			"Active" => 1
+		));
+		$coupon->write();
+		
 		$context = array("CouponCode" => $coupon->Code);
 		$this->assertTrue($coupon->valid($this->cart, $context), $coupon->getMessage());
 		$this->assertEquals($coupon->getDiscountValue(1000), 10, "$10 off fixed value");
@@ -72,94 +85,30 @@ class OrderCouponTest extends SapphireTest{
 		//TODO: test amount that is greater than item value
 	}
 
-	public function testProductsDiscount() {
-		$coupon = $this->objFromFixture("OrderCoupon", "products20percentoff");
-		$context = array("CouponCode" => $coupon->Code);
-		//add product to coupon product list
-		$coupon->Products()->add($this->objFromFixture("Product", "tshirt"));
-		$this->assertEquals($this->calc($this->placedorder, $coupon), 20);
-		//add another product to coupon product list
-		$coupon->Products()->add($this->objFromFixture("Product", "mp3player"));
-		$this->assertEquals($this->calc($this->placedorder, $coupon), 100);
-	}
-
-	public function testCategoryDiscount() {
-		$coupon = $this->objFromFixture("OrderCoupon", "clothing5percent");
-		$coupon->Categories()->add($this->objFromFixture("ProductCategory", "clothing"));
-		$context = array("CouponCode" => $coupon->Code);
-		$this->assertTrue($coupon->valid($this->cart, $context), "Order contains a t-shirt. ".$coupon->getMessage());
-		$this->assertEquals($this->calc($this->cart, $coupon), 0.4, "5% discount for socks in cart");
-		$this->assertFalse($coupon->valid($this->othercart, $context), "Order does not contain clothing");
-		$this->assertEquals($this->calc($this->othercart, $coupon), 0, "No discount, because no product in category");
-	}
-
-	public function testZoneDiscount() {
-		$coupon = $this->objFromFixture('OrderCoupon', 'zoned');
-		$coupon->Zones()->add($this->objFromFixture('Zone', 'transtasman'));
-		$coupon->Zones()->add($this->objFromFixture('Zone', 'special'));
-		$address = $this->objFromFixture("Address", 'bukhp193eq');
-		$context = array("CouponCode" => $coupon->Code);
-		$this->cart->ShippingAddressID = $address->ID; //set address
-		$this->assertFalse($coupon->valid($this->cart, $context), "check order is out of zone");
-		$address = $this->objFromFixture("Address", 'sau5024');
-		$this->othercart->ShippingAddressID = $address->ID; //set address
-		$valid = $coupon->valid($this->othercart, $context);
-		$this->assertTrue($valid, "check order is in zone");
-	}
-
-	public function testMinOrderValue() {
-		$coupon = $this->objFromFixture("OrderCoupon", "orders200plus");
-		$context = array("CouponCode" => $coupon->Code);
-		$this->assertFalse($coupon->valid($this->cart, $context), "$8 order isn't enough");
-		$this->assertTrue($coupon->valid($this->othercart, $context), "$200 is enough");
-		$this->assertTrue($coupon->valid($this->placedorder, $context), "$500 order is enough");
-
-		$this->assertEquals(0, $this->calc($this->cart, $coupon));
-		$this->assertEquals(35, $this->calc($this->othercart, $coupon));
-		$this->assertEquals(35, $this->calc($this->placedorder, $coupon));
-	}
-
-	public function testUseLimit() {
-		$coupon = $this->objFromFixture("OrderCoupon", "used");
-		$context = array("CouponCode" => $coupon->Code);
-		$this->assertFalse($coupon->valid($this->cart, $context), "Coupon is already used");
-		$coupon = $this->objFromFixture("OrderCoupon", "limited");
-		$context = array("CouponCode" => $coupon->Code);
-		$this->assertTrue($coupon->valid($this->cart, $context), "Coupon has been used, but can continue to be used");
-	}
-
-	public function testMemberGroup() {
-		$group = $this->objFromFixture("Group", "resellers");
-		$coupon = $this->objFromFixture("OrderCoupon", "grouped");
-		$coupon->GroupID = $group->ID;
-		$coupon->write();
-		$context = array("CouponCode" => $coupon->Code);
-		$this->assertFalse($coupon->valid($this->cart, $context), "Invalid for memberless order");
-		$context = array(
-			"CouponCode" => $coupon->Code,
-			"Member" => $this->objFromFixture("Member", "bobjones")
-		);
-		$this->assertTrue($coupon->valid($this->othercart, $context), "Valid because member is in resellers group");
-	}
-
 	public function testInactiveCoupon() {
-		$inactivecoupon = $this->objFromFixture('OrderCoupon', 'inactivecoupon');
+		$inactivecoupon = OrderCoupon::create(array(
+ 			"Title" => "Not active",
+ 			"Code" => "EE891574D6",
+ 			"Type" => "Amount",
+ 			"Amount" => 10,
+ 			"Active" => 0
+		));
+		$inactivecoupon->write();
 		$context = array("CouponCode" => $inactivecoupon->Code);
 		$this->assertFalse($inactivecoupon->valid($this->cart, $context), "Coupon is not set to active");
 	}
 
-	public function testDates() {
-		$unreleasedcoupon = $this->objFromFixture('OrderCoupon', 'unreleasedcoupon');
-		$context = array("CouponCode" => $unreleasedcoupon->Code);
-		$this->assertFalse($unreleasedcoupon->valid($this->cart, $context), "Coupon is un released (start date has not arrived)");
-		$expiredcoupon = $this->objFromFixture('OrderCoupon', 'expiredcoupon');
-		$context = array("CouponCode" => $expiredcoupon->Code);
-		$this->assertFalse($expiredcoupon->valid($this->cart, $context), "Coupon has expired (end date has passed)");
-	}
-
 	public function testFreeShipping() {
 		if (!class_exists('ShippingFrameworkModifier')) return;
-		$coupon = $this->objFromFixture("OrderCoupon", "freeshipping");
+		$coupon = OrderCoupon::create(array(
+			"Title" => "Free shipping",
+			"Code" => "FREESHIPPING",
+			"ForShipping" => 1,
+			"ForItems" => 0,
+			"Percent" => 1
+		));
+		$coupon->write();
+
 		$order = $this->cart;
 		$shipping = new ShippingFrameworkModifier(array(
 			'Amount' => 12.34,
@@ -175,7 +124,15 @@ class OrderCouponTest extends SapphireTest{
 	public function testShippingAmountDiscount() {
 		if (!class_exists('ShippingFrameworkModifier')) return;
 		$order = $this->cart;
-		$coupon = $this->objFromFixture("OrderCoupon", "10dollarsoffshipping");
+		$coupon = OrderCoupon::create(array(
+			"Title" => "Free shipping",
+			"Code" => "FREESHIPPING",
+			"ForShipping" => 1,
+			"ForItems" => 0,
+			"Percent" => 1
+		));
+		$coupon->write();
+
 		$shipping = new ShippingFrameworkModifier(array(
 			'Amount' => 30,
 			'OrderID' => $order->ID
@@ -190,7 +147,15 @@ class OrderCouponTest extends SapphireTest{
 	public function testShippingPercentDiscount() {
 		if (!class_exists('ShippingFrameworkModifier')) return;
 		$order = $this->othercart;
-		$coupon = $this->objFromFixture("OrderCoupon", "30percentoffshipping");
+		$coupon = OrderCoupon::create(array(
+			"Title" => "Save 30% off shipping",
+			"Code" => "30PERCENTSHIPPING",
+			"Percent" => 0.3,
+			"ForShipping" => 1,
+			"ForItems" => 0
+		));
+		$coupon->write();
+
 		$shipping = new ShippingFrameworkModifier(array(
 			'Amount' => 10,
 			'OrderID' => $order->ID
@@ -206,7 +171,15 @@ class OrderCouponTest extends SapphireTest{
 		if (!class_exists('ShippingFrameworkModifier')) return;
 		//test an edge case, where a discount is for orders, and shipping.
 		$order = $this->othercart; //$200
-		$coupon = $this->objFromFixture("OrderCoupon", "shippinganditems");
+		$coupon = OrderCoupon::create(array(
+			"Title" => "Save $20 on order",
+			"Code" => "SAVE20",
+			"Amount" => 20,
+			"ForShipping" => 1,
+			"ForItems" => 1
+		));
+		$coupon->write();
+
 		$shipping = new ShippingFrameworkModifier(array(
 			'Amount' => 30,
 			'OrderID' => $order->ID
