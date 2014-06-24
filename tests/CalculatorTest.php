@@ -83,50 +83,6 @@ class CalculatorTest extends SapphireTest{
 		$this->assertEquals(0.8, $calculator->calculate(), "10% of $8");
 	}
 
-	function testProductDiscount() {
-		$discount = OrderDiscount::create(array(
-			"Title" => "20% off each selected products",
-			"Percent" => 0.2,
-			"Active" => 1,
-			"ExactProducts" => 1
-		));
-		$discount->write();
-		//selected products
-		$discount->Products()->add($this->socks);
-		$discount->Products()->add($this->tshirt);
-		//should work for megacart
-		//20 * socks($8) = 160 ...20% off each = 32
-		//10 * tshirt($25) = 250 ..20% off each  = 50
-		//2 * mp3player($200) = 400 ..nothing off = 0
-		//total discount: 82
-		$calculator = new Calculator($this->megacart);
-		$this->assertEquals(82, $calculator->calculate(), "20% off selected products");
-		//no discount for cart
-		$calculator = new Calculator($this->cart);
-		$this->assertEquals(0, $calculator->calculate(), "20% off selected products");		
-		//no discount for modifiedcart
-		$calculator = new Calculator($this->modifiedcart);
-		$this->assertEquals(0, $calculator->calculate(), "20% off selected products");
-		
-		//partial match
-		$discount->ExactProducts = 0;
-		$discount->write();
-		//total discount: 82
-		$calculator = new Calculator($this->megacart);
-		$this->assertEquals(82, $calculator->calculate(), "20% off selected products");
-		//discount for cart: 32 (just socks)
-		$calculator = new Calculator($this->cart);
-		$this->assertEquals(1.6, $calculator->calculate(), "20% off selected products");			
-		//no discount for modified cart
-		$calculator = new Calculator($this->modifiedcart);
-		$this->assertEquals(0, $calculator->calculate(), "20% off selected products");
-
-		//get individual item discounts
-		$discount = $this->objFromFixture("Product_OrderItem", "megacart_socks")
-						->Discounts()->first();
-		$this->assertEquals(32, $discount->DiscountAmount);
-	}
-
 	function testZeroOrderDiscount() {
 		OrderDiscount::create(array(
 			"Title" => "Everything is free!",
@@ -136,6 +92,7 @@ class CalculatorTest extends SapphireTest{
 			"ForCart" => 1,
 			"ForShipping" => 1
 		))->write();
+		$this->markTestIncomplete("Add assertions");
 	}
 
 	function testItemLevelPercentAndAmountDiscounts() {
@@ -343,6 +300,100 @@ class CalculatorTest extends SapphireTest{
 		$processor = new OrderProcessor($cart);
 		$processor->placeOrder();
 		$this->assertEquals(16, Order::get()->byID($cart->ID)->GrandTotal());
+	}
+
+	//shipping discounts
+	
+	public function testFreeShipping() {
+		if (!class_exists('ShippingFrameworkModifier')) return;
+		$discount = OrderDiscount::create(array(
+			"Title" => "Free shipping",
+			"ForShipping" => 1,
+			"ForItems" => 0,
+			"Percent" => 1
+		));
+		$discount->write();
+
+		$order = $this->cart;
+		$shipping = new ShippingFrameworkModifier(array(
+			'Amount' => 12.34,
+			'OrderID' => $order->ID
+		));
+		$shipping->write();
+		$order->Modifiers()->add($shipping);
+
+		$calculator = new Calculator($order);
+		$this->assertTrue($discount->valid($order), "Free shipping discount is valid");
+		$this->assertEquals($calculator->calculate(), 12.34, "Shipping discount");
+	}
+
+	public function testShippingAmountDiscount() {
+		if (!class_exists('ShippingFrameworkModifier')) return;
+		$order = $this->cart;
+		$discount = OrderDiscount::create(array(
+			"Title" => "Free shipping",
+			"ForShipping" => 1,
+			"ForItems" => 0,
+			"Percent" => 1
+		));
+		$discount->write();
+
+		$shipping = new ShippingFrameworkModifier(array(
+			'Amount' => 30,
+			'OrderID' => $order->ID
+		));
+		$shipping->write();
+		$order->Modifiers()->add($shipping);
+		$calculator = new Calculator($order);
+		$this->assertTrue($discount->valid($order), "100% off shipping is valid");
+		$this->assertEquals($calculator->calculate(), 30, "discount is full $30 amount");
+	}
+
+	public function testShippingPercentDiscount() {
+		if (!class_exists('ShippingFrameworkModifier')) return;
+		$order = $this->othercart;
+		$discount = OrderDiscount::create(array(
+			"Title" => "Save 30% off shipping",
+			"Percent" => 0.3,
+			"ForShipping" => 1,
+			"ForItems" => 0
+		));
+		$discount->write();
+
+		$shipping = new ShippingFrameworkModifier(array(
+			'Amount' => 10,
+			'OrderID' => $order->ID
+		));
+		$shipping->write();
+		$order->Modifiers()->add($shipping);
+		$calculator = new Calculator($order);
+		$this->assertTrue($discount->valid($order), "30% off shipping discount is valid");
+		$this->assertEquals($calculator->calculate(), 3, "30% discount on $10 of shipping");
+	}
+
+	public function testShipingAndItems() {
+		if (!class_exists('ShippingFrameworkModifier')) return;
+		//test an edge case, where a discount is for orders, and shipping.
+		$order = $this->othercart; //$200
+		$discount = OrderDiscount::create(array(
+			"Title" => "Save $20 on order",
+			"Amount" => 20,
+			"ForShipping" => 1,
+			"ForItems" => 1
+		));
+		$discount->write();
+
+		$shipping = new ShippingFrameworkModifier(array(
+			'Amount' => 30,
+			'OrderID' => $order->ID
+		));
+		$shipping->write();
+		$order->Modifiers()->add($shipping);
+		$calculator = new Calculator($order);
+		$this->assertTrue($discount->valid($order), "Shipping and items discount is valid");
+		$this->assertEquals($calculator->calculate(), 40, "$20 discount");
+
+		//TODO:  test when subtotal & shipping are both < 20
 	}
 	
 }

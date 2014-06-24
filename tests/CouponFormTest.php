@@ -3,7 +3,8 @@
 class CouponFormTest extends FunctionalTest{
 
 	protected static $fixture_file = array(
-		'shop/tests/fixtures/shop.yml'
+		'shop/tests/fixtures/shop.yml',
+		'shop/tests/fixtures/Pages.yml'
 	);
 
 	function setUp() {

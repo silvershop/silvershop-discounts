@@ -5,7 +5,8 @@ use Shop\Discount\Calculator;
 class CategoriesDiscountConstraintTest extends SapphireTest{
 	
 	protected static $fixture_file = array(
-		'shop/tests/fixtures/shop.yml'
+		'shop/tests/fixtures/shop.yml',
+		'shop/tests/fixtures/Carts.yml'
 	);
 
 	public function setUp() {
