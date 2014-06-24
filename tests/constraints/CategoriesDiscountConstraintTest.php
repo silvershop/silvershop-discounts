@@ -13,8 +13,6 @@ class CategoriesDiscountConstraintTest extends SapphireTest{
 		parent::setUp();
 		ShopTest::setConfiguration();
 
-		Config::inst()->update('OrderCoupon', 'minimum_code_length', null);
-
 		$this->socks = $this->objFromFixture("Product", "socks");
 		$this->socks->publish("Stage", "Live");
 		$this->tshirt = $this->objFromFixture("Product", "tshirt");
@@ -24,30 +22,32 @@ class CategoriesDiscountConstraintTest extends SapphireTest{
 
 		$this->cart = $this->objFromFixture("Order", "cart");
 		$this->othercart = $this->objFromFixture("Order", "othercart");
+		$this->kitecart = $this->objFromFixture("Order", "kitecart");
 	}
 
 	public function testCategoryDiscount() {
-		$coupon = OrderCoupon::create(array(
+		$discount = OrderDiscount::create(array(
 			"Title" => "5% off clothing",
-			"Code" => "CHEAPCLOTHING",
 			"Type" => "Percent",
 			"Percent" => 0.05
 		));
-		$coupon->write();
-		$coupon->Categories()->add($this->objFromFixture("ProductCategory", "clothing"));
-		$context = array("CouponCode" => $coupon->Code);
-		$this->assertTrue($coupon->valid($this->cart, $context), "Order contains a t-shirt. ".$coupon->getMessage());
-		$this->assertEquals($this->calc($this->cart, $coupon), 0.4, "5% discount for socks in cart");
-		$this->assertFalse($coupon->valid($this->othercart, $context), "Order does not contain clothing");
-		$this->assertEquals($this->calc($this->othercart, $coupon), 0, "No discount, because no product in category");
-	}
+		$discount->write();
+		$discount->Categories()->add($this->objFromFixture("ProductCategory", "clothing"));
 
-	protected function getCalculator($order, $coupon) {
-		return new Calculator($order, array("CouponCode" => $coupon->Code));
-	}
+		$this->assertTrue($discount->valid($this->cart), "Order contains a t-shirt. ".$discount->getMessage());
+		$calculator = new Calculator($this->cart);
+		$this->assertEquals($calculator->calculate(), 0.4, "5% discount for socks in cart");
 
-	protected function calc($order, $coupon) {
-		return $this->getCalculator($order, $coupon)->calculate();
+		$this->assertFalse($discount->valid($this->othercart), "Order does not contain clothing");
+		$calculator = new Calculator($this->othercart);
+		$this->assertEquals($calculator->calculate(), 0, "No discount, because no product in category");
+
+		$discount->Categories()->removeAll();
+
+		$discount->Categories()->add($this->objFromFixture("ProductCategory", "kites"));
+		$this->assertTrue($discount->valid($this->kitecart), "Order contains a kite. ".$discount->getMessage());
+		$calculator = new Calculator($this->kitecart);
+		$this->assertEquals($calculator->calculate(), 1.75, "5% discount for kite in cart");
 	}
 
 }
