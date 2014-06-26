@@ -176,8 +176,8 @@ class CalculatorTest extends SapphireTest{
 			"Title" => "$500 off baby!",
 			"Type" => "Amount",
 			"Amount" => 500,
-			"ForItems" => false,
-			"ForCart" => true
+			"ForItems" => true,
+			"ForCart" => false
 		))->write();
 
 		$calculator = new Calculator($this->megacart);
