@@ -1,6 +1,6 @@
 <p>Here is your gift voucher</p>
 
-<% control Coupon %>
+<% with Coupon %>
 <div class="giftvoucher" style="padding:10px; font-size:2em;">
 	<p>Code: <strong>$Code</strong></p>
 	<% if Type = Percent %>
@@ -13,4 +13,4 @@
 		<p>This voucher must be used by $EndDate.Long</p>
 	<% end_if %>
 </div>
-<% end_control %>
+<% end_with %>
