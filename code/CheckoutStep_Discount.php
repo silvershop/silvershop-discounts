@@ -2,7 +2,7 @@
 
 class CheckoutStep_Discount extends CheckoutStep{
 
-	public static $allowed_actions = array(
+	private static $allowed_actions = array(
 		'discount',
 		'CouponForm',
 		'setcoupon'

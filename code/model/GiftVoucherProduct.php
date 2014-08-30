@@ -12,7 +12,7 @@ class GiftVoucherProduct extends Product{
 	private static $singular_name = "Gift Voucher";
 	private static $plural_name = "Gift Vouchers";
 
-	public static $order_item = "GiftVoucher_OrderItem";
+	private static $order_item = "GiftVoucher_OrderItem";
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
