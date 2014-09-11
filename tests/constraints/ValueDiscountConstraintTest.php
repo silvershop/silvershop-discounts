@@ -28,9 +28,9 @@ class ValueDiscountConstraintTest extends SapphireTest{
 		));
 		$coupon->write();
 		$context = array("CouponCode" => $coupon->Code);
-		$this->assertFalse($coupon->valid($this->cart, $context), "$8 order isn't enough");
-		$this->assertTrue($coupon->valid($this->othercart, $context), "$200 is enough");
-		$this->assertTrue($coupon->valid($this->placedorder, $context), "$500 order is enough");
+		$this->assertFalse($coupon->validateOrder($this->cart, $context), "$8 order isn't enough");
+		$this->assertTrue($coupon->validateOrder($this->othercart, $context), "$200 is enough");
+		$this->assertTrue($coupon->validateOrder($this->placedorder, $context), "$500 order is enough");
 
 		$calculator = new Calculator($this->cart, $context);
 		$this->assertEquals(0, $calculator->calculate());

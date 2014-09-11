@@ -31,12 +31,12 @@ class ProductsDiscountConstraintTest extends SapphireTest{
 		));
 		$discount->write();
 		$discount->Products()->add($this->objFromFixture("Product", "tshirt"));
-		$this->assertFalse($discount->valid($this->cart));
+		$this->assertFalse($discount->validateOrder($this->cart));
 		//no products match
 		$this->assertDOSEquals(array(), OrderDiscount::get_matching($this->cart));
 		//add product discount list
 		$discount->Products()->add($this->objFromFixture("Product", "tshirt"));
-		$this->assertFalse($discount->valid($this->cart));
+		$this->assertFalse($discount->validateOrder($this->cart));
 		//no products match
 		$this->assertDOSEquals(array(), OrderDiscount::get_matching($this->cart));
 

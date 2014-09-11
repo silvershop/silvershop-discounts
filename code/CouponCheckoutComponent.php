@@ -26,7 +26,7 @@ class CouponCheckoutComponent extends CheckoutComponent{
 		}
 		//check the coupon exists, and can be used
 		if($coupon = OrderCoupon::get_by_code($code)){
-			if(!$coupon->valid($order, array("CouponCode" => $code))){
+			if(!$coupon->validateOrder($order, array("CouponCode" => $code))){
 				$result->error($coupon->getMessage(), "Code");
 				throw new ValidationException($result);
 			}

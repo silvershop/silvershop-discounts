@@ -76,7 +76,7 @@ class CalculatorTest extends SapphireTest{
 			array("Title" => "10% off")
 		), $matching);
 		//check valid
-		$valid = $discount->valid($this->cart);
+		$valid = $discount->validateOrder($this->cart);
 		$this->assertTrue($valid, "discount is valid");
 		//check calculator
 		$calculator = new Calculator($this->cart);
@@ -196,7 +196,7 @@ class CalculatorTest extends SapphireTest{
 			"ForCart" => true
 		));
 		$discount->write();	
-		$this->assertTrue($discount->valid($this->cart));
+		$this->assertTrue($discount->validateOrder($this->cart));
 		$calculator = new Calculator($this->cart);
 		$this->assertEquals(8, $calculator->calculate());
 		$calculator = new Calculator($this->othercart);
@@ -323,7 +323,7 @@ class CalculatorTest extends SapphireTest{
 		$order->Modifiers()->add($shipping);
 
 		$calculator = new Calculator($order);
-		$this->assertTrue($discount->valid($order), "Free shipping discount is valid");
+		$this->assertTrue($discount->validateOrder($order), "Free shipping discount is valid");
 		$this->assertEquals($calculator->calculate(), 12.34, "Shipping discount");
 	}
 
@@ -345,7 +345,7 @@ class CalculatorTest extends SapphireTest{
 		$shipping->write();
 		$order->Modifiers()->add($shipping);
 		$calculator = new Calculator($order);
-		$this->assertTrue($discount->valid($order), "100% off shipping is valid");
+		$this->assertTrue($discount->validateOrder($order), "100% off shipping is valid");
 		$this->assertEquals($calculator->calculate(), 30, "discount is full $30 amount");
 	}
 
@@ -367,7 +367,7 @@ class CalculatorTest extends SapphireTest{
 		$shipping->write();
 		$order->Modifiers()->add($shipping);
 		$calculator = new Calculator($order);
-		$this->assertTrue($discount->valid($order), "30% off shipping discount is valid");
+		$this->assertTrue($discount->validateOrder($order), "30% off shipping discount is valid");
 		$this->assertEquals($calculator->calculate(), 3, "30% discount on $10 of shipping");
 	}
 
@@ -390,7 +390,7 @@ class CalculatorTest extends SapphireTest{
 		$shipping->write();
 		$order->Modifiers()->add($shipping);
 		$calculator = new Calculator($order);
-		$this->assertTrue($discount->valid($order), "Shipping and items discount is valid");
+		$this->assertTrue($discount->validateOrder($order), "Shipping and items discount is valid");
 		$this->assertEquals($calculator->calculate(), 40, "$20 discount");
 
 		//TODO:  test when subtotal & shipping are both < 20

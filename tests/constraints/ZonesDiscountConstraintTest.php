@@ -30,10 +30,10 @@ class ZonesDiscountConstraintTest extends SapphireTest{
 		$address = $this->objFromFixture("Address", 'bukhp193eq');
 		$context = array("CouponCode" => $coupon->Code);
 		$this->cart->ShippingAddressID = $address->ID; //set address
-		$this->assertFalse($coupon->valid($this->cart, $context), "check order is out of zone");
+		$this->assertFalse($coupon->validateOrder($this->cart, $context), "check order is out of zone");
 		$address = $this->objFromFixture("Address", 'sau5024');
 		$this->othercart->ShippingAddressID = $address->ID; //set address
-		$valid = $coupon->valid($this->othercart, $context);
+		$valid = $coupon->validateOrder($this->othercart, $context);
 		$this->assertTrue($valid, "check order is in zone");
 	}
 

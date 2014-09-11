@@ -16,10 +16,10 @@ class UseLimitDiscountConstraintTest extends SapphireTest{
 	public function testUseLimit() {
 		$coupon = $this->objFromFixture("OrderCoupon", "used");
 		$context = array("CouponCode" => $coupon->Code);
-		$this->assertFalse($coupon->valid($this->cart, $context), "Coupon is already used");
+		$this->assertFalse($coupon->validateOrder($this->cart, $context), "Coupon is already used");
 		$coupon = $this->objFromFixture("OrderCoupon", "limited");
 		$context = array("CouponCode" => $coupon->Code);
-		$this->assertTrue($coupon->valid($this->cart, $context), "Coupon has been used, but can continue to be used");
+		$this->assertTrue($coupon->validateOrder($this->cart, $context), "Coupon has been used, but can continue to be used");
 	}
 
 }

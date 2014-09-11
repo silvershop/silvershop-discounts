@@ -77,7 +77,7 @@ class Discount extends DataObject{
 		//cull remaining invalid discounts programatically
 		$validdiscounts = new ArrayList();
 		foreach ($discounts as $discount) {
-			if($discount->valid($order, $context)){
+			if($discount->validateOrder($order, $context)){
 				$validdiscounts->push($discount);
 			}
 		}
@@ -211,9 +211,10 @@ class Discount extends DataObject{
 	/**
 	 * Check if this coupon can be used with a given order
 	 * @param Order $order
+	 * @param array $context addional data to be checked in constraints.
 	 * @return boolean
 	 */
-	public function valid($order, $context = array()) {
+	public function validateOrder($order, $context = array()) {
 		if(empty($order)){
 			$this->error(_t("Discount.NOORDER", "Order has not been started."));
 			return false;
@@ -227,11 +228,11 @@ class Discount extends DataObject{
 		}
 		$constraints = self::config()->constraints;
 		foreach($constraints as $constraint){
-			$dc = singleton($constraint)
+			$constraint = singleton($constraint)
 				->setOrder($order)
 				->setContext($context);
-			if(!$dc->check($this)){
-				$this->error($dc->getMessage());
+			if(!$constraint->check($this)){
+				$this->error($constraint->getMessage());
 				return false;
 			}
 		}
@@ -410,6 +411,15 @@ class Discount extends DataObject{
 
 	public function getMessageType() {
 		return $this->messagetype;
+	}
+
+
+	/**
+	 * @deprecated
+	 */
+	public function valid($order, $context = array()){
+		Deprecation::notice("1.2", "use validateOrder instead");
+		return $this->validateOrder($order, $context);
 	}
 
 }

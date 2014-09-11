@@ -23,13 +23,13 @@ class MembershipDiscountConstraintTest extends SapphireTest{
 		$member = $this->objFromFixture("Member", "joebloggs");
 		$discount->Members()->add($member);
 
-		$this->assertFalse($discount->valid($this->cart), "Invalid, because no member");
+		$this->assertFalse($discount->validateOrder($this->cart), "Invalid, because no member");
 		$context = array(
 			"Member" => $this->objFromFixture("Member", "bobjones")
 		);
-		$this->assertFalse($discount->valid($this->cart, $context), "Invalid because wrong member present");
+		$this->assertFalse($discount->validateOrder($this->cart, $context), "Invalid because wrong member present");
 		$context = array("Member" => $member);
-		$this->assertTrue($discount->valid($this->cart, $context), "Valid because correct member present".$discount->getMessage());
+		$this->assertTrue($discount->validateOrder($this->cart, $context), "Valid because correct member present".$discount->getMessage());
 	}
 
 }

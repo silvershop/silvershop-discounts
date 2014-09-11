@@ -25,12 +25,12 @@ class GroupDiscountConstraintTest extends SapphireTest{
 		$coupon->write();
 		
 		$context = array("CouponCode" => $coupon->Code);
-		$this->assertFalse($coupon->valid($this->cart, $context), "Invalid for memberless order");
+		$this->assertFalse($coupon->validateOrder($this->cart, $context), "Invalid for memberless order");
 		$context = array(
 			"CouponCode" => $coupon->Code,
 			"Member" => $this->objFromFixture("Member", "bobjones")
 		);
-		$this->assertTrue($coupon->valid($this->othercart, $context), "Valid because member is in resellers group");
+		$this->assertTrue($coupon->validateOrder($this->othercart, $context), "Valid because member is in resellers group");
 	}
 	
 }
