@@ -76,3 +76,7 @@ ProductVariation:
   extensions:
     - SpecificPricingExtension
 ```
+
+## Upgrading
+
+`OrderCoupon` has become a subclass of `Discount`, so if your existing database contains `OrderCoupon`, it might be best to rename it to `Discount` before running `dev/build?flush=1`.
