@@ -59,19 +59,12 @@ class OrderCoupon extends Discount {
 		$fields->addFieldsToTab(
 			"Root.Main", array(
 				$codefield = TextField::create("Code")->setMaxLength(25),
-				$uselimitfield = NumericField::create("UseLimit", "Limit number of uses")
-						->setDescription("Note: 0 = unlimited")
 			), 
 			"Active"
 		);
 		if($this->owner->Code && $codefield){
 			$fields->replaceField("Code",
 				$codefield->performReadonlyTransformation()
-			);
-		}
-		if($this->owner->Code && $uselimitfield){
-			$fields->replaceField("UseLimit",
-				$uselimitfield->performReadonlyTransformation()
 			);
 		}
 

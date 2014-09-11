@@ -101,7 +101,7 @@ class Discount extends DataObject{
 								$maxamountfield = CurrencyField::create("MaxAmount",
 									_t("MaxAmount", "Maximum Amount")
 								)->setDescription(
-									"Don't allow the total discount amount to be more than this amount. '0' means the maximum discoun isn't limited."
+									"The total allowable discount. 0 means unlimited."
 								)
 							),
 							"Percent"

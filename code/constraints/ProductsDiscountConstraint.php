@@ -12,14 +12,13 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint{
 
 	public function updateCMSFields(FieldList $fields) {
 		if($this->owner->isInDB() && $this->owner->ForItems){
-			$fields->fieldByname("Root.Main.Constraints")->push(new Tab("Products",
-				LabelField::create("ProductsDescription", "Select specific products that this discount applies to"),
-				CheckboxField::create("ExactProducts", "All products must be present in cart."),
-				GridField::create("Products", "Products", $this->owner->Products(),
+			$fields->addFieldsToTab("Root.Main.Constraints.Products",array(
+				GridField::create("Products", "Specific Products", $this->owner->Products(),
 					GridFieldConfig_RelationEditor::create()
 						->removeComponentsByType("GridFieldAddNewButton")
 						->removeComponentsByType("GridFieldEditButton")
-				)
+				)->setDescription("Select specific products that this discount applies to"),
+				CheckboxField::create("ExactProducts", "All the selected products must be present in cart."),
 			));
 		}
 	}
