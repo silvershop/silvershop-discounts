@@ -1,6 +1,6 @@
 <?php
 
-class CategoriesDiscountConstraint extends DiscountConstraint{
+class CategoriesDiscountConstraint extends ItemDiscountConstraint{
 	
 	private static $many_many = array(
 		"Categories" => "ProductCategory"
@@ -30,15 +30,7 @@ class CategoriesDiscountConstraint extends DiscountConstraint{
 		if(!$categories->exists()){
 			return true;
 		}
-		$items = $this->order->Items();
-		$incart = false; //note that this means an order without items will always be invalid
-		foreach($items as $item){
-			//check at least one item in the cart meets the discount's criteria
-			if($this->itemMatchesCategoryCriteria($item, $discount)){
-				$incart = true;
-				break;
-			}
-		}
+		$incart = $this->itemsInCart($discount);
 		if(!$incart){
 			$this->error("The required products (categories) are not in the cart.");
 		}
@@ -46,10 +38,7 @@ class CategoriesDiscountConstraint extends DiscountConstraint{
 		return $incart;
 	}
 
-	/**
-	 * This function is used by ItemDiscountAction, and the check function above.
-	 */
-	public function itemMatchesCategoryCriteria(OrderItem $item, Discount $discount) {
+	public function itemMatchesCriteria(OrderItem $item, Discount $discount) {
 		$discountcategoryids = $discount->Categories()->getIDList();
 		if(empty($discountcategoryids)){
 
