@@ -22,8 +22,7 @@ abstract class ItemDiscountAction extends DiscountAction{
 	 * @return boolean
 	 */
 	protected function itemQualifies(ItemPriceInfo $info){
-		return $this->discount->itemMatchesProductCriteria($info->getItem(), $this->discount) &&
-			$this->discount->itemMatchesCategoryCriteria($info->getItem(), $this->discount);
+		return ItemDiscountConstraint::match($info->getItem(), $this->discount);
 	}
 
 }

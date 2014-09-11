@@ -1,6 +1,6 @@
 <?php
 
-class ProductsDiscountConstraint extends DiscountConstraint{
+class ProductsDiscountConstraint extends ItemDiscountConstraint{
 
 	private static $db = array(
 		'ExactProducts' => 'Boolean'
@@ -51,7 +51,7 @@ class ProductsDiscountConstraint extends DiscountConstraint{
 		return $incart;
 	}
 
-	public function itemMatchesProductCriteria(OrderItem $item, Discount $discount) {
+	public function itemMatchesCriteria(OrderItem $item, Discount $discount) {
 		$products = $discount->Products();
 		$itemproduct = $item->Product(true); //true forces the current version of product to be retrieved.
 		if($products->exists() && !$products->find('ID', $item->ProductID)){

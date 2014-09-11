@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Encapsulate a single kind of constraint.
+ * This class extends DataExtension, because constraint data
+ * needs to be stored in the Discount object - the class
+ * which each constraint extends.
+ *
+ * Constraints are also instantiated on their own. See
+ * ItemDiscountConstraint::match and Discount->valid
+ */
 abstract class DiscountConstraint extends DataExtension{
 
 	protected $order;
@@ -26,6 +35,12 @@ abstract class DiscountConstraint extends DataExtension{
 	 */
 	abstract function filter(DataList $list);
 
+	/**
+	 * Check if the current set order falls within
+	 * this constraint.
+	 * @param  Discount $discount
+	 * @return boolean
+	 */
 	abstract function check(Discount $discount);
 
 

@@ -119,10 +119,7 @@ class Calculator{
 	protected function getDiscountableAmount($discount){
 		$amount = 0;
 		foreach($this->order->Items() as $item){
-			if(
-				$discount->itemMatchesCategoryCriteria($item, $discount) &&
-				$discount->itemMatchesProductCriteria($item, $discount)
-			){
+			if(\ItemDiscountConstraint::match($item, $discount)){
 				$amount += method_exists($item, "DiscountableAmount") ?
 							$item->DiscountableAmount() :
 							$item->Total();
