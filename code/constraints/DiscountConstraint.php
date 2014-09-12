@@ -27,13 +27,15 @@ abstract class DiscountConstraint extends DataExtension{
 	}
 
 	/**
-	 * Add filtering to a Discount DataList so it matches
-	 * this constraint.
+	 * Filter a list of discounts according to this
+	 * constraint.
 	 * 
-	 * @param  DataList $list the list to constrain
-	 * @return DataList        the updated list
+	 * @param  DataList $discounts discount list constrain
+	 * @return DataList
 	 */
-	abstract function filter(DataList $list);
+	public function filter(DataList $discounts){
+		return $discounts;
+	}
 
 	/**
 	 * Check if the current set order falls within

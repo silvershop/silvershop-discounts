@@ -19,13 +19,6 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint{
 		}
 	}
 
-	public function filter(DataList $list) {
-		//classname is in x,y,z
-		//$this->getTypes();
-
-		return $list;
-	}
-
 	public function check(Discount $discount) {
 		$types = $this->getTypes(true, $discount);
 		//valid if no categories defined

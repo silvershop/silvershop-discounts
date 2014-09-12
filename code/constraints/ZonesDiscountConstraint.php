@@ -17,11 +17,6 @@ class ZonesDiscountConstraint extends DiscountConstraint{
 			));
 		}
 	}
-	
-	public function filter(DataList $list) {
-		//TODO: restrict to zone?
-		return $list;
-	}
 
 	public function check(Discount $discount) {
 		$zones = $discount->Zones();

@@ -20,11 +20,6 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint{
 		}
 	}
 
-	public function filter(DataList $list) {
-		//TODO: filter discounts to match categories
-		return $list;
-	}
-
 	public function check(Discount $discount) {
 		$categories = $discount->Categories();
 		//valid if no categories defined

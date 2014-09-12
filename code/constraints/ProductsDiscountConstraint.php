@@ -22,14 +22,6 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint{
 			));
 		}
 	}
-	
-	public function filter(DataList $list) {
-		// $productids = $this->order->Items()
-		// 			->map('ProductID', 'ProductID')
-		// 			->toArray();
-		//todo update discount list to narrow to products
-		return $list;
-	}
 
 	public function check(Discount $discount) {
 		$products = $discount->Products();

@@ -17,11 +17,6 @@ class UseLimitDiscountConstraint extends DiscountConstraint{
 		);
 	}
 
-	public function filter(DataList $list) {
-		//this would require summing order counts in sql
-		return $list;
-	}
-
 	public function check(Discount $discount) {
 		if($discount->UseLimit){
 			if($discount->UseCount >= $discount->UseLimit){
