@@ -12,6 +12,10 @@ class ProductTypeDiscountConstraintTest extends SapphireTest{
 	public function setUp() {
 		parent::setUp();
 		ShopTest::setConfiguration();
+		Config::inst()->update("Discount","constraints", array(
+			"ProductTypeDiscountConstraint"
+		));
+
 		$this->cart = $this->objFromFixture("Order", "cart");
 		$this->giftcart = $this->objFromFixture("Order", "giftcart");
 
