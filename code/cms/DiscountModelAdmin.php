@@ -11,8 +11,8 @@ class DiscountModelAdmin extends ModelAdmin {
 	private static $menu_priority = 2;
 
 	private static $managed_models = array(
-		"OrderCoupon",
 		"OrderDiscount",
+		"OrderCoupon",
 		"PartialUseDiscount"
 	);
 	public static $model_importers = array();
@@ -20,6 +20,12 @@ class DiscountModelAdmin extends ModelAdmin {
 	private static $allowed_actions = array(
 		"generatecoupons",
 		"GenerateCouponsForm"
+	);
+
+	private static $model_descriptions = array(
+		"OrderDiscount" => "Discounts are applied at the checkout, based on defined constraints. If not constraints are given, then the discount will always be applied.",
+		"OrderCoupon" => "Coupons are like discounts, but have an associated code.",
+		"PartialUseDiscount" => "Partial use discounts are 'amount only' discounts that allow remainder amounts to be used."
 	);
 
 	public function getEditForm($id = null, $fields = null){
@@ -31,6 +37,12 @@ class DiscountModelAdmin extends ModelAdmin {
 					"GridFieldExportButton"
 				);
 			$link->addExtraClass("ss-ui-action-constructive");
+		}
+
+		$descriptions = self::config()->model_descriptions;
+		if(isset($descriptions[$this->modelClass])){
+			$form->Fields()->fieldByName($this->modelClass)
+				->setDescription($descriptions[$this->modelClass]);
 		}
 
 		return $form;
