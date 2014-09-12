@@ -29,6 +29,11 @@ abstract class DiscountConstraint extends DataExtension{
 	/**
 	 * Filter a list of discounts according to this
 	 * constraint.
+	 *
+	 * The filtering must always allow empty data through,
+	 * for example Value = 'X' OR Value IS NULL
+	 *
+	 * See predefined constraints for examples.
 	 * 
 	 * @param  DataList $discounts discount list constrain
 	 * @return DataList
