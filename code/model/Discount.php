@@ -111,11 +111,11 @@ class Discount extends DataObject{
 							"Amount"
 						)
 					))->setTitle("Type"),
-					new FieldGroup("This discount applies to:",
+					FieldGroup::create("This discount applies to:",
 						CheckboxField::create("ForItems", "Individual item values"),
 						CheckboxField::create("ForCart", "Cart subtotal"),
 						CheckboxField::create("ForShipping", "Shipping subtotal")
-					),
+					)->setName("For"),
 					new Tab("Main",
 						HeaderField::create("ConstraintsTitle", "Constraints", 3),
 						LabelField::create(
@@ -148,7 +148,11 @@ class Discount extends DataObject{
 				)
 			));
 		}
-		if($this->Type && (double)$this->{$this->Type}){
+		if($params && isset($params['forcetype'])){
+			$valuefield = $params['forcetype'] == "Percent" ? $percentfield : $amountfield;
+			$fields->insertAfter($valuefield,"Type");
+			$fields->removeByName("Type");
+		}elseif($this->Type && (double)$this->{$this->Type}){
 			$valuefield = $this->Type == "Percent" ? $percentfield : $amountfield;
 			$fields->removeByName("Type");
 			$fields->insertAfter($valuefield, "Active");

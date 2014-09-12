@@ -22,12 +22,18 @@ class PartialUseDiscount extends Discount{
 	private static $plural_name = "Partial Use Discounts";
 
 	function getCMSFields($params = null) {
-		$fields = parent::getCMSFields();
-		//$constraints = $field->
-		$fields->removeByName("ForCart");
-		$fields->removeByName("ForItems");
-		$fields->removeByName("ForShipping");
-		$limitfield = $fields->fieldByName("Root.Main.Constraints")->fieldByName("Main.UseLimit");
+		$fields = parent::getCMSFields(array(
+			'forcetype' => 'Amount'
+		));
+
+		$fields->removeByName(array(
+			"ForCart",
+			"ForItems",
+			"ForShipping",
+			"For"
+		));
+		$limitfield = $fields->fieldByName("Root.Main.Constraints")
+						->fieldByName("Main.UseLimit");
 		$fields->replaceField("UseLimit", $limitfield->performReadOnlyTransformation());
 		return $fields;
 	}
