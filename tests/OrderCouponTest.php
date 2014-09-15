@@ -25,7 +25,7 @@ class OrderCouponTest extends SapphireTest{
 		$this->mp3player = $this->objFromFixture("Product", "mp3player");
 		$this->mp3player->publish("Stage", "Live");
 
-		$this->placedorder = $this->objFromFixture("Order", "unpaid");
+		$this->unpaid = $this->objFromFixture("Order", "unpaid");
 		$this->cart = $this->objFromFixture("Order", "cart");
 		$this->othercart = $this->objFromFixture("Order", "othercart");
 	}
@@ -65,7 +65,7 @@ class OrderCouponTest extends SapphireTest{
 		$context = array("CouponCode" => $coupon->Code);
 		$this->assertTrue($coupon->validateOrder($this->cart, $context), $coupon->getMessage());
 		$this->assertEquals(4, $coupon->getDiscountValue(10), "40% off value");
-		$this->assertEquals(200, $this->calc($this->placedorder, $coupon), "40% off order");
+		$this->assertEquals(200, $this->calc($this->unpaid, $coupon), "40% off order");
 	}
 	
 	public function testAmount() {
@@ -81,7 +81,8 @@ class OrderCouponTest extends SapphireTest{
 		$context = array("CouponCode" => $coupon->Code);
 		$this->assertTrue($coupon->validateOrder($this->cart, $context), $coupon->getMessage());
 		$this->assertEquals($coupon->getDiscountValue(1000), 10, "$10 off fixed value");
-		$this->assertEquals(60, $this->calc($this->placedorder, $coupon), "$10 off each item: $60 total");
+		$this->assertTrue($coupon->validateOrder($this->unpaid, $context), $coupon->getMessage());
+		$this->assertEquals(60, $this->calc($this->unpaid, $coupon), "$10 off each item: $60 total");
 		//TODO: test amount that is greater than item value
 	}
 
