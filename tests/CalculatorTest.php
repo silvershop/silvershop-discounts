@@ -377,6 +377,7 @@ class CalculatorTest extends SapphireTest{
 		$order = $this->othercart; //$200
 		$discount = OrderDiscount::create(array(
 			"Title" => "Save $20 on order",
+			"Type" => "Amount",
 			"Amount" => 20,
 			"ForShipping" => 1,
 			"ForItems" => 1
