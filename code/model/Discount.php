@@ -268,10 +268,9 @@ class Discount extends DataObject{
 	 */
 	public function getDiscountValue($value) {
 		$discount = 0;
-		if($this->Amount) {
+		if($this->Type === "Amount") {
 			$discount += $this->Amount;
-		}
-		if($this->Percent) {
+		}elseif($this->Percent) {
 			$discount += $value * $this->Percent;
 		}
 		//prevent discounting more than the discountable amount
