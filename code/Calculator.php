@@ -6,6 +6,7 @@ class Calculator{
 	
 	protected $order;
 	protected $discounts;
+	protected $modifier;
 
 	protected $log = array();
 
@@ -13,6 +14,7 @@ class Calculator{
 		$this->order = $order;
 		//get qualifying discounts for this order
 		$this->discounts = \Discount::get_matching($this->order, $context);
+		$this->modifier = $this->order->getModifier("OrderDiscountModifier", true);
 	}
 
 	/**
@@ -22,9 +24,8 @@ class Calculator{
 	 */
 	public function calculate() {
 		$total = 0;
-		$modifier = $this->order->getModifier("OrderDiscountModifier", true);
 		//clear any existing linked discounts
-		$modifier->Discounts()->removeAll();
+		$this->modifier->Discounts()->removeAll();
 
 		//work out all item-level discounts, and load into infoitems
 		$infoitems = $this->createPriceInfoList($this->order->Items());
@@ -80,7 +81,7 @@ class Calculator{
 			//don't let amount be greater than remainder
 			$amount = $amount > $cartremainder ? $cartremainder : $amount;
 			$total += $amount;
-			$modifier->Discounts()->add(
+			$this->modifier->Discounts()->add(
 				$discount,
 				array('DiscountAmount' => $amount)
 			);
@@ -102,7 +103,7 @@ class Calculator{
 				$amount = $bestadjustment->getValue();
 				//don't let amount be greater than remainder
 				$total += $amount;
-				$modifier->Discounts()->add(
+				$this->modifier->Discounts()->add(
 					$discount,
 					array('DiscountAmount' => $amount)
 				);
