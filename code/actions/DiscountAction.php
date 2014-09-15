@@ -38,4 +38,11 @@ abstract class DiscountAction extends Action{
 		return !$this->limited || $this->remaining > 0;
 	}
 
+
+	public function reduceRemaining($amount){
+		if($this->remaining){
+			$this->remaining -= $amount;
+		}
+	}
+
 }

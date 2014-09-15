@@ -31,9 +31,10 @@ class Calculator{
 		$infoitems = $this->createPriceInfoList($this->order->Items());
 		foreach($this->getItemDiscounts() as $discount){
 			//item discounts will update info items
-			$action = $discount->Type == "Percent" ?
+			$action = $discount->Type === "Percent" ?
 				new \ItemPercentDiscount($infoitems, $discount) :	
 				new \ItemFixedDiscount($infoitems, $discount);
+			$action->reduceRemaining($this->discountSubtotal($discount));
 			$amount = $action->perform();
 		}
 
@@ -65,6 +66,7 @@ class Calculator{
 				$this->getDiscountableAmount($discount),
 				$discount
 			);
+			$action->reduceRemaining($this->discountSubtotal($discount));
 			$cartpriceinfo->adjustPrice(
 				new Adjustment($action->perform(), $discount)
 			);
@@ -91,8 +93,9 @@ class Calculator{
 		if($shipping = $this->order->getModifier("ShippingFrameworkModifier")){
 			//work out all shipping-level discounts, and load into shippingpriceinfo
 			$shippingpriceinfo = new PriceInfo($shipping->Amount);
-			foreach($this->getShippingDiscounts()as $discount){
-				$action = new \SubtotalDiscountAction($shipping->Amount,$discount);
+			foreach($this->getShippingDiscounts() as $discount){
+				$action = new \SubtotalDiscountAction($shipping->Amount, $discount);
+				$action->reduceRemaining($this->discountSubtotal($discount));
 				$shippingpriceinfo->adjustPrice(
 					new Adjustment($action->perform(), $discount)
 				);
@@ -130,6 +133,16 @@ class Calculator{
 		return $amount;
 	}
 
+	/**
+	 * Work out how much the given discount has already
+	 * been used.
+	 */
+	protected function discountSubtotal($discount) {
+		 return $this->modifier->Discounts()
+		 			->filter("ID", $discount->ID)
+		 			->sum("DiscountAmount");
+	}
+
 	protected function createPriceInfoList(\DataList $list) {
 		$output = array();
 		foreach($list as $item){
@@ -152,10 +165,9 @@ class Calculator{
 
 	/**
 	 * Store details about discounts for loggging / debubgging
-	 * @param  [type]   $level    [description]
-	 * @param  [type]   $amount   [description]
-	 * @param  Discount $discount [description]
-	 * @return [type]             [description]
+	 * @param  string   $level
+	 * @param  double   $amount
+	 * @param  Discount $discount
 	 */
 	public function logDiscountAmount($level, $amount, \Discount $discount) {
 		$this->log[] = array(
