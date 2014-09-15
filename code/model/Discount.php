@@ -310,6 +310,17 @@ class Discount extends DataObject{
 	}
 
 	/**
+	 * Max amount should be $this->Amount, if $this->Type is Amount.
+	 * @return float amount
+	 */
+	public function getMaxAmount(){
+		if($this->Type === "Percent"){
+			return $this->getField("MaxAmount");
+		}
+		return $this->Amount;
+	}
+
+	/**
 	 * Get the orders that this discount has been used on.
 	 * 
 	 * @param $includeunpaid include orders where the payment process has started
