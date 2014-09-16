@@ -7,7 +7,11 @@ class SubtotalDiscountAction extends DiscountAction{
 	function __construct($subtotal, Discount $discount) {
 		parent::__construct($discount);
 		$this->subtotal = $subtotal;
-		$this->discount = $discount;
+		//for Amount discounts on Subtotals, prevent amount from ever being greater than the Amount
+		if($discount->Type === "Amount" && $discount->Amount > $this->remaining){
+			$this->remaining = (float)$this->discount->Amount;
+			$this->limited = true;
+		}
 	}
 
 	function perform(){

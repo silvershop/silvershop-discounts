@@ -34,7 +34,6 @@ class Calculator{
 			$action = $discount->Type === "Percent" ?
 				new \ItemPercentDiscount($infoitems, $discount) :	
 				new \ItemFixedDiscount($infoitems, $discount);
-			$action->reduceRemaining($this->discountSubtotal($discount));
 			$amount = $action->perform();
 		}
 
