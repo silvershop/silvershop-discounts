@@ -93,10 +93,11 @@ class Discount extends DataObject{
 					TextField::create("Title"),
 					CheckboxField::create("Active", "Active")
 						->setDescription("Enable/disable all use of this discount."),
+					HeaderField::create("ActionTitle", "Action", 3),
 					$typefield = SelectionGroup::create("Type",array(
 						new SelectionGroup_Item("Percent",
 							$percentgroup = FieldGroup::create(
-								$percentfield = NumericField::create("Percent", "Discount", "0.00")
+								$percentfield = NumericField::create("Percent", "Percentage", "0.00")
 									->setDescription("e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%"),
 								$maxamountfield = CurrencyField::create("MaxAmount",
 									_t("MaxAmount", "Maximum Amount")
@@ -104,22 +105,23 @@ class Discount extends DataObject{
 									"The total allowable discount. 0 means unlimited."
 								)
 							),
-							"Percent"
+							"Discount by percentage"
 						),
 						new SelectionGroup_Item("Amount",
-							$amountfield = CurrencyField::create("Amount", "Discount", "$0.00"),
-							"Amount"
+							$amountfield = CurrencyField::create("Amount", "Amount", "$0.00"),
+							"Discount by fixed amount"
 						)
 					))->setTitle("Type"),
-					FieldGroup::create("This discount applies to:",
-						CheckboxField::create("ForItems", "Individual item values"),
-						CheckboxField::create("ForCart", "Cart subtotal"),
-						CheckboxField::create("ForShipping", "Shipping subtotal")
-					)->setName("For"),
+					OptionSetField::create("For", "Applies to", array(
+						"Order" => "Entire Order",
+						"Cart" => "Cart Subtotal",
+						"Shipping" => "Shipping Subtotal",
+						"Items" => "Each Individual Item"
+					)),
 					new Tab("Main",
 						HeaderField::create("ConstraintsTitle", "Constraints", 3),
 						LabelField::create(
-							"CriteriaDescription",
+							"ConstraintsDescription",
 							"Configure the requirements an order must meet for this discount to be valid:"
 						)
 					),
@@ -155,7 +157,7 @@ class Discount extends DataObject{
 		}elseif($this->Type && (double)$this->{$this->Type}){
 			$valuefield = $this->Type == "Percent" ? $percentfield : $amountfield;
 			$fields->removeByName("Type");
-			$fields->insertAfter($valuefield, "Active");
+			$fields->insertAfter($valuefield, "ActionTitle");
 			$fields->replaceField($this->Type,
 				$valuefield->performReadonlyTransformation()
 			);
@@ -306,6 +308,38 @@ class Discount extends DataObject{
 	public function setPercent($value){
 		$value = $value > 100 ? 100 : $value;
 		$this->setField("Percent", $value);
+	}
+
+	/**
+	 * Map the single 'For' to the For"X" boolean fields
+	 * @param string $val
+	 */
+	public function setFor($val){
+		$map = array(
+			"Items" => array(1,0,0),
+			"Cart" => array(0,1,0),
+			"Shipping" => array(0,0,1),
+			"Order" => array(0,1,1)
+		);
+		$mapping = $map[$val];
+		$this->ForItems = $mapping[0];
+		$this->ForCart = $mapping[1];
+		$this->ForShipping = $mapping[2];
+	}
+
+	public function getFor(){
+		if($this->ForShipping && $this->ForCart){
+			return "Order";
+		}
+		if($this->ForShipping){
+			return "Shipping";
+		}
+		if($this->ForItems){
+			return "Items";
+		}
+		if($this->ForCart){
+			return "Cart";
+		}
 	}
 
 	/**
