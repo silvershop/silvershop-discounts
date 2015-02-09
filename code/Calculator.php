@@ -89,7 +89,7 @@ class Calculator{
 			$this->logDiscountAmount("Cart", $amount, $discount);
 		}
 
-		if($shipping = $this->order->getModifier("ShippingFrameworkModifier")){
+		if(class_exists('ShippingFrameworkModifier') && $shipping = $this->order->getModifier("ShippingFrameworkModifier")){
 			//work out all shipping-level discounts, and load into shippingpriceinfo
 			$shippingpriceinfo = new PriceInfo($shipping->Amount);
 			foreach($this->getShippingDiscounts() as $discount){
