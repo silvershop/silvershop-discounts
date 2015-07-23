@@ -24,7 +24,14 @@ class SpecificPricingExtension extends DataExtension{
 			$this->owner->SpecificPrices()
 				->filter("Price:LessThan", $price)
 		)->first()){
-			$price = $specificprice->Price;
+			if ($specificprice->Price > 0) {
+				$price = $specificprice->Price;
+			} elseif ($specificprice->DiscountPercent > 0) {
+				$price *= 1.0 - $specificprice->DiscountPercent;
+			} else {
+				// this would mean both discount and price were 0
+				$price = 0;
+			}
 		}
 	}
 
