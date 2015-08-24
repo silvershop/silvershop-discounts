@@ -315,6 +315,7 @@ class Discount extends DataObject{
 	 * @param string $val
 	 */
 	public function setFor($val){
+		if(!$val) return;
 		$map = array(
 			"Items" => array(1,0,0),
 			"Cart" => array(0,1,0),
