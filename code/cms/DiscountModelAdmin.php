@@ -120,18 +120,23 @@ class DiscountModelAdmin extends ModelAdmin {
 
 	public function generate($data, $form) {
 		$count = 1;
-		if(isset($data['Number']) && is_numeric($data['Number'])){
-			$count = (int)$data['Number'];
+
+		if(isset($data['Number']) && is_numeric($data['Number'])) {
+			$count = (int) $data['Number'];
 		}
+
 		$prefix = isset($data['Prefix']) ? $data['Prefix'] : "";
-		$length = isset($data['Length']) ? (int)$data['Length'] : 10;
+		$length = isset($data['Length']) ? (int) $data['Length'] : OrderCoupon::config()->generated_code_length;
+
 		for($i = 0; $i < $count; $i++){
 			$coupon = new OrderCoupon();
 			$form->saveInto($coupon);
+
 			$coupon->Code = OrderCoupon::generate_code(
-				OrderCoupon::config()->generated_code_length,
+				$length,
 				$prefix
 			);
+
 			$coupon->write();
 		}
 		$this->redirect($this->Link());
