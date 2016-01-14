@@ -1,6 +1,6 @@
 <?php
 
-class SpecificPricingExtension extends DataExtension{
+class SpecificPricingExtension extends DataExtension {
 	
 	private static $has_many = array(
 		"SpecificPrices" => "SpecificPrice"

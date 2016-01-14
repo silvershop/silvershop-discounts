@@ -37,6 +37,8 @@ class CouponCheckoutComponent extends CheckoutComponent{
 			);
 			throw new ValidationException($result);
 		}
+
+
 		return $result;
 	}
 

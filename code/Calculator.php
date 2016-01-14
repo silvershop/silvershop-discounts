@@ -24,74 +24,89 @@ class Calculator{
 	 */
 	public function calculate() {
 		$total = 0;
-		//clear any existing linked discounts
+
+		// clear any existing linked discounts
 		$this->modifier->Discounts()->removeAll();
 
-		//work out all item-level discounts, and load into infoitems
+		// work out all item-level discounts, and load into infoitems
 		$infoitems = $this->createPriceInfoList($this->order->Items());
-		foreach($this->getItemDiscounts() as $discount){
-			//item discounts will update info items
+
+		foreach($this->getItemDiscounts() as $discount) {
+			// item discounts will update info items
 			$action = $discount->Type === "Percent" ?
 				new \ItemPercentDiscount($infoitems, $discount) :	
 				new \ItemFixedDiscount($infoitems, $discount);
-			$amount = $action->perform();
+
+			$action->perform();
 		}
 
-		//select best item-level discounts
-		foreach($infoitems as $infoitem){
+
+		// select best item-level discounts
+		foreach($infoitems as $infoitem) {
 			$bestadjustment = $infoitem->getBestAdjustment();
-			if(!$bestadjustment){
+
+			if(!$bestadjustment) {
 				continue;
 			}
+
 			$amount = $bestadjustment->getValue();
-			//prevent discounting more than original price
-			if($amount > $infoitem->getOriginalTotal()){
+			
+			// prevent discounting more than original price
+			if($amount > $infoitem->getOriginalTotal()) {
 				$amount = $infoitem->getOriginalTotal();
 			}
+
 			$total += $amount;
-			//remove any existing linked discounts
+			
+			// remove any existing linked discounts
 			$infoitem->getItem()->Discounts()->removeAll();
 			$infoitem->getItem()->Discounts()->add(
 				$bestadjustment->getAdjuster(),
 				array('DiscountAmount' => $amount)
 			);
+
 			$this->logDiscountAmount("Item", $amount, $bestadjustment->getAdjuster());
 		}
 
-		//work out all cart-level discounts, and load into cartpriceinfo
+		// work out all cart-level discounts, and load into cartpriceinfo
 		$cartpriceinfo = new PriceInfo($this->order->SubTotal());
-		foreach($this->getCartDiscounts()as $discount){
+		
+		foreach($this->getCartDiscounts() as $discount) {
 			$action = new \SubtotalDiscountAction(
 				$this->getDiscountableAmount($discount),
 				$discount
 			);
+
 			$action->reduceRemaining($this->discountSubtotal($discount));
-			$cartpriceinfo->adjustPrice(
-				new Adjustment($action->perform(), $discount)
-			);
+
+			$adjust = new Adjustment($action->perform(), $discount);
+			$cartpriceinfo->adjustPrice($adjust);
 		}
 
 		$cartremainder = $cartpriceinfo->getOriginalPrice() - $total;
-		//keep remainder sane, i.e above 0
+		// keep remainder sane, i.e above 0
 		$cartremainder = $cartremainder < 0 ? 0 : $cartremainder;
 
-		//select best cart-level disount
-		if($bestadjustment = $cartpriceinfo->getBestAdjustment()){
+		// select best cart-level discount
+		if($bestadjustment = $cartpriceinfo->getBestAdjustment()) {
 			$discount = $bestadjustment->getAdjuster();
 			$amount = $bestadjustment->getValue();
-			//don't let amount be greater than remainder
+			// don't let amount be greater than remainder
 			$amount = $amount > $cartremainder ? $cartremainder : $amount;
 			$total += $amount;
+
 			$this->modifier->Discounts()->add(
 				$discount,
 				array('DiscountAmount' => $amount)
 			);
+	
 			$this->logDiscountAmount("Cart", $amount, $discount);
 		}
 
 		if(class_exists('ShippingFrameworkModifier') && $shipping = $this->order->getModifier("ShippingFrameworkModifier")){
-			//work out all shipping-level discounts, and load into shippingpriceinfo
+			// work out all shipping-level discounts, and load into shippingpriceinfo
 			$shippingpriceinfo = new PriceInfo($shipping->Amount);
+
 			foreach($this->getShippingDiscounts() as $discount){
 				$action = new \SubtotalDiscountAction($shipping->Amount, $discount);
 				$action->reduceRemaining($this->discountSubtotal($discount));
@@ -118,11 +133,16 @@ class Calculator{
 
 	/**
 	 * Work out the total discountable amount for a given discount
+	 *
+	 * @param Discount
+	 *
+	 * @return float
 	 */
-	protected function getDiscountableAmount($discount){
+	protected function getDiscountableAmount($discount) {
 		$amount = 0;
-		foreach($this->order->Items() as $item){
-			if(\ItemDiscountConstraint::match($item, $discount)){
+		
+		foreach($this->order->Items() as $item) {
+			if(\ItemDiscountConstraint::match($item, $discount)) {
 				$amount += method_exists($item, "DiscountableAmount") ?
 							$item->DiscountableAmount() :
 							$item->Total();
@@ -176,7 +196,7 @@ class Calculator{
 		);
 	}
 
-	public function getLog(){
+	public function getLog() {
 		return $this->log;
 	}
 

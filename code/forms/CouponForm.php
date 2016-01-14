@@ -20,11 +20,13 @@ class CouponForm extends Form{
 		$this->loadDataFrom($this->config->getData(), Form::MERGE_IGNORE_FALSEISH);
 
 		$storeddata = $couponcompoent->getData($order);
+
 		if(isset($storeddata['Code'])){
 			$actions->push(
 				FormAction::create('removeCoupon', _t('RemoveCoupon', 'Remove coupon'))
 			);
 		}
+
 		$controller->extend("updateCouponForm", $this, $order);
 	}
 

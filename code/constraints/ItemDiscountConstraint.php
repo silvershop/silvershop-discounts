@@ -2,8 +2,10 @@
 
 /**
  * Discount constraint that restricts to specific items.
+ *
+ * @package shop_discount
  */
-abstract class ItemDiscountConstraint extends Discountconstraint{
+abstract class ItemDiscountConstraint extends DiscountConstraint {
 
 	/**
 	 * Checks that an item can be discounted for configured
@@ -15,11 +17,15 @@ abstract class ItemDiscountConstraint extends Discountconstraint{
 		$singletons = array();
 		$itemconstraints = ClassInfo::subclassesFor("ItemDiscountConstraint");
 		array_shift($itemconstraints); //exclude abstract base class
+
 		$configuredconstraints = Config::inst()->forClass("Discount")->constraints;
+		
 		//get only the configured item constraints
 		$classes = array_intersect($itemconstraints, $configuredconstraints);
-		foreach($classes as $constraint){
-			if(!singleton($constraint)->itemMatchesCriteria($item, $discount)){
+		
+		foreach($classes as $constraint) {
+			if(!singleton($constraint)->itemMatchesCriteria($item, $discount)) {
+				var_dump($constraint);
 				return false;
 			}
 		}
@@ -43,8 +49,9 @@ abstract class ItemDiscountConstraint extends Discountconstraint{
 	 */
 	public function itemsInCart(Discount $discount){
 		$items = $this->order->Items();
-		foreach($items as $item){
-			if($this->itemMatchesCriteria($item, $discount)){
+		
+		foreach($items as $item) {
+			if($this->itemMatchesCriteria($item, $discount)) {
 				return true;
 			}
 		}

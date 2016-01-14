@@ -1,6 +1,9 @@
 <?php
 
-class ProductDiscountExtension extends DataExtension{
+/**
+ * @package shop_discount
+ */
+class ProductDiscountExtension extends DataExtension {
 	
 	private static $casting = array(
 		'TotalReduction' => 'Currency'
@@ -10,7 +13,7 @@ class ProductDiscountExtension extends DataExtension{
 	 * Get the difference between the original price
 	 * and the new price.
 	 */
-	function getTotalReduction($original = "BasePrice") {
+	public function getTotalReduction($original = "BasePrice") {
 		$reduction = $this->owner->{$original} - $this->owner->sellingPrice();
 		//keep it above 0;
 		$reduction = $reduction < 0 ? 0 : $reduction;
@@ -20,8 +23,15 @@ class ProductDiscountExtension extends DataExtension{
 	/**
 	 * Check if this product has a reduced price.
 	 */
-	function IsReduced(){
+	public function IsReduced() {
 		return (bool)$this->getTotalReduction();
+	}
+
+	/**
+	 *
+	 */
+	public function getDiscountedProductID() {
+		return $this->owner->ID;
 	}
 
 }

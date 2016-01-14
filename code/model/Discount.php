@@ -1,6 +1,9 @@
 <?php
 
-class Discount extends DataObject{
+/**
+ * @package shop_discount
+ */
+class Discount extends DataObject {
 	
 	private static $db = array(
 		"Title" => "Varchar(255)", //store the promotion name, or whatever you like

@@ -5,7 +5,7 @@ namespace Shop\Discount;
 /**
  * Wrap PriceInfo with order item info
  */
-class ItemPriceInfo extends PriceInfo{
+class ItemPriceInfo extends PriceInfo {
 
 	protected $item;
 	protected $quantity;
@@ -13,6 +13,7 @@ class ItemPriceInfo extends PriceInfo{
 	public function __construct(\OrderItem $item) {
 		$this->item = $item;
 		$this->quantity = $item->Quantity;
+
 		$originalprice = method_exists($item, "DiscountableAmount") ?
 							$item->DiscountableAmount() :
 							$item->UnitPrice();
@@ -39,12 +40,13 @@ class ItemPriceInfo extends PriceInfo{
 		$price = $this->getOriginalPrice();
 		$val .= " price:$price discount:$discount total:$total.\n";
 		
-		if($best = $this->getBestAdjustment()){
+		if($best = $this->getBestAdjustment()) {
 			$val .= $this->getBestAdjustment()." ";
 			$val .= $this->getBestAdjustment()->getAdjuster()->Title;
-		}else{
+		} else {
 			$val .= "No adjustments";
 		}
+
 		$val .= "\n";
 		$val .= implode(",", $this->getAdjustments());
 		$val .= "\n\n";
