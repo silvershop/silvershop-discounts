@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @package shop_discount
+ */
 class DiscountedOrderItem extends DataExtension {
 
 	private static $db = array(
@@ -20,7 +23,9 @@ class DiscountedOrderItem extends DataExtension {
 	 * @return int
 	 */
 	public function getDiscountedProductID() {
-		return $this->owner->{OrderItem::config()->buyable_relationship}."ID";
+        $productKey = OrderItem::config()->buyable_relationship . "ID";
+
+		return $this->owner->{$productKey};
 	}
 
 }
