@@ -8,8 +8,7 @@
 abstract class ItemDiscountConstraint extends DiscountConstraint {
 
 	/**
-	 * Checks that an item can be discounted for configured
-	 * constraints.
+	 * Checks that an item can be discounted for configured constraints.
 	 *
 	 * If any constraint check fails, the entire function returns false;
 	 */
@@ -25,7 +24,6 @@ abstract class ItemDiscountConstraint extends DiscountConstraint {
 		
 		foreach($classes as $constraint) {
 			if(!singleton($constraint)->itemMatchesCriteria($item, $discount)) {
-				var_dump($constraint);
 				return false;
 			}
 		}
@@ -46,15 +44,20 @@ abstract class ItemDiscountConstraint extends DiscountConstraint {
 
 	/**
 	 * Check if at least one item in cart matches this criteria.
+	 *
+	 * @param Discount $discount
+	 *
+	 * @return boolean
 	 */
-	public function itemsInCart(Discount $discount){
+	public function itemsInCart(Discount $discount) {
 		$items = $this->order->Items();
-		
+
 		foreach($items as $item) {
 			if($this->itemMatchesCriteria($item, $discount)) {
 				return true;
 			}
 		}
+
 		return false;
 	}
 

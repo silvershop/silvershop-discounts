@@ -70,6 +70,7 @@ class Discount extends DataObject {
 				"Amount:GreaterThan" => 0,
 				"Percent:GreaterThan" => 0
 			));
+
 		$constraints = self::config()->constraints;
 		foreach($constraints as $constraint){
 			$discounts = singleton($constraint)
@@ -77,7 +78,8 @@ class Discount extends DataObject {
 							->setContext($context)
 							->filter($discounts);
 		}
-		//cull remaining invalid discounts programatically
+
+		// cull remaining invalid discounts problematically
 		$validdiscounts = new ArrayList();
 		foreach ($discounts as $discount) {
 			if($discount->validateOrder($order, $context)){

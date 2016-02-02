@@ -12,7 +12,7 @@ class Calculator{
 
 	public function __construct(\Order $order, $context = array()) {
 		$this->order = $order;
-		//get qualifying discounts for this order
+		// get qualifying discounts for this order
 		$this->discounts = \Discount::get_matching($this->order, $context);
 		$this->modifier = $this->order->getModifier("OrderDiscountModifier", true);
 	}
@@ -39,7 +39,6 @@ class Calculator{
 
 			$action->perform();
 		}
-
 
 		// select best item-level discounts
 		foreach($infoitems as $infoitem) {
@@ -162,11 +161,18 @@ class Calculator{
 		 			->sum("DiscountAmount");
 	}
 
+	/**
+	 * @param DataList $list
+	 *
+	 * @return array
+	 */
 	protected function createPriceInfoList(\DataList $list) {
 		$output = array();
-		foreach($list as $item){
+
+		foreach($list as $item) {
 			$output[] = new ItemPriceInfo($item);
 		}
+
 		return $output;
 	}
 

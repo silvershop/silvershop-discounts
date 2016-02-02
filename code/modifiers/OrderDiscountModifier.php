@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @package shop_discount
+ */
 class OrderDiscountModifier extends OrderModifier{
 	
 	private static $defaults = array(
@@ -17,33 +20,39 @@ class OrderDiscountModifier extends OrderModifier{
 	);
 
 	private static $singular_name = "Discount";
+
 	private static $plural_name = "Discounts";
 
 	public function value($incoming) {
 		$this->Amount = $this->getDiscount();
+
 		return $this->Amount;
 	}
 
 	public function getDiscount() {
 		$context = array();
-		if($code = Session::get("cart.couponcode")){
+
+		if($code = Session::get("cart.couponcode")) {
 			$context['CouponCode'] = $code;
 		}
+
 		$order = $this->Order();
 		$order->extend("updateDiscountContext", $context);
+		
 		$calculator = new Shop\Discount\Calculator($order, $context);
+		
 		return $calculator->calculate();
 	}
 
-	public function getCode(){
+	public function getCode() {
 		return Session::get("cart.couponcode");
 	}
 
-	public function getSubTitle(){
+	public function getSubTitle() {
 		return $this->getUsedCodes();
 	}
 
-	public function getUsedCodes(){
+	public function getUsedCodes() {
 		return implode(",",
 			$this->Order()->Discounts()
 				->filter("Code:not", "")
