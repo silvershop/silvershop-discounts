@@ -29,12 +29,22 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint {
 	public function check(Discount $discount) {
 		$products = $discount->Products();
 
-		//valid if no categories defined
+        // if no products in the discount even
 		if(!$products->exists()) {
-			return true;
-		}
+            $curr = Versioned::current_stage();
 
-		$constraintproductids = $products->map('ID','ID')->toArray();
+            Versioned::reading_stage('Stage');
+            $products = $discount->Products();
+
+            if(!$products->exists()) {
+                return true;
+            }
+
+            $constraintproductids = $products->map('ID','ID')->toArray();
+            Versioned::reading_stage($curr);
+		} else {
+		  $constraintproductids = $products->map('ID','ID')->toArray();
+        }
 
 		// uses 'DiscountedProductID' so that subclasses of projects (say a custom nested set of products) can define the
 		// underlying DiscountedProductID.
@@ -48,7 +58,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint {
 		if(!$incart) {
 			$this->error("The required products are not in the cart.");
 		}
-		
+
 		return $incart;
 	}
 
@@ -58,7 +68,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint {
 
 		if($products->exists()) {
 			foreach($products as $product) {
-				// uses 'DiscountedProductID' since some subclasses of buyable could be used as the item product (such as 
+				// uses 'DiscountedProductID' since some subclasses of buyable could be used as the item product (such as
 				// a bundle) rather than the product stored.
 				if($product->ID == $itemproduct->DiscountedProductID) {
 					return true;
