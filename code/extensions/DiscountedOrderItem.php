@@ -20,7 +20,7 @@ class DiscountedOrderItem extends DataExtension {
 	 * @return int
 	 */
 	public function getDiscountedProductID() {
-		return $this->{OrderItem::config()->buyable_relationship}."ID";
+		return $this->owner->{OrderItem::config()->buyable_relationship}."ID";
 	}
 
 }
