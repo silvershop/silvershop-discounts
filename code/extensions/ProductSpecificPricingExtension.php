@@ -22,7 +22,7 @@ class SpecificPricingExtension extends DataExtension {
 	function updateSellingPrice(&$price){
 		if($specificprice = SpecificPrice::filter(
 			$this->owner->SpecificPrices()
-				->filter("Price:LessThan", $price)
+				->filter("Price:LessThan", $price), Member::currentUser()
 		)->first()){
 			if ($specificprice->Price > 0) {
 				$price = $specificprice->Price;
