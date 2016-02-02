@@ -56,7 +56,9 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint {
 			count($intersection) > 0;
 
 		if(!$incart) {
-			$this->error("The required products are not in the cart.");
+			$this->error(
+                _t('ProductsDiscountConstraint.MISSINGPRODUCT', "The required products are not in the cart.")
+            );
 		}
 
 		return $incart;
@@ -74,6 +76,10 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint {
 					return true;
 				}
 			}
+
+            $this->error(
+                _t('ProductsDiscountConstraint.MISSINGPRODUCT', "The required products are not in the cart.")
+            );
 
 			return false;
 		}

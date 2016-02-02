@@ -12,13 +12,15 @@ class CouponForm extends Form {
 		$this->config = new CheckoutComponentConfig($order, false);
 		$this->config->addComponent($couponcompoent = new CouponCheckoutComponent());
 
+        $validator = Injector::inst()->create('CheckoutComponentValidator', $this->config);
+
         $fields = $this->config->getFormFields();
 
         $actions = new FieldList(
 			FormAction::create('applyCoupon', _t('ApplyCoupon', 'Apply coupon'))
 		);
 
-        parent::__construct($controller, $name, $fields, $actions);
+        parent::__construct($controller, $name, $fields, $actions, $validator);
 
         $this->loadDataFrom($this->config->getData(), Form::MERGE_IGNORE_FALSEISH);
 

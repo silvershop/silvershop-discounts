@@ -25,21 +25,23 @@ class CouponCheckoutComponent extends CheckoutComponent {
 		$result = new ValidationResult();
 		$code = $data['Code'];
 
-		if($this->validwhenblank && !$code){
+		if($this->validwhenblank && !$code) {
 			return $result;
 		}
 
-		//check the coupon exists, and can be used
-		if($coupon = OrderCoupon::get_by_code($code)){
-			if(!$coupon->validateOrder($order, array("CouponCode" => $code))){
+		// check the coupon exists, and can be used
+		if($coupon = OrderCoupon::get_by_code($code)) {
+			if(!$coupon->validateOrder($order, array("CouponCode" => $code))) {
 				$result->error($coupon->getMessage(), "Code");
+
 				throw new ValidationException($result);
 			}
-		}else{
+		} else {
 			$result->error(
 				_t("OrderCouponModifier.NOTFOUND", "Coupon could not be found"),
 				"Code"
 			);
+
 			throw new ValidationException($result);
 		}
 
