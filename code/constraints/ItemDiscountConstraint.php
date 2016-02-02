@@ -12,16 +12,17 @@ abstract class ItemDiscountConstraint extends DiscountConstraint {
 	 *
 	 * If any constraint check fails, the entire function returns false;
 	 */
-	public static function match(OrderItem $item, Discount $discount){
+	public static function match(OrderItem $item, Discount $discount) {
 		$singletons = array();
 		$itemconstraints = ClassInfo::subclassesFor("ItemDiscountConstraint");
+
 		array_shift($itemconstraints); //exclude abstract base class
 
 		$configuredconstraints = Config::inst()->forClass("Discount")->constraints;
-		
+
 		//get only the configured item constraints
 		$classes = array_intersect($itemconstraints, $configuredconstraints);
-		
+
 		foreach($classes as $constraint) {
 			if(!singleton($constraint)->itemMatchesCriteria($item, $discount)) {
 				return false;
@@ -35,9 +36,9 @@ abstract class ItemDiscountConstraint extends DiscountConstraint {
 	 * Returns true if the given item sits within this constraint.
 	 *
 	 * If there is no constraint set, then it should return true.
-	 * 
+	 *
 	 * @param  OrderItem $item
-	 * @param  Discount  $discount 
+	 * @param  Discount  $discount
 	 * @return boolean
 	 */
 	abstract public function itemMatchesCriteria(OrderItem $item, Discount $discount);

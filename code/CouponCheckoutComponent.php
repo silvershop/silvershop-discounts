@@ -1,12 +1,15 @@
 <?php
 
-class CouponCheckoutComponent extends CheckoutComponent{
+/**
+ * @package shop_discount
+ */
+class CouponCheckoutComponent extends CheckoutComponent {
 
 	protected $validwhenblank = false;
 
 	public function getFormFields(Order $order) {
 		$fields = FieldList::create(
-			TextField::create('Code', _t("CouponForm.COUPON", 
+			TextField::create('Code', _t("CouponForm.COUPON",
 				'Enter your coupon code if you have one.'
 			))
 		);
@@ -14,16 +17,18 @@ class CouponCheckoutComponent extends CheckoutComponent{
 		return $fields;
 	}
 
-	public function setValidWhenBlank($valid){
+	public function setValidWhenBlank($valid) {
 		$this->validwhenblank = $valid;
 	}
 
 	public function validateData(Order $order, array $data) {
 		$result = new ValidationResult();
 		$code = $data['Code'];
+
 		if($this->validwhenblank && !$code){
 			return $result;
 		}
+
 		//check the coupon exists, and can be used
 		if($coupon = OrderCoupon::get_by_code($code)){
 			if(!$coupon->validateOrder($order, array("CouponCode" => $code))){
@@ -50,7 +55,7 @@ class CouponCheckoutComponent extends CheckoutComponent{
 
 	public function setData(Order $order, array $data) {
 		Session::set("cart.couponcode", strtoupper($data['Code']));
+
 		$order->getModifier("OrderDiscountModifier", true);
 	}
-
 }
