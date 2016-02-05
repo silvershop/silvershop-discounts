@@ -4,7 +4,7 @@
  * @package shop_discount
  */
 class Discount extends DataObject {
-	
+
 	private static $db = array(
 		"Title" => "Varchar(255)", //store the promotion name, or whatever you like
 		"Type" => "Enum('Percent,Amount','Percent')",
@@ -262,9 +262,9 @@ class Discount extends DataObject {
 	 */
 	public function setCastedField($fieldName, $value) {
 		if ($fieldName == 'Percent' && $value > 1){
-			$value /= 100.0;	
+			$value /= 100.0;
 		}
-		
+
 		return parent::setCastedField($fieldName, $value);
 	}
 
@@ -350,7 +350,7 @@ class Discount extends DataObject {
 
 	/**
 	 * Get the orders that this discount has been used on.
-	 * 
+	 *
 	 * @param $includeunpaid include orders where the payment process has started
 	 * less than 'unpaid_use_timeout' minutes ago.
 	 * @return DataList list of orders
@@ -393,13 +393,13 @@ class Discount extends DataObject {
 						->innerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"")
 						->where("\"Order\".\"Paid\" IS NOT NULL")
 						->sum("DiscountAmount");
-		
+
 		return $itemsavings + $modifiersavings;
 	}
 
 	/**
 	 * Get the amount saved on the given order with this discount.
-	 * 
+	 *
 	 * @param  Order  $order order to match against
 	 * @return double  savings amount
 	 */
@@ -413,7 +413,7 @@ class Discount extends DataObject {
 			->innerJoin("OrderDiscountModifier_Discounts", "\"OrderAttribute\".\"ID\" = \"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\"")
 			->filter("OrderDiscountModifier_Discounts.DiscountID", $this->ID)
 			->filter("OrderAttribute.OrderID", $order->ID)
-			->sum("DiscountAmount");	
+			->sum("DiscountAmount");
 
 		return $itemsavings + $modifiersavings;
 	}

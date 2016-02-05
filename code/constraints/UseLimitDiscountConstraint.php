@@ -1,7 +1,10 @@
 <?php
 
-class UseLimitDiscountConstraint extends DiscountConstraint{
-	
+/**
+ * @package shop_discount
+ */
+class UseLimitDiscountConstraint extends DiscountConstraint {
+
 	private static $db = array(
 		"UseLimit" => "Int"
 	);
@@ -18,13 +21,14 @@ class UseLimitDiscountConstraint extends DiscountConstraint{
 	}
 
 	public function check(Discount $discount) {
-		if($discount->UseLimit){
-			if($discount->UseCount >= $discount->UseLimit){
+		if($discount->UseLimit) {
+			if($discount->UseCount >= $discount->UseLimit) {
 				$this->error("This discount has reached it's maximum number of uses.");
+
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
