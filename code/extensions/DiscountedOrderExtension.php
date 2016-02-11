@@ -7,13 +7,15 @@ class DiscountedOrderExtension extends DataExtension {
 
     public function updateCMSFields(FieldList $fields) {
         $fields->addFieldsToTab('Root.Discounts',
-           new GridField(
+           $grid = new GridField(
                 'Discounts',
                 'Discount',
                 $this->Discounts(),
                 new GridFieldConfig_RecordViewer()
             )
         );
+
+        $grid->setModelClass('Discount');
     }
 
 	/**
