@@ -141,11 +141,10 @@ class Discount extends DataObject {
 				), "Constraints"
 			);
 		}
-		$this->extend("updateCMSFields", $fields, $params);
-		if($count = $this->getUseCount()){
+
+		if($count = $this->getUseCount()) {
 			$fields->addFieldsToTab("Root.Usage", array(
 				HeaderField::create("UseCount", sprintf("This discount has been used $count time%s.", $count > 1 ? "s" : "")),
-				HeaderField::create("TotalSavings", sprintf("A total of %s has been saved by customers using this discount.", $this->SavingsTotal),"3"),
 				GridField::create(
 					"Orders",
 					"Orders",
@@ -170,6 +169,8 @@ class Discount extends DataObject {
 				$fields->insertAfter($maxamountfield, "Percent");
 			}
 		}
+
+        $this->extend("updateCMSFields", $fields, $params);
 
 		return $fields;
 	}

@@ -4,7 +4,7 @@
  * @package shop_discount
  */
 class OrderDiscountModifier extends OrderModifier{
-	
+
 	private static $defaults = array(
 		"Type" => "Deductable"
 	);
@@ -38,9 +38,9 @@ class OrderDiscountModifier extends OrderModifier{
 
 		$order = $this->Order();
 		$order->extend("updateDiscountContext", $context);
-		
+
 		$calculator = new Shop\Discount\Calculator($order, $context);
-		
+
 		return $calculator->calculate();
 	}
 
@@ -56,7 +56,7 @@ class OrderDiscountModifier extends OrderModifier{
 		return implode(",",
 			$this->Order()->Discounts()
 				->filter("Code:not", "")
-				->map('ID','Title')->toArray()
+				->map('ID','Title')
 		);
 	}
 
