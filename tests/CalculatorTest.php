@@ -5,7 +5,7 @@ use Shop\Discount\Adjustment;
 use Shop\Discount\PriceInfo;
 
 class CalculatorTest extends SapphireTest{
-	
+
 	protected static $fixture_file = array(
 		'shop_discount/tests/fixtures/Discounts.yml',
 		'shop/tests/fixtures/shop.yml'
@@ -96,16 +96,19 @@ class CalculatorTest extends SapphireTest{
 	}
 
 	function testItemLevelPercentAndAmountDiscounts() {
+        OrderDiscount::get()->removeAll();
 		OrderDiscount::create(array(
 			"Title" => "10% off",
 			"Type" => "Percent",
 			"Percent" => 0.10
 		))->write();
+
 		OrderDiscount::create(array(
 			"Title" => "$5 off",
 			"Type" => "Amount",
 			"Amount" => 5
 		))->write();
+
 		//check that discount matches order
 		$matching = Discount::get_matching($this->cart);
 		$this->assertDOSEquals(array(
@@ -172,6 +175,7 @@ class CalculatorTest extends SapphireTest{
 			"ForItems" => false,
 			"ForCart" => true
 		))->write();
+
 		OrderDiscount::create(array(
 			"Title" => "$500 off baby!",
 			"Type" => "Amount",
@@ -195,7 +199,7 @@ class CalculatorTest extends SapphireTest{
 			"ForItems" => false,
 			"ForCart" => true
 		));
-		$discount->write();	
+		$discount->write();
 		$this->assertTrue($discount->validateOrder($this->cart));
 		$calculator = new Calculator($this->cart);
 		$this->assertEquals(8, $calculator->calculate());
@@ -303,7 +307,7 @@ class CalculatorTest extends SapphireTest{
 	}
 
 	//shipping discounts
-	
+
 	public function testFreeShipping() {
 		if (!class_exists('ShippingFrameworkModifier')) return;
 		$discount = OrderDiscount::create(array(
@@ -420,5 +424,5 @@ class CalculatorTest extends SapphireTest{
 		$this->assertTrue($discount->validateOrder($order), "Discount is valid");
 		$this->assertEquals(10, $calculator->calculate(), "$10 is maximum discount");
 	}
-	
+
 }
