@@ -333,17 +333,23 @@ class Discount extends DataObject {
 		$this->ForShipping = $mapping[2];
 	}
 
-	public function getFor(){
-		if($this->ForShipping && $this->ForCart){
+    /**
+     * @return string
+     */
+	public function getFor() {
+		if($this->ForShipping && $this->ForCart) {
 			return "Order";
 		}
-		if($this->ForShipping){
+
+		if($this->ForShipping) {
 			return "Shipping";
 		}
-		if($this->ForItems){
+
+		if($this->ForItems) {
 			return "Items";
 		}
-		if($this->ForCart){
+
+		if($this->ForCart) {
 			return "Cart";
 		}
 	}
@@ -353,6 +359,7 @@ class Discount extends DataObject {
 	 *
 	 * @param $includeunpaid include orders where the payment process has started
 	 * less than 'unpaid_use_timeout' minutes ago.
+     *
 	 * @return DataList list of orders
 	 */
 	public function getAppliedOrders($includeunpaid = false) {
@@ -364,7 +371,8 @@ class Discount extends DataObject {
 				"Product_OrderItem_Discounts.DiscountID" => $this->ID,
 				"OrderDiscountModifier_Discounts.DiscountID" => $this->ID
 			));
-		if($includeunpaid){
+
+		if($includeunpaid) {
 			$minutes = self::config()->unpaid_use_timeout;
 			$timeouttime = date('Y-m-d H:i:s', strtotime("-{$minutes} minutes"));
 			$orders = $orders->leftJoin("Payment", "\"Payment\".\"OrderID\" = \"Order\".\"ID\"")
@@ -372,9 +380,11 @@ class Discount extends DataObject {
 					"(\"Order\".\"Paid\" IS NOT NULL) OR ".
 					"(\"Payment\".\"Created\" > '$timeouttime' AND \"Payment\".\"Status\" NOT IN('Refunded', 'Void'))"
 				);
-		}else{
+		} else {
 			$orders = $orders->where("\"Order\".\"Paid\" IS NOT NULL");
 		}
+
+        $this->extend('updateAppliedOrders', $orders, $includeunpaid);
 
 		return $orders;
 	}
@@ -409,6 +419,7 @@ class Discount extends DataObject {
 			->filter("Product_OrderItem_Discounts.DiscountID", $this->ID)
 			->filter("OrderAttribute.OrderID", $order->ID)
 			->sum("DiscountAmount");
+
 		$modifiersavings = OrderAttribute::get()
 			->innerJoin("OrderDiscountModifier_Discounts", "\"OrderAttribute\".\"ID\" = \"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\"")
 			->filter("OrderDiscountModifier_Discounts.DiscountID", $this->ID)

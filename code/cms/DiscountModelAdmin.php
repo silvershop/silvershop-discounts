@@ -1,13 +1,16 @@
 <?php
 
 /**
- * @package shop-discounts
+ * @package shop_discount
  **/
 class DiscountModelAdmin extends ModelAdmin {
 
 	private static $url_segment = 'discounts';
+
 	private static $menu_title = 'Discounts';
+
 	private static $menu_icon = 'shop_discount/images/icon-coupons.png';
+
 	private static $menu_priority = 2;
 
 	private static $managed_models = array(
@@ -15,7 +18,8 @@ class DiscountModelAdmin extends ModelAdmin {
 		"OrderCoupon",
 		"PartialUseDiscount"
 	);
-	public static $model_importers = array();
+
+    public static $model_importers = array();
 
 	private static $allowed_actions = array(
 		"generatecoupons",
@@ -28,9 +32,10 @@ class DiscountModelAdmin extends ModelAdmin {
 		"PartialUseDiscount" => "Partial use discounts are 'amount only' discounts that allow remainder amounts to be used."
 	);
 
-	public function getEditForm($id = null, $fields = null){
+	public function getEditForm($id = null, $fields = null) {
 		$form = parent::getEditForm($id, $fields);
-		if($grid = $form->Fields()->fieldByName("OrderCoupon")){
+
+		if($grid = $form->Fields()->fieldByName("OrderCoupon")) {
 			$grid->getConfig()
 				->addComponent(
 					$link = new GridField_LinkComponent("Generate Multiple Coupons", $this->Link()."/generatecoupons"),
@@ -40,7 +45,8 @@ class DiscountModelAdmin extends ModelAdmin {
 		}
 
 		$descriptions = self::config()->model_descriptions;
-		if(isset($descriptions[$this->modelClass])){
+
+		if(isset($descriptions[$this->modelClass])) {
 			$form->Fields()->fieldByName($this->modelClass)
 				->setDescription($descriptions[$this->modelClass]);
 		}
@@ -55,6 +61,7 @@ class DiscountModelAdmin extends ModelAdmin {
 		$context = $this->getSearchContext();
 		$params = $this->request->requestVar('q');
 		$list = $context->getResults($params);
+
 		if(isset($params['HasBeenUsed'])) {
 			$list = $list
 				->leftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
@@ -64,16 +71,19 @@ class DiscountModelAdmin extends ModelAdmin {
 					"\"OrderAttribute\".\"ID\" = \"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\""
 				)));
 		}
+
 		if(isset($params['Products'])) {
 			$list = $list
 				->innerJoin("Discount_Products", "Discount_Products.DiscountID = Discount.ID")
 				->filter("Discount_Products.ProductID", $params['Products']);
 		}
+
 		if(isset($params['Categories'])) {
 			$list = $list
 				->innerJoin("Discount_Categories", "Discount_Categories.DiscountID = Discount.ID")
 				->filter("Discount_Categories.ProductCategoryID", $params['Categories']);
-		}		
+		}
+
 		$this->extend('updateList', $list);
 
 		return $list;
@@ -96,7 +106,7 @@ class DiscountModelAdmin extends ModelAdmin {
 				)->setDescription("This is in addition to the length of the prefix.")
 			)
 		), "Title");
-		
+
 		$actions = new FieldList(
 			new FormAction('generate', 'Generate')
 		);
