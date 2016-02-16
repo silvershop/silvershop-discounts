@@ -3,7 +3,7 @@
 /**
  * @package shop_discount
  */
-class OrderDiscountModifier extends OrderModifier{
+class OrderDiscountModifier extends OrderModifier {
 
 	private static $defaults = array(
 		"Type" => "Deductable"
@@ -32,7 +32,7 @@ class OrderDiscountModifier extends OrderModifier{
 	public function getDiscount() {
 		$context = array();
 
-		if($code = Session::get("cart.couponcode")) {
+		if($code = $this->getCode()) {
 			$context['CouponCode'] = $code;
 		}
 
@@ -40,13 +40,24 @@ class OrderDiscountModifier extends OrderModifier{
 		$order->extend("updateDiscountContext", $context);
 
 		$calculator = new Shop\Discount\Calculator($order, $context);
+		$amount = $calculator->calculate();
 
-		return $calculator->calculate();
+        return $amount;
 	}
 
-	public function getCode() {
-		return Session::get("cart.couponcode");
-	}
+    public function getCode() {
+        $code = Session::get("cart.couponcode");
+
+        if(!$code && $this->Order()->exists()) {
+            $discount = $this->Order()->Discounts()->filter("Code:not", "")->first();
+
+            if($discount) {
+                return $discount->Code;
+            }
+        }
+
+        return $code;
+    }
 
 	public function getSubTitle() {
 		return $this->getUsedCodes();
@@ -60,8 +71,17 @@ class OrderDiscountModifier extends OrderModifier{
 		);
 	}
 
+    public function getAmount() {
+        $fields = $this->getQueriedDatabaseFields();
+
+        if(!$fields['Amount']) {
+            return $this->getDiscount();
+        }
+
+        return $fields['Amount'];
+    }
+
 	public function ShowInTable() {
 		return $this->Amount() > 0;
 	}
-
 }

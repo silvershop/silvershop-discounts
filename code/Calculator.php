@@ -109,7 +109,7 @@ class Calculator {
 			// work out all shipping-level discounts, and load into shippingpriceinfo
 			$shippingpriceinfo = new PriceInfo($shipping->Amount);
 
-			foreach($this->getShippingDiscounts() as $discount){
+			foreach($this->getShippingDiscounts() as $discount) {
 				$action = new \SubtotalDiscountAction($shipping->Amount, $discount);
 				$action->reduceRemaining($this->discountSubtotal($discount));
 				$shippingpriceinfo->adjustPrice(
@@ -117,15 +117,17 @@ class Calculator {
 				);
 			}
 			//select best shipping-level disount
-			if($bestadjustment = $shippingpriceinfo->getBestAdjustment()){
+			if($bestadjustment = $shippingpriceinfo->getBestAdjustment()) {
 				$discount = $bestadjustment->getAdjuster();
 				$amount = $bestadjustment->getValue();
 				//don't let amount be greater than remainder
 				$total += $amount;
-				$this->modifier->Discounts()->add(
+
+                $this->modifier->Discounts()->add(
 					$discount,
 					array('DiscountAmount' => $amount)
 				);
+
 				$this->logDiscountAmount("Shipping", $amount, $discount);
 			}
 		}

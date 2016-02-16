@@ -134,7 +134,8 @@ class Discount extends DataObject {
 				)
 			)
 		));
-		if(!$this->isInDB()){
+
+		if(!$this->isInDB()) {
 			$fields->addFieldToTab("Root.Main",
 				LiteralField::create("SaveNote",
 					"<p class=\"message good\">More constraints will show up after you save for the first time.</p>"
@@ -154,18 +155,21 @@ class Discount extends DataObject {
 				)
 			));
 		}
-		if($params && isset($params['forcetype'])){
+
+		if($params && isset($params['forcetype'])) {
 			$valuefield = $params['forcetype'] == "Percent" ? $percentfield : $amountfield;
 			$fields->insertAfter($valuefield,"Type");
-			$fields->removeByName("Type");
-		}elseif($this->Type && (double)$this->{$this->Type}){
+			$fields->makeFieldReadonly("Type");
+		} else if($this->Type && (double)$this->{$this->Type}) {
 			$valuefield = $this->Type == "Percent" ? $percentfield : $amountfield;
-			$fields->removeByName("Type");
+
+			$fields->makeFieldReadonly("Type");
 			$fields->insertAfter($valuefield, "ActionTitle");
 			$fields->replaceField($this->Type,
 				$valuefield->performReadonlyTransformation()
 			);
-			if($this->Type == "Percent"){
+
+            if($this->Type == "Percent") {
 				$fields->insertAfter($maxamountfield, "Percent");
 			}
 		}
@@ -290,8 +294,7 @@ class Discount extends DataObject {
 	}
 
 	public function getDiscountNice() {
-		if($this->Type == "Percent"){
-
+		if($this->Type == "Percent") {
 			return $this->dbObject("Percent")->Nice();
 		}
 
