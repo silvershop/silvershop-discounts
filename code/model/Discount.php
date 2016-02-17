@@ -72,6 +72,7 @@ class Discount extends DataObject {
 			));
 
 		$constraints = self::config()->constraints;
+
 		foreach($constraints as $constraint){
 			$discounts = singleton($constraint)
 							->setOrder($order)
@@ -81,6 +82,7 @@ class Discount extends DataObject {
 
 		// cull remaining invalid discounts problematically
 		$validdiscounts = new ArrayList();
+
 		foreach ($discounts as $discount) {
 			if($discount->validateOrder($order, $context)){
 				$validdiscounts->push($discount);
@@ -226,29 +228,37 @@ class Discount extends DataObject {
 
 	/**
 	 * Check if this coupon can be used with a given order
+     *
 	 * @param Order $order
 	 * @param array $context addional data to be checked in constraints.
 	 * @return boolean
 	 */
 	public function validateOrder($order, $context = array()) {
-		if(empty($order)){
+		if(empty($order)) {
 			$this->error(_t("Discount.NOORDER", "Order has not been started."));
-			return false;
+
+        	return false;
 		}
-		//active
-		if(!$this->Active){
+
+		// active discount.
+		if(!$this->Active) {
 			$this->error(
 				sprintf(_t("Discount.INACTIVE", "This %s is not active."), $this->i18n_singular_name())
 			);
+
 			return false;
 		}
-		$constraints = self::config()->constraints;
-		foreach($constraints as $constraint){
+
+        $constraints = self::config()->constraints;
+
+		foreach($constraints as $constraint) {
 			$constraint = singleton($constraint)
 				->setOrder($order)
 				->setContext($context);
-			if(!$constraint->check($this)){
+
+			if(!$constraint->check($this)) {
 				$this->error($constraint->getMessage());
+
 				return false;
 			}
 		}
@@ -302,20 +312,34 @@ class Discount extends DataObject {
 	}
 
 	/**
-	* Get the number of times a discount has been used
-	* @param string $order - ignore this order when counting uses
-	* @return int count
-	*/
-	public function getUseCount() {
-		return $this->getAppliedOrders(true)->count();
+	 * Get the number of times a discount has been used.
+     *
+	 * @param int $orderID - ignore this order when counting uses
+     *
+	 * @return int count
+	 */
+	public function getUseCount($orderID = null) {
+		$used = $this->getAppliedOrders(true);
+
+        if($orderID) {
+            $used = $used->exclude('ID', $orderID);
+        }
+
+        return $used->count();
 	}
 
-	public function isUsed(){
-		return (boolean)$this->getUseCount();
+    /**
+     * Returns whether this coupon is used.
+     *
+     * @param int $orderID
+     */
+	public function isUsed($orderID = null) {
+		return $this->getUseCount($orderID)->exists();
 	}
 
 	public function setPercent($value){
 		$value = $value > 100 ? 100 : $value;
+
 		$this->setField("Percent", $value);
 	}
 
@@ -323,14 +347,16 @@ class Discount extends DataObject {
 	 * Map the single 'For' to the For"X" boolean fields
 	 * @param string $val
 	 */
-	public function setFor($val){
+	public function setFor($val) {
 		if(!$val) return;
+
 		$map = array(
 			"Items" => array(1,0,0),
 			"Cart" => array(0,1,0),
 			"Shipping" => array(0,0,1),
 			"Order" => array(0,1,1)
 		);
+
 		$mapping = $map[$val];
 		$this->ForItems = $mapping[0];
 		$this->ForCart = $mapping[1];

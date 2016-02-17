@@ -40,7 +40,9 @@ class OrderDiscountModifier extends OrderModifier {
 		$order->extend("updateDiscountContext", $context);
 
 		$calculator = new Shop\Discount\Calculator($order, $context);
-		$amount = $calculator->calculate();
+        $amount = $calculator->calculate();
+
+		$this->setField('Amount', $amount);
 
         return $amount;
 	}
@@ -72,13 +74,7 @@ class OrderDiscountModifier extends OrderModifier {
 	}
 
     public function getAmount() {
-        $fields = $this->getQueriedDatabaseFields();
-
-        if(!$fields['Amount']) {
-            return $this->getDiscount();
-        }
-
-        return $fields['Amount'];
+        return $this->getDiscount();
     }
 
 	public function ShowInTable() {
