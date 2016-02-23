@@ -332,9 +332,11 @@ class Discount extends DataObject {
      * Returns whether this coupon is used.
      *
      * @param int $orderID
+     *
+     * @return boolean
      */
 	public function isUsed($orderID = null) {
-		return $this->getUseCount($orderID)->exists();
+		return $this->getUseCount($orderID) > 0;
 	}
 
 	public function setPercent($value){
