@@ -9,6 +9,7 @@ class CouponForm extends Form {
 	protected $config;
 
 	public function __construct($controller, $name, Order $order) {
+
 		$this->config = new CheckoutComponentConfig($order, false);
 		$this->config->addComponent($couponcompoent = new CouponCheckoutComponent());
 
@@ -32,6 +33,8 @@ class CouponForm extends Form {
 			);
 		}
 
+        $order = $this->config->getOrder();
+
 		$controller->extend("updateCouponForm", $this, $order);
 	}
 
@@ -44,6 +47,13 @@ class CouponForm extends Form {
 
 	public function removeCoupon($data, $form) {
 		Session::clear("cart.couponcode");
+
+        $order = $this->config->getOrder();
+
+        if($order) {
+            $order->removeDiscounts();
+        }
+
 		return $this->controller->redirectBack();
 	}
 

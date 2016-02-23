@@ -62,4 +62,21 @@ class DiscountedOrderExtension extends DataExtension {
 			}
 		}
 	}
+
+    /**
+     * Remove discounts
+     */
+    public function removeDiscounts() {
+        $discounts = Discount::get()
+            ->leftJoin("OrderDiscountModifier_Discounts", "\"Discount\".\"ID\" = \"OrderDiscountModifier_Discounts\".\"DiscountID\"")
+            ->innerJoin("OrderAttribute",
+                "(\"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\" = \"OrderAttribute\".\"ID\")"
+            )
+            ->filter("OrderAttribute.OrderID", $this->owner->ID)
+            ->removeAll();
+
+        foreach($this->owner->Items() as $item) {
+            $item->Discounts()->removeAll();
+        }
+    }
 }
