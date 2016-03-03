@@ -21,12 +21,12 @@ before_script:
   - cd ~/builds/ss
 
 script:
-  - "if [ \"$COVERAGE\" = \"\" ]; then vendor/bin/phpunit -c shop_discount/phpunit.xml.dist; fi"
-  - "if [ \"$COVERAGE\" = \"1\" ]; then vendor/bin/phpunit -c shop_discount/phpunit.xml.dist --coverage-clover shop_discount/coverage.xml; fi"
+  - "if [ \"$COVERAGE\" = \"\" ]; then vendor/bin/phpunit -c silvershop-discounts/phpunit.xml.dist; fi"
+  - "if [ \"$COVERAGE\" = \"1\" ]; then vendor/bin/phpunit -c silvershop-discounts/phpunit.xml.dist --coverage-clover silvershop-discounts/coverage.xml; fi"
 
 after_script:
   - if [ "$COVERAGE" = "1" ]; then
-  - cd shop_discount
+  - cd silvershop-discounts
   - wget https://scrutinizer-ci.com/ocular.phar
   - php ocular.phar code-coverage:upload -v --format=php-clover coverage.xml
   - fi

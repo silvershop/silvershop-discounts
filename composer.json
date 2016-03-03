@@ -1,27 +1,16 @@
 {
-	"name" : "burnbright/silverstripe-shop-discount",
-	"description" : "Discounts submodule for silverstripe-shop module. Create coupons and generic discounts to be applied at checkout.",
+	"name" : "silvershop/discounts",
+	"description" : "Adds Discount and Coupon support for SilverShop.",
 	"license" : "BSD-2-Clause",
 	"type" : "silverstripe-module",
 	"keywords" : ["silverstripe","shop","shopping cart","ecommerce","discount","coupons"],
-	"authors" : [
-		{
-			"name" : "Jeremy Shipman",
-			"email" : "jeremy@burnbright.net",
-			"homepage" : "https://github.com/jedateach",
-			"role" : "Developer"
-		}
-	],
 	"require" : {
-		"silverstripe/cms": "~3.1",
-		"silverstripe/framework": "~3.1",
-		"burnbright/silverstripe-shop": "*"
+		"silvershop/core": "*"
 	},
 	"require-dev": {
-		"phpunit/PHPUnit": "~3.7",
-		"burnbright/silverstripe-shop-shipping": "*"
+		"phpunit/PHPUnit": "~3.7"
 	},
 	"extra" : {
-		"installer-name": "shop_discount"
+		"installer-name": "silvershop-discounts"
     }
 }
