@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @package shop_discount
+ * @package silvershop-discounts
  */
 class DiscountedOrderExtension extends DataExtension {
 

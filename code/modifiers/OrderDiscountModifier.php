@@ -1,51 +1,51 @@
 <?php
 
 /**
- * @package shop_discount
+ * @package silvershop-discounts
  */
 class OrderDiscountModifier extends OrderModifier {
 
-	private static $defaults = array(
-		"Type" => "Deductable"
-	);
+    private static $defaults = array(
+        "Type" => "Deductable"
+    );
 
-	private static $many_many = array(
-		"Discounts" => "Discount"
-	);
+    private static $many_many = array(
+        "Discounts" => "Discount"
+    );
 
-	private static $many_many_extraFields = array(
-		'Discounts' => array(
-			'DiscountAmount' => 'Currency'
-		)
-	);
+    private static $many_many_extraFields = array(
+        'Discounts' => array(
+            'DiscountAmount' => 'Currency'
+        )
+    );
 
-	private static $singular_name = "Discount";
+    private static $singular_name = "Discount";
 
-	private static $plural_name = "Discounts";
+    private static $plural_name = "Discounts";
 
-	public function value($incoming) {
-		$this->Amount = $this->getDiscount();
+    public function value($incoming) {
+        $this->Amount = $this->getDiscount();
 
-		return $this->Amount;
-	}
+        return $this->Amount;
+    }
 
-	public function getDiscount() {
-		$context = array();
+    public function getDiscount() {
+        $context = array();
 
-		if($code = $this->getCode()) {
-			$context['CouponCode'] = $code;
-		}
+        if($code = $this->getCode()) {
+            $context['CouponCode'] = $code;
+        }
 
-		$order = $this->Order();
-		$order->extend("updateDiscountContext", $context);
+        $order = $this->Order();
+        $order->extend("updateDiscountContext", $context);
 
-		$calculator = new Shop\Discount\Calculator($order, $context);
+        $calculator = new Shop\Discount\Calculator($order, $context);
         $amount = $calculator->calculate();
 
-		$this->setField('Amount', $amount);
+        $this->setField('Amount', $amount);
 
         return $amount;
-	}
+    }
 
     public function getCode() {
         $code = Session::get("cart.couponcode");
@@ -61,23 +61,23 @@ class OrderDiscountModifier extends OrderModifier {
         return $code;
     }
 
-	public function getSubTitle() {
-		return $this->getUsedCodes();
-	}
+    public function getSubTitle() {
+        return $this->getUsedCodes();
+    }
 
-	public function getUsedCodes() {
-		return implode(",",
-			$this->Order()->Discounts()
-				->filter("Code:not", "")
-				->map('ID','Title')
-		);
-	}
+    public function getUsedCodes() {
+        return implode(",",
+            $this->Order()->Discounts()
+                ->filter("Code:not", "")
+                ->map('ID','Title')
+        );
+    }
 
     public function getAmount() {
         return $this->getDiscount();
     }
 
-	public function ShowInTable() {
-		return $this->Amount() > 0;
-	}
+    public function ShowInTable() {
+        return $this->Amount() > 0;
+    }
 }

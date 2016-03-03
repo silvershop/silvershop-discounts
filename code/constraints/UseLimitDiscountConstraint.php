@@ -1,35 +1,35 @@
 <?php
 
 /**
- * @package shop_discount
+ * @package silvershop-discounts
  */
 class UseLimitDiscountConstraint extends DiscountConstraint {
 
-	private static $db = array(
-		"UseLimit" => "Int"
-	);
+    private static $db = array(
+        "UseLimit" => "Int"
+    );
 
-	private static $field_labels = array(
-		"UseLimit" => "Maximum number of uses"
-	);
+    private static $field_labels = array(
+        "UseLimit" => "Maximum number of uses"
+    );
 
-	public function updateCMSFields(FieldList $fields) {
-		$fields->addFieldToTab("Root.Main.Constraints.Main",
-			NumericField::create("UseLimit", "Limit number of uses", 0)
-				->setDescription("Note: 0 = unlimited")
-		);
-	}
+    public function updateCMSFields(FieldList $fields) {
+        $fields->addFieldToTab("Root.Main.Constraints.Main",
+            NumericField::create("UseLimit", "Limit number of uses", 0)
+                ->setDescription("Note: 0 = unlimited")
+        );
+    }
 
-	public function check(Discount $discount) {
-		if($discount->UseLimit) {
-			if($discount->getUseCount($this->order->ID) >= $discount->UseLimit) {
-				$this->error("This discount has reached it's maximum number of uses.");
+    public function check(Discount $discount) {
+        if($discount->UseLimit) {
+            if($discount->getUseCount($this->order->ID) >= $discount->UseLimit) {
+                $this->error("This discount has reached it's maximum number of uses.");
 
-				return false;
-			}
-		}
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
 }

@@ -3,7 +3,7 @@ Name: silvershop-discounts
 ---
 LeftAndMain:
   extra_requirements_css:
-    - shop_discount/css/OrderCouponAdmin.css
+    - silvershop-discounts/css/OrderCouponAdmin.css
 Product:
   extensions:
     - ProductDiscountExtension

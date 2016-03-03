@@ -3,63 +3,63 @@
 /**
  * Discount constraint that restricts to specific items.
  *
- * @package shop_discount
+ * @package silvershop-discounts
  */
 abstract class ItemDiscountConstraint extends DiscountConstraint {
 
-	/**
-	 * Checks that an item can be discounted for configured constraints.
-	 *
-	 * If any constraint check fails, the entire function returns false;
-	 */
-	public static function match(OrderItem $item, Discount $discount) {
-		$singletons = array();
-		$itemconstraints = ClassInfo::subclassesFor("ItemDiscountConstraint");
+    /**
+     * Checks that an item can be discounted for configured constraints.
+     *
+     * If any constraint check fails, the entire function returns false;
+     */
+    public static function match(OrderItem $item, Discount $discount) {
+        $singletons = array();
+        $itemconstraints = ClassInfo::subclassesFor("ItemDiscountConstraint");
 
-		array_shift($itemconstraints); //exclude abstract base class
+        array_shift($itemconstraints); //exclude abstract base class
 
-		$configuredconstraints = Config::inst()->forClass("Discount")->constraints;
+        $configuredconstraints = Config::inst()->forClass("Discount")->constraints;
 
-		//get only the configured item constraints
-		$classes = array_intersect($itemconstraints, $configuredconstraints);
+        //get only the configured item constraints
+        $classes = array_intersect($itemconstraints, $configuredconstraints);
 
-		foreach($classes as $constraint) {
-			if(!singleton($constraint)->itemMatchesCriteria($item, $discount)) {
-				return false;
-			}
-		}
+        foreach($classes as $constraint) {
+            if(!singleton($constraint)->itemMatchesCriteria($item, $discount)) {
+                return false;
+            }
+        }
 
-		return true;
-	}
+        return true;
+    }
 
-	/**
-	 * Returns true if the given item sits within this constraint.
-	 *
-	 * If there is no constraint set, then it should return true.
-	 *
-	 * @param  OrderItem $item
-	 * @param  Discount  $discount
-	 * @return boolean
-	 */
-	abstract public function itemMatchesCriteria(OrderItem $item, Discount $discount);
+    /**
+     * Returns true if the given item sits within this constraint.
+     *
+     * If there is no constraint set, then it should return true.
+     *
+     * @param  OrderItem $item
+     * @param  Discount  $discount
+     * @return boolean
+     */
+    abstract public function itemMatchesCriteria(OrderItem $item, Discount $discount);
 
-	/**
-	 * Check if at least one item in cart matches this criteria.
-	 *
-	 * @param Discount $discount
-	 *
-	 * @return boolean
-	 */
-	public function itemsInCart(Discount $discount) {
-		$items = $this->order->Items();
+    /**
+     * Check if at least one item in cart matches this criteria.
+     *
+     * @param Discount $discount
+     *
+     * @return boolean
+     */
+    public function itemsInCart(Discount $discount) {
+        $items = $this->order->Items();
 
-		foreach($items as $item) {
-			if($this->itemMatchesCriteria($item, $discount)) {
-				return true;
-			}
-		}
+        foreach($items as $item) {
+            if($this->itemMatchesCriteria($item, $discount)) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
 }

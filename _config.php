@@ -1,5 +1,5 @@
 <?php
 
-define('SHOP_DISCOUNT_DIR', 'shop_discount');
+define('silvershop-discounts_DIR', 'silvershop-discounts');
 
 DiscountConstraint::set_up_constraints();

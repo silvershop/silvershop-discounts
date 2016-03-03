@@ -3,26 +3,26 @@
 use Shop\Discount\Adjustment;
 
 /**
- * @package shop_discount
+ * @package silvershop-discounts
  */
 class ItemFixedDiscount extends ItemDiscountAction {
 
-	function perform() {
-		foreach($this->infoitems as $info) {
-			if(!$this->itemQualifies($info)) {
-				continue;
-			}
+    function perform() {
+        foreach($this->infoitems as $info) {
+            if(!$this->itemQualifies($info)) {
+                continue;
+            }
 
-			$amount = $this->discount->getDiscountValue($info->getOriginalPrice());
-			$amount *= $info->getQuantity();
-			$amount = $this->limit($amount);
+            $amount = $this->discount->getDiscountValue($info->getOriginalPrice());
+            $amount *= $info->getQuantity();
+            $amount = $this->limit($amount);
 
             $info->adjustPrice(new Adjustment($amount, $this->discount));
 
-			//break the loop if there is no discountable amount left
-			if(!$this->hasRemainingDiscount()) {
-				break;
-			}
-		}
-	}
+            //break the loop if there is no discountable amount left
+            if(!$this->hasRemainingDiscount()) {
+                break;
+            }
+        }
+    }
 }
