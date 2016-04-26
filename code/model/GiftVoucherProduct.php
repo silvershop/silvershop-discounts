@@ -16,14 +16,14 @@ class GiftVoucherProduct extends Product{
 
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
-		$fields->addFieldToTab("Root.Content.Pricing",
+		$fields->addFieldToTab("Root.Pricing",
 			new OptionsetField("VariableAmount", "Price", array(
 				0 => "Fixed",
 				1 => "Allow customer to choose"
 			)),
 			"BasePrice"
 		);
-		$fields->addFieldsToTab("Root.Content.Pricing", array(
+		$fields->addFieldsToTab("Root.Pricing", array(
 			//text field, because of CMS js validation issue
 			$minimumamount = new TextField("MinimumAmount", "Minimum Amount")
 		));
