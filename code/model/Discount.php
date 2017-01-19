@@ -63,13 +63,25 @@ class Discount extends DataObject {
      */
     public static function get_matching(Order $order, $context = array()) {
         //get as many matching discounts as possible in a single query
-        $discounts = self::get()
-            ->filter("Active", true)
-            //amount or percent > 0
+        if ($order->Placed) {
+            $discounts = self::get()->filter(array(
+                'StartDate:LessThan' => $order->Created,
+                'EndDate:GreaterThan' => $order->Created,
+            ))
             ->filterAny(array(
                 "Amount:GreaterThan" => 0,
                 "Percent:GreaterThan" => 0
             ));
+        } else {
+            //get as many matching discounts as possible in a single query
+            $discounts = self::get()
+                ->filter("Active", true)
+                //amount or percent > 0
+                ->filterAny(array(
+                    "Amount:GreaterThan" => 0,
+                    "Percent:GreaterThan" => 0
+            ));
+        }
 
         $constraints = self::config()->constraints;
 
