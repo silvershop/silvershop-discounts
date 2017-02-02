@@ -19,25 +19,32 @@ class DatetimeDiscountConstraint extends DiscountConstraint{
 	}
 
 	public function filter(DataList $list) {
-		$now = date('Y-m-d H:i:s');
+	    // Check whether we are looking at a historic order or a current one
+		$datetime = $this->order->Placed ? $this->order->Created : date('Y-m-d H:i:s');
+
 		//to bad ORM filtering for NULL doesn't work...so we need to use where
 		return $list->where(
-			"(\"Discount\".\"StartDate\" IS NULL) OR (\"Discount\".\"StartDate\" < '$now')"
+			"(\"Discount\".\"StartDate\" IS NULL) OR (\"Discount\".\"StartDate\" < '$datetime')"
 		)
 		->where(
-			"(\"Discount\".\"EndDate\" IS NULL) OR (\"Discount\".\"EndDate\" > '$now')"
+			"(\"Discount\".\"EndDate\" IS NULL) OR (\"Discount\".\"EndDate\" > '$datetime')"
 		);
 	}
 
 	public function check(Discount $discount) {
+
 		//time period
 		$startDate = strtotime($discount->StartDate);
 		$endDate = strtotime($discount->EndDate);
-		$now = time();
+
+		// Adjust the time to the when the order was placed or the current time non completed orders
+		$now = $this->order->Placed ? strtotime($this->order->Created) : time();
+
 		if($endDate && $endDate < $now){
 			$this->error(_t("OrderCoupon.EXPIRED", "This coupon has already expired."));
 			return false;
 		}
+
 		if($startDate && $startDate > $now){
 			$this->error(_t("OrderCoupon.TOOEARLY", "It is too early to use this coupon."));
 			return false;
@@ -45,5 +52,4 @@ class DatetimeDiscountConstraint extends DiscountConstraint{
 
 		return true;
 	}
-
 }

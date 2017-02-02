@@ -63,33 +63,21 @@ class Discount extends DataObject {
      */
     public static function get_matching(Order $order, $context = array()) {
         //get as many matching discounts as possible in a single query
-        if ($order->Placed) {
-            $discounts = self::get()->filter(array(
-                'StartDate:LessThan' => $order->Created,
-                'EndDate:GreaterThan' => $order->Created,
-            ))
+        $discounts = self::get()
+            ->filter("Active", true)
+            //amount or percent > 0
             ->filterAny(array(
                 "Amount:GreaterThan" => 0,
                 "Percent:GreaterThan" => 0
-            ));
-        } else {
-            //get as many matching discounts as possible in a single query
-            $discounts = self::get()
-                ->filter("Active", true)
-                //amount or percent > 0
-                ->filterAny(array(
-                    "Amount:GreaterThan" => 0,
-                    "Percent:GreaterThan" => 0
-            ));
-        }
+        ));
 
         $constraints = self::config()->constraints;
 
-        foreach($constraints as $constraint){
+        foreach ($constraints as $constraint) {
             $discounts = singleton($constraint)
-                            ->setOrder($order)
-                            ->setContext($context)
-                            ->filter($discounts);
+                ->setOrder($order)
+                ->setContext($context)
+                ->filter($discounts);
         }
 
         // cull remaining invalid discounts problematically
@@ -270,7 +258,7 @@ class Discount extends DataObject {
 
             if(!$constraint->check($this)) {
                 $this->error($constraint->getMessage());
-
+                var_dump($constraint->getMessage());
                 return false;
             }
         }
