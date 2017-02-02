@@ -258,7 +258,6 @@ class Discount extends DataObject {
 
             if(!$constraint->check($this)) {
                 $this->error($constraint->getMessage());
-                var_dump($constraint->getMessage());
                 return false;
             }
         }
