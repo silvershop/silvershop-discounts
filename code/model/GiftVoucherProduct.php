@@ -58,7 +58,7 @@ class GiftVoucherProduct_Controller extends Product_Controller{
 			));
 			$form->Fields()->push(
 				//TODO: set minimum amount
-				$giftamount = new CurrencyField("UnitPrice", "Amount", $this->BasePrice)
+				$giftamount = new CurrencyField("UnitPrice", _t('GiftVoucherProduct.Amount', 'Amount'), $this->BasePrice)
 			);
 			$giftamount->setForm($form);
 		}
