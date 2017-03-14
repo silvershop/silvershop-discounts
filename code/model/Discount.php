@@ -69,15 +69,15 @@ class Discount extends DataObject {
             ->filterAny(array(
                 "Amount:GreaterThan" => 0,
                 "Percent:GreaterThan" => 0
-            ));
+        ));
 
         $constraints = self::config()->constraints;
 
-        foreach($constraints as $constraint){
+        foreach ($constraints as $constraint) {
             $discounts = singleton($constraint)
-                            ->setOrder($order)
-                            ->setContext($context)
-                            ->filter($discounts);
+                ->setOrder($order)
+                ->setContext($context)
+                ->filter($discounts);
         }
 
         // cull remaining invalid discounts problematically
@@ -258,7 +258,6 @@ class Discount extends DataObject {
 
             if(!$constraint->check($this)) {
                 $this->error($constraint->getMessage());
-
                 return false;
             }
         }
