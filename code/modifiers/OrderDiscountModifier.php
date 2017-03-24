@@ -38,6 +38,11 @@ class OrderDiscountModifier extends OrderModifier {
 
         $order = $this->Order();
         $order->extend("updateDiscountContext", $context);
+        
+        // Prevent placed orders from having a discount applied to them
+        if ($order->Placed) {
+            return;
+        }
 
         $calculator = new Shop\Discount\Calculator($order, $context);
         $amount = $calculator->calculate();
