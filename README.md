@@ -34,21 +34,21 @@ Discounts can be globally enabled/disabled.
 via composer:
 
 ```sh
-	composer require burnbright/silverstripe-shop-discount dev-master
+	composer require silvershop/discounts dev-master
 ```
 
 If you are using the stepped checkout, add the `CheckoutStep_Discount` checkout step:
 
 ```yaml
 CheckoutPage:
-	steps:
-		'contactdetails' : 'CheckoutStep_ContactDetails'
-		'shippingaddress' : 'CheckoutStep_Address'
-		'billingaddress' : 'CheckoutStep_Address'
-		'shippingmethod' : 'CheckoutStep_ShippingMethod'
-		'discount' : 'CheckoutStep_Discount' #here!
-		'paymentmethod' : 'CheckoutStep_PaymentMethod'
-		'summary' : 'CheckoutStep_Summary'
+  steps:
+    'contactdetails' : 'CheckoutStep_ContactDetails'
+    'shippingaddress' : 'CheckoutStep_Address'
+    'billingaddress' : 'CheckoutStep_Address'
+    'shippingmethod' : 'CheckoutStep_ShippingMethod'
+    'discount' : 'CheckoutStep_Discount' #here!
+    'paymentmethod' : 'CheckoutStep_PaymentMethod'
+    'summary' : 'CheckoutStep_Summary'
 ```
 
 If you would like to display the coupon form seperately to the checkout form,
@@ -64,10 +64,10 @@ Add the `OrderDiscountModifier` modifier to your order modifiers yaml config:
 
 ```yaml
 Order:
-	modifiers:
-		- Blah
-		- OrderDiscountModifier #here!
-		- Blah
+  modifiers:
+    - Blah
+    - OrderDiscountModifier #here!
+    - Blah
 ```
 
 ## Specific Pricing
