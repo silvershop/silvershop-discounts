@@ -169,6 +169,7 @@ class GiftVoucher_OrderItem extends Product_OrderItem{
 		$email->populateTemplate(array(
 			'Coupon' => $coupon
 		));
+        $this->extend('updateVoucherMail', $email, $coupon);
 		return $email->send();
 	}
 
