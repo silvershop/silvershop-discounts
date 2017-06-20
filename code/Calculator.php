@@ -37,8 +37,8 @@ class Calculator {
 
 			// item discounts will update info items
 			$action = $discount->Type === "Percent" ?
-				new \ItemPercentDiscount($infoitems, $discount) :
-				new \ItemFixedDiscount($infoitems, $discount);
+				\Injector::inst()->createWithArgs(\ItemPercentDiscount::class, array($infoitems, $discount)) :
+                \Injector::inst()->createWithArgs(\ItemFixedDiscount::class, array($infoitems, $discount));
 
 			$action->perform();
 		}
