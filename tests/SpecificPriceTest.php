@@ -1,15 +1,23 @@
 <?php
 
+namespace SilverShop\Discounts\Tests;
+
+use SilverStripe\Dev\SapphireTest;
+use Object;
+use SilverShop\Discounts\Extensions\SpecificPricingExtension;
+
+
+
 class SpecificPriceTest extends SapphireTest{
-    
-    protected static $fixture_file = array(
-        'silvershop-discounts/tests/fixtures/SpecificPrices.yml'
-    );
-    
+
+    protected static $fixture_file = [
+        'SpecificPrices.yml'
+    ];
+
     function setUp(){
         parent::setUp();
-        Object::add_extension("Product", "SpecificPricingExtension");
-        Object::add_extension("ProductVariation", "SpecificPricingExtension");
+        Object::add_extension("Product", SpecificPricingExtension::class);
+        Object::add_extension("ProductVariation", SpecificPricingExtension::class);
     }
 
     function testProductPrice() {

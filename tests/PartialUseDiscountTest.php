@@ -1,15 +1,22 @@
 <?php
 
-class PartialUseDiscountTest extends SapphireTest{
+namespace SilverShop\Discounts\Tests;
 
-    protected static $fixture_file = array(
-        'silvershop/tests/fixtures/shop.yml',
-        'silvershop-discounts/tests/fixtures/PartialUseDiscount.yml'
-    );
+use SilverStripe\Dev\SapphireTest;
+use SilverShop\Discounts\Model\PartialUseDiscount;
 
-    function testCreateRemainder() {
+class PartialUseDiscountTest extends SapphireTest
+{
+
+    protected static $fixture_file = [
+        'shop.yml',
+        'PartialUseDiscount.yml'
+    ];
+
+    public function testCreateRemainder()
+    {
         //basic remainder
-        $discount = $this->objFromFixture("PartialUseDiscount", "partial");
+        $discount = $this->objFromFixture(PartialUseDiscount::class, "partial");
         $this->assertNull($discount->createRemainder(5000));
         $this->assertNull($discount->createRemainder(90));
         $remainderdiscount = $discount->createRemainder(40);
@@ -22,20 +29,19 @@ class PartialUseDiscountTest extends SapphireTest{
         //TODO: check basic relationships match, e.g. group
 
         //check constraints copying works
-        $discount = $this->objFromFixture("PartialUseDiscount", "constrained");
+        $discount = $this->objFromFixture(PartialUseDiscount::class, "constrained");
         $remainder = $discount->createRemainder(40);
-        $this->assertDOSEquals(array(
-            array("FirstName" => "Joe")
-        ), $remainder->Members());
-        $this->assertDOSEquals(array(
-            array("Title" => "ProductA"),
-            array("Title" => "ProductB")
-        ), $remainder->Products());
+        $this->assertDOSEquals([
+            ["FirstName" => "Joe"]
+        ], $remainder->Members());
+        $this->assertDOSEquals([
+            ["Title" => "ProductA"],
+            ["Title" => "ProductB"]
+        ], $remainder->Products());
     }
 
-    function testCheckoutProcessing() {
-        //create remainder on payment
+    public function testCheckoutProcessing()
+    {
         $this->markTestIncomplete('This should be tested');
     }
-
 }

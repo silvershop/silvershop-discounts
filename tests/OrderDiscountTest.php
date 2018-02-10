@@ -1,64 +1,75 @@
 <?php
 
+namespace SilverShop\Discounts\Tests;
+
+use SilverStripe\Dev\SapphireTest;
+use SilverShop\Tests\ShopTest;
+
+
+use SilverShop\Discounts\Model\OrderDiscount;
+use SilverShop\Discounts\Model\Discount;
+
+
+
 class OrderDiscountTest extends SapphireTest{
 
-    protected static $fixture_file = array(
-        'silvershop-discounts/tests/fixtures/Discounts.yml',
-        'silvershop/tests/fixtures/shop.yml'
-    );
+    protected static $fixture_file = [
+        'Discounts.yml',
+        'shop.yml'
+    ];
 
     public function setUp() {
         parent::setUp();
         ShopTest::setConfiguration();
-        $this->cart = $this->objFromFixture("Order", "cart");
+        $this->cart = $this->objFromFixture(Order::class, "cart");
     }
 
     /**
      * Check that available discounts are matched to the current order.
      */
     public function testManyMatches() {
-        OrderDiscount::create(array(
+        OrderDiscount::create([
             "Title" => "10% off",
             "Type" => "Percent",
             "Percent" => 0.10
-        ))->write();
-        OrderDiscount::create(array(
+        ])->write();
+        OrderDiscount::create([
             "Title" => "$5 off",
             "Type" => "Amount",
             "Amount" => 5
-        ))->write();
+        ])->write();
         $matches = OrderDiscount::get_matching($this->cart);
-        $this->assertDOSEquals(array(
-            array("Title" => "10% off"),
-            array("Title" => "$5 off"),
-        ), $matches);
+        $this->assertDOSEquals([
+            ["Title" => "10% off"],
+            ["Title" => "$5 off"],
+        ], $matches);
     }
 
     public function testPercent() {
-        OrderDiscount::create(array(
+        OrderDiscount::create([
             "Title" => "10% off",
             "Type" => "Percent",
             "Percent" => 0.10
-        ))->write();
-        $this->assertDOSEquals(array(
-            array("Title" => "10% off")
-        ), OrderDiscount::get_matching($this->cart));
+        ])->write();
+        $this->assertDOSEquals([
+            ["Title" => "10% off"]
+        ], OrderDiscount::get_matching($this->cart));
     }
 
     public function testAmount() {
-        OrderDiscount::create(array(
+        OrderDiscount::create([
             "Title" => "$5 off",
             "Type" => "Amount",
             "Amount" => 5
-        ))->write();
-        $this->assertDOSEquals(array(
-            array("Title" => "$5 off")
-        ), OrderDiscount::get_matching($this->cart));
+        ])->write();
+        $this->assertDOSEquals([
+            ["Title" => "$5 off"]
+        ], OrderDiscount::get_matching($this->cart));
     }
 
     public function testUseCount() {
         //check that order with payment started counts as a use
-        $discount = $this->objFromFixture("OrderDiscount", "paymentused");
+        $discount = $this->objFromFixture(OrderDiscount::class, "paymentused");
         $payment = $this->objFromFixture("Payment", "paymentstarted_recent");
         //set timeout to 60 minutes
         Discount::config()->unpaid_use_timeout = 60;

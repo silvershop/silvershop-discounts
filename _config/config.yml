@@ -1,29 +1,25 @@
 ---
 Name: silvershop-discounts
 ---
-LeftAndMain:
-  extra_requirements_css:
-    - silvershop-discounts/css/OrderCouponAdmin.css
-Product:
+SilverShop\Page\Product:
   extensions:
-    - ProductDiscountExtension
-ProductVariation:
+    - SilverShop\Discounts\Extensions\ProductDiscountExtension
+SilverShop\Model\Variation\Variation:
   extensions:
-    - ProductVariationDiscountExtension
-Order:
+    - SilverShop\Discounts\Extensions\ProductVariationDiscountExtension
+SilverShop\Model\Order:
   extensions:
-    - DiscountedOrderExtension
-Product_OrderItem:
+    - SilverShop\Discounts\Extensions\DiscountedOrderExtension
+SilverShop\Model\OrderItem:
   extensions:
-    - DiscountedOrderItem
-Discount:
+    - SilverShop\Discounts\Extensions\DiscountedOrderItem
+SilverShop\Discounts\Model\Discount:
   constraints:
-    - ZonesDiscountConstraint
-    - CategoriesDiscountConstraint
-    - ProductsDiscountConstraint
-    - GroupDiscountConstraint
-    - MembershipDiscountConstraint
-    - DatetimeDiscountConstraint
-    - ValueDiscountConstraint
-    - UseLimitDiscountConstraint
-    - CodeDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint

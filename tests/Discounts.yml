@@ -1,0 +1,83 @@
+SilverShop\Discounts\Model\OrderDiscount:
+    limited:
+        Title: Limited Discount
+        Active: 0
+        UseLimit: 10
+    used:
+        Title: Used
+        Active: 1
+        UseLimit: 1
+    paymentused:
+        Title: Payment Used
+        Active: 1
+        UseLimit: 1
+
+SilverShop\Discounts\Model\OrderCoupon:
+    limited:
+        Title: Limited Coupon
+        Code: LIMITED
+        Active: 1
+        UseLimit: 10
+    used:
+        Title: Used
+        Code: USEDCOUPON
+        Active: 1
+        UseLimit: 1
+
+SilverShop\Model\Order:
+    limitedcoupon:
+        Status: Complete
+        Paid: 2000-01-01 12:00:00
+        Placed: 2000-01-01 12:02:00
+    usedcoupon:
+        Status: Paid
+        Paid: 2000-01-01 12:00:00
+        Placed: 2000-01-01 12:02:00
+    paymentstarted:
+        Status: Cart
+
+SilverShop\Model\OrderItem:
+    limitedcoupon_blah:
+        UnitPrice: 30
+        Quantity: 3
+        Order: '=>SilverShop\Model\Order.limitedcoupon'
+    limitedcoupon_foo:
+        UnitPrice: 20
+        Quantity: 1
+        Order: '=>SilverShop\Model\Order.limitedcoupon'
+
+SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier:
+    limited:
+        OrderID: '=>SilverShop\Model\Order.limitedcoupon'
+        #Discounts: defined below
+    used:
+        OrderID: '=>SilverShop\Model\Order.usedcoupon'
+        Discounts: '=>SilverShop\Discounts\Model\OrderCoupon.used, =>SilverShop\Discounts\Model\OrderDiscount.used'
+    paymentstarted:
+        OrderID: '=>SilverShop\Model\Order.paymentstarted'
+        Discounts: '=>SilverShop\Discounts\Model\OrderDiscount.paymentused'
+
+OrderDiscountModifier_Discounts:
+    limitedcouponmodifier:
+        DiscountAmount: 20
+        OrderDiscountModifierID: '=>SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier.limited'
+        DiscountID: '=>SilverShop\Discounts\Model\OrderCoupon.limited'
+    limiteddiscountmodifier:
+        DiscountAmount: 40
+        OrderDiscountModifierID: '=>SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier.limited'
+        DiscountID: '=>SilverShop\Discounts\Model\OrderDiscount.limited'
+
+SilverShop_OrderItem_Discounts:
+    limitedcouponitem:
+        DiscountAmount: 2
+        OrderItemID: '=>SilverShop\Model\OrderItem.limitedcoupon_blah'
+        DiscountID:  '=>SilverShop\Discounts\Model\OrderCoupon.limited'
+    limiteddiscountitem:
+        DiscountAmount: 4
+        OrderItemID: '=>SilverShop\Model\OrderItem.limitedcoupon_blah'
+        DiscountID:  '=>SilverShop\Discounts\Model\OrderDiscount.limited'
+
+SilverStripe\Omnipay\Model\Payment:
+    paymentstarted_recent:
+        Created: #now
+        OrderID: '=>SilverShop\Model\Order.paymentstarted'
