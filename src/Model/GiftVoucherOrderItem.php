@@ -20,7 +20,7 @@ class GiftVoucherOrderItem extends OrderItem
         "UnitPrice"
     ];
 
-    private static $table_name = 'GiftVoucherOrderItem';
+    private static $table_name = 'SilverShop_GiftVoucherOrderItem';
 
     /**
      * Don't get unit price from product

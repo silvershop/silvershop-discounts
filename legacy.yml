@@ -1,0 +1,13 @@
+---
+Name: silvershop-discounts-legacy
+---
+# Mapping rules to map old model-classes to new ones.
+SilverStripe\ORM\DatabaseAdmin:
+  classname_value_remapping:
+    Discount: SilverShop\Discounts\Model\Discount
+    GiftVoucherOrderItem: SilverShop\Discounts\Model\GiftVoucherOrderItem
+    OrderDiscountModifier: SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier
+    OrderCoupon: SilverShop\Discounts\Model\OrderCoupon
+    OrderDiscount: SilverShop\Discounts\Model\OrderDiscount
+    PartialUseDiscount: SilverShop\Discounts\Model\PartialUseDiscount
+    SpecificPrice: SilverShop\Discounts\Model\SpecificPrice

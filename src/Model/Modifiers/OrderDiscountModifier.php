@@ -27,7 +27,7 @@ class OrderDiscountModifier extends OrderModifier
 
     private static $plural_name = "Discounts";
 
-    private static $table_name = 'OrderDiscountModifier';
+    private static $table_name = 'SilverShop_OrderDiscountModifier';
 
     public function value($incoming)
     {

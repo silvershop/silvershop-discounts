@@ -80,7 +80,7 @@ class Discount extends DataObject
 
     private static $default_sort = "EndDate DESC, StartDate DESC";
 
-    private static $table_name = 'Discount';
+    private static $table_name = 'SilverShop_Discount';
 
     protected $message;
 

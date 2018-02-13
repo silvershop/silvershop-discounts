@@ -27,7 +27,7 @@ class PartialUseDiscount extends Discount
 
     private static $plural_name = "Partial Use Discounts";
 
-    private static $table_name = 'PartialUseDiscount';
+    private static $table_name = 'SilverShop_PartialUseDiscount';
 
     public function getCMSFields($params = null)
     {

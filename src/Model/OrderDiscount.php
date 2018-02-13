@@ -10,4 +10,6 @@ namespace SilverShop\Discounts\Model;
  */
 class OrderDiscount extends Discount
 {
+
+    private static $table_name = 'SilverShop_OrderDiscount';
 }

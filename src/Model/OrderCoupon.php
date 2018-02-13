@@ -38,7 +38,7 @@ class OrderCoupon extends Discount
 
     private static $generated_code_length = 10;
 
-    private static $table_name = OrderCoupon::class;
+    private static $table_name = 'SilverShop_OrderCoupon';
 
     public static function get_by_code($code)
     {

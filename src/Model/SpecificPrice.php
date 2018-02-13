@@ -43,7 +43,7 @@ class SpecificPrice extends DataObject
 
     private static $default_sort = "\"Price\" ASC";
 
-    private static $table_name = 'SpecificPrice';
+    private static $table_name = 'SilverShop_SpecificPrice';
 
     public static function filter(DataList $list, $member = null)
     {
