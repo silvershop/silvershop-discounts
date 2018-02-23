@@ -9,6 +9,8 @@ use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
 use SilverStripe\ORM\DataList;
 use SilverStripe\Security\Member;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
+use SilverStripe\Forms\GridField\GridFieldEditButton;
 
 class MembershipDiscountConstraint extends DiscountConstraint
 {
@@ -19,12 +21,12 @@ class MembershipDiscountConstraint extends DiscountConstraint
     public function updateCMSFields(FieldList $fields)
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldToTab("Root.Main.Constraints.Members",
-                GridField::create("Members", "Members",
+            $fields->addFieldToTab("Root.Constraints",
+                GridField::create("Members", _t(__CLASS__ . '.Members', "Members"),
                     $this->owner->Members(),
                     GridFieldConfig_RelationEditor::create()
-                        ->removeComponentsByType("GridFieldAddNewButton")
-                        ->removeComponentsByType("GridFieldEditButton")
+                        ->removeComponentsByType(GridFieldAddNewButton::class)
+                        ->removeComponentsByType(GridFieldEditButton::class)
                 )
             );
         }

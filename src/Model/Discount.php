@@ -65,7 +65,7 @@ class Discount extends DataObject
 
     private static $summary_fields = [
         "Title",
-        "DiscountNice",
+        "DiscountNice" => "Discount",
         "StartDate",
         "EndDate"
     ];
@@ -164,21 +164,16 @@ class Discount extends DataObject
                         "Cart" => "Cart Subtotal",
                         "Shipping" => "Shipping Subtotal",
                         "Items" => "Each Individual Item"
-                    ]),
-                    new Tab("Main",
-                        HeaderField::create("ConstraintsTitle", "Constraints", 3),
-                        LabelField::create(
-                            "ConstraintsDescription",
-                            "Configure the requirements an order must meet for this discount to be valid:"
-                        )
-                    ),
-                    new TabSet("Constraints")
+                    ])
+                ),
+                $constraints = new Tab("Constraints",
+                    HeaderField::create("ConstraintsTitle", "Constraints", 3)
                 )
             )
         ]);
 
         if (!$this->isInDB()) {
-            $fields->addFieldToTab("Root.Main",
+            $fields->addFieldToTab("Root.Constraints",
                 LiteralField::create("SaveNote",
                     "<p class=\"message good\">More constraints will show up after you save for the first time.</p>"
                 ), "Constraints"
@@ -228,16 +223,12 @@ class Discount extends DataObject
         $fields->push(CheckboxField::create("HasBeenUsed"));
         //add date range filtering
         $fields->push(ToggleCompositeField::create("StartDate", "Start Date", [
-            DateField::create("q[StartDateFrom]", "From")
-                        ->setConfig('showcalendar', true),
+            DateField::create("q[StartDateFrom]", "From"),
             DateField::create("q[StartDateTo]", "To")
-                        ->setConfig('showcalendar', true)
         ]));
         $fields->push(ToggleCompositeField::create("EndDate", "End Date", [
-            DateField::create("q[EndDateFrom]", "From")
-                        ->setConfig('showcalendar', true),
+            DateField::create("q[EndDateFrom]", "From"),
             DateField::create("q[EndDateTo]", "To")
-                        ->setConfig('showcalendar', true)
         ]));
         //must be enabled in config, because some sites may have many products = slow load time, or memory maxes out
         //future solution is using an ajaxified field
@@ -448,24 +439,22 @@ class Discount extends DataObject
     public function getAppliedOrders($includeunpaid = false)
     {
         $orders =  Order::get()
-            ->innerJoin("OrderAttribute", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"")
-            ->leftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"Product_OrderItemID\" = \"OrderAttribute\".\"ID\"")
-            ->leftJoin("OrderDiscountModifier_Discounts", "\"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\" = \"OrderAttribute\".\"ID\"")
-            ->filterAny([
-                "Product_OrderItem_Discounts.DiscountID" => $this->ID,
-                "OrderDiscountModifier_Discounts.DiscountID" => $this->ID
-            ]);
+            ->innerJoin("SilverShop_OrderAttribute", "\"SilverShop_OrderAttribute\".\"OrderID\" = \"SilverShop_Order\".\"ID\"")
+            ->leftJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderItem_Discounts\".\"SilverShop_OrderItemID\" = \"SilverShop_OrderAttribute\".\"ID\"")
+            ->leftJoin("SilverShop_OrderDiscountModifier_Discounts", "\"SilverShop_OrderDiscountModifier_Discounts\".\"SilverShop_OrderDiscountModifierID\" = \"SilverShop_OrderAttribute\".\"ID\"")
+            ->where("SilverShop_OrderItem_Discounts.DiscountID = $this->ID OR SilverShop_OrderDiscountModifier_Discounts.SilverShop_DiscountID = $this->ID
+            ");
 
         if ($includeunpaid) {
             $minutes = self::config()->unpaid_use_timeout;
             $timeouttime = date('Y-m-d H:i:s', strtotime("-{$minutes} minutes"));
-            $orders = $orders->leftJoin("Payment", "\"Payment\".\"OrderID\" = \"Order\".\"ID\"")
+            $orders = $orders->leftJoin("Omnipay_Payment", "\"Omnipay_Payment\".\"OrderID\" = \"SilverShop_Order\".\"ID\"")
                 ->where(
-                    "(\"Order\".\"Paid\" IS NOT NULL) OR ".
-                    "(\"Payment\".\"Created\" > '$timeouttime' AND \"Payment\".\"Status\" NOT IN('Refunded', 'Void'))"
+                    "(\"SilverShop_Order\".\"Paid\" IS NOT NULL) OR ".
+                    "(\"Omnipay_Payment\".\"Created\" > '$timeouttime' AND \"Omnipay_Payment\".\"Status\" NOT IN('Refunded', 'Void'))"
                 );
         } else {
-            $orders = $orders->where("\"Order\".\"Paid\" IS NOT NULL");
+            $orders = $orders->where("\"SilverShop_Order\".\"Paid\" IS NOT NULL");
         }
 
         $this->extend('updateAppliedOrders', $orders, $includeunpaid);
@@ -501,14 +490,14 @@ class Discount extends DataObject
     public function getSavingsForOrder(Order $order)
     {
         $itemsavings = OrderAttribute::get()
-            ->innerJoin("Product_OrderItem_Discounts", "\"OrderAttribute\".\"ID\" = \"Product_OrderItem_Discounts\".\"Product_OrderItemID\"")
-            ->filter("Product_OrderItem_Discounts.DiscountID", $this->ID)
+            ->innerJoin("SilverShop_OrderItem_Discounts", "\"OrderAttribute\".\"ID\" = \"SilverShop_OrderItem_Discounts\".\"SilverShop_OrderItemID\"")
+            ->filter("SilverShop_OrderItem_Discounts.DiscountID", $this->ID)
             ->filter("OrderAttribute.OrderID", $order->ID)
             ->sum("DiscountAmount");
 
         $modifiersavings = OrderAttribute::get()
-            ->innerJoin("OrderDiscountModifier_Discounts", "\"OrderAttribute\".\"ID\" = \"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\"")
-            ->filter("OrderDiscountModifier_Discounts.DiscountID", $this->ID)
+            ->innerJoin("SilverShop_OrderDiscountModifier_Discounts", "\"OrderAttribute\".\"ID\" = \"SilverShop_OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\"")
+            ->filter("SilverShop_OrderDiscountModifier_Discounts.DiscountID", $this->ID)
             ->filter("OrderAttribute.OrderID", $order->ID)
             ->sum("DiscountAmount");
 

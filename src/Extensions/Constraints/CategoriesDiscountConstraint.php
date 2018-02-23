@@ -19,7 +19,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
     public function updateCMSFields(FieldList $fields)
     {
         if ($this->owner->isInDB()) {
-            $fields->fieldByName("Root.Main.Constraints")->push(new Tab("Categories",
+            $fields->fieldByName("Root.Constraints")->push(new Tab("Categories",
                 GridField::create("Categories", "Categories", $this->owner->Categories(),
                     GridFieldConfig_RelationEditor::create()
                         ->removeComponentsByType("GridFieldAddNewButton")

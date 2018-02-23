@@ -24,7 +24,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
     public function updateCMSFields(FieldList $fields)
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldsToTab("Root.Main.Constraints.Products", [
+            $fields->addFieldsToTab("Root.Constraints", [
                 GridField::create("Products", "Specific Products", $this->owner->Products(),
                     GridFieldConfig_RelationEditor::create()
                         ->removeComponentsByType("GridFieldAddNewButton")

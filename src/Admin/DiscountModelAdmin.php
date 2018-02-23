@@ -79,10 +79,10 @@ class DiscountModelAdmin extends ModelAdmin
 
         if (isset($params['HasBeenUsed'])) {
             $list = $list
-                ->leftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
+                ->leftJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
                 ->leftJoin("OrderDiscountModifier_Discounts", "\"OrderDiscountModifier_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
                 ->innerJoin("OrderAttribute", implode(" OR ", [
-                    "\"OrderAttribute\".\"ID\" = \"Product_OrderItem_Discounts\".\"Product_OrderItemID\"",
+                    "\"OrderAttribute\".\"ID\" = \"SilverShop_OrderItem_Discounts\".\"Product_OrderItemID\"",
                     "\"OrderAttribute\".\"ID\" = \"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\""
                 ]));
         }

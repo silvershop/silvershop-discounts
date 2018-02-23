@@ -13,6 +13,10 @@ use SilverStripe\Security\RandomGenerator;
  */
 class OrderCoupon extends Discount
 {
+    private static $db = [
+        'Code' => 'Varchar(255)'
+    ];
+
     private static $has_one = [
         "GiftVoucher" => GiftVoucherOrderItem::class
     ];

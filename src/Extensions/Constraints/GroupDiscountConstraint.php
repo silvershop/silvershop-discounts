@@ -18,7 +18,7 @@ class GroupDiscountConstraint extends DiscountConstraint
 
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldToTab("Root.Main.Constraints.Main",
+        $fields->addFieldToTab("Root.Constraints",
             DropdownField::create("GroupID",
                 "Member Belongs to Group",
                 Group::get()->map('ID', 'Title')

@@ -44,10 +44,10 @@ class DiscountReport extends ShopPeriodReport
         $query->addSelect("\"Discount\".*")
             ->selectField("\"Title\"", "Name")
             ->selectField("COUNT(DISTINCT \"Order\".\"ID\")", 'Entered')
-            ->addLeftJoin("Product_OrderItem_Discounts", "\"Product_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
+            ->addLeftJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
             ->addLeftJoin("OrderDiscountModifier_Discounts", "\"OrderDiscountModifier_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
             ->addInnerJoin("OrderAttribute", (implode(" OR ", [
-                "\"Product_OrderItem_Discounts\".\"Product_OrderItemID\" = \"OrderAttribute\".\"ID\"",
+                "\"SilverShop_OrderItem_Discounts\".\"Product_OrderItemID\" = \"OrderAttribute\".\"ID\"",
                 "\"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\" = \"OrderAttribute\".\"ID\""
             ])))
             ->addInnerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"");
