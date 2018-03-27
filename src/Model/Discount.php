@@ -176,7 +176,7 @@ class Discount extends DataObject
             $fields->addFieldToTab("Root.Constraints",
                 LiteralField::create("SaveNote",
                     "<p class=\"message good\">More constraints will show up after you save for the first time.</p>"
-                ), "Constraints"
+                )
             );
         }
 
