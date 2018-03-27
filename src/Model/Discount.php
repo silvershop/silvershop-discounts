@@ -442,7 +442,7 @@ class Discount extends DataObject
             ->innerJoin("SilverShop_OrderAttribute", "\"SilverShop_OrderAttribute\".\"OrderID\" = \"SilverShop_Order\".\"ID\"")
             ->leftJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderItem_Discounts\".\"SilverShop_OrderItemID\" = \"SilverShop_OrderAttribute\".\"ID\"")
             ->leftJoin("SilverShop_OrderDiscountModifier_Discounts", "\"SilverShop_OrderDiscountModifier_Discounts\".\"SilverShop_OrderDiscountModifierID\" = \"SilverShop_OrderAttribute\".\"ID\"")
-            ->where("SilverShop_OrderItem_Discounts.DiscountID = $this->ID OR SilverShop_OrderDiscountModifier_Discounts.SilverShop_DiscountID = $this->ID
+            ->where("SilverShop_OrderItem_Discounts.SilverShop_DiscountID = $this->ID OR SilverShop_OrderDiscountModifier_Discounts.SilverShop_DiscountID = $this->ID
             ");
 
         if ($includeunpaid) {
