@@ -175,7 +175,10 @@ class Discount extends DataObject
         if (!$this->isInDB()) {
             $fields->addFieldToTab("Root.Constraints",
                 LiteralField::create("SaveNote",
-                    "<p class=\"message good\">More constraints will show up after you save for the first time.</p>"
+                    sprintf(
+                        "<p class=\"message good\">%s</p>",
+                        _t(__CLASS__ . 'SaveNote', 'More constraints will show up after you save for the first time.')
+                    )
                 )
             );
         }

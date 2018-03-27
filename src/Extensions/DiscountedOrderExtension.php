@@ -3,6 +3,7 @@
 namespace SilverShop\Discounts\Extensions;
 
 use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
@@ -17,7 +18,7 @@ class DiscountedOrderExtension extends DataExtension
         $fields->addFieldsToTab('Root.Discounts',
            $grid = new GridField(
                 'Discounts',
-                Discount::class,
+                Config::inst()->get(Discount::class, 'plural_name'),
                 $this->Discounts(),
                 new GridFieldConfig_RecordViewer()
             )
