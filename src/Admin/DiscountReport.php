@@ -11,7 +11,7 @@ class DiscountReport extends ShopPeriodReport
 
     protected $dataClass = Discount::class;
 
-    protected $periodfield = "\"Order\".\"Paid\"";
+    protected $periodfield = "\"SilverShop_Order\".\"Paid\"";
 
     protected $description = "See the total savings for discounts. Note that the 'Entered' field may not be
 										accurate if old/expired carts have been deleted from the database.";
@@ -41,17 +41,17 @@ class DiscountReport extends ShopPeriodReport
     public function query($params)
     {
         $query = parent::query($params);
-        $query->addSelect("\"Discount\".*")
+        $query->addSelect("\"SilverShop_Discount\".*")
             ->selectField("\"Title\"", "Name")
-            ->selectField("COUNT(DISTINCT \"Order\".\"ID\")", 'Entered')
-            ->addLeftJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
-            ->addLeftJoin("OrderDiscountModifier_Discounts", "\"OrderDiscountModifier_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
-            ->addInnerJoin("OrderAttribute", (implode(" OR ", [
-                "\"SilverShop_OrderItem_Discounts\".\"Product_OrderItemID\" = \"OrderAttribute\".\"ID\"",
-                "\"OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\" = \"OrderAttribute\".\"ID\""
+            ->selectField("COUNT(DISTINCT \"SilverShop_Order\".\"ID\")", 'Entered')
+            ->addLeftJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderItem_Discounts\".\"SilverShop_DiscountID\" = \"SilverShop_Discount\".\"ID\"")
+            ->addLeftJoin("SilverShop_OrderDiscountModifier_Discounts", "\"SilverShop_OrderDiscountModifier_Discounts\".\"SilverShop_DiscountID\" = \"SilverShop_Discount\".\"ID\"")
+            ->addInnerJoin("SilverShop_OrderAttribute", (implode(" OR ", [
+                "\"SilverShop_OrderItem_Discounts\".\"SilverShop_OrderItemID\" = \"SilverShop_OrderAttribute\".\"ID\"",
+                "\"SilverShop_OrderDiscountModifier_Discounts\".\"SilverShop_OrderDiscountModifierID\" = \"SilverShop_OrderAttribute\".\"ID\""
             ])))
-            ->addInnerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"");
-        $query->setGroupBy("\"Discount\".\"ID\"");
+            ->addInnerJoin("SilverShop_Order", "\"SilverShop_OrderAttribute\".\"OrderID\" = \"SilverShop_Order\".\"ID\"");
+        $query->setGroupBy("\"SilverShop_Discount\".\"ID\"");
         $query->setLimit("50");
 
         return $query;
