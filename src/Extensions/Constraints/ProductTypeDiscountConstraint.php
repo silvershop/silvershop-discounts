@@ -20,10 +20,10 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
     {
         //multiselect subtypes of orderitem
         if ($this->owner->isInDB() && $this->owner->ForItems) {
-            $fields->addFieldToTab("Root.Main.Constraints.Products",
+            $fields->addFieldToTab("Root.Constraints.ConstraintsTabs.Product",
                 ListBoxField::create(
                     "ProductTypes",
-                    "Product Types",
+                    _t(__CLASS__.'.PRODUCTTYPES', "Product types"),
                     $this->getTypes(false, $this->owner)
                 )->setMultiple(true)
             );
@@ -39,7 +39,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         }
         $incart = $this->itemsInCart($discount);
         if (!$incart) {
-            $this->error("The required product type(s), are not in the cart.");
+            $this->error(_t(__CLASS__.'.PRODUCTTYPESNOTINCART', "The required product type(s), are not in the cart."));
         }
 
         return $incart;

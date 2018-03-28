@@ -17,12 +17,19 @@ class DatetimeDiscountConstraint extends DiscountConstraint
 
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldToTab("Root.Constraints",
-            FieldGroup::create("Valid date range:",
-                DatetimeField::create("StartDate", "Start Date / Time"),
-                DatetimeField::create("EndDate", "End Date / Time")
+        $fields->addFieldToTab("Root.Constraints.ConstraintsTabs.General",
+            FieldGroup::create(
+                _t(__CLASS__.'.VALIDDATERANGE', "Valid date range:"),
+                DatetimeField::create(
+                    "StartDate",
+                    _t(__CLASS__.'.RANGESTART', "Start date/time")
+                ),
+                DatetimeField::create(
+                    "EndDate",
+                    _t(__CLASS__.'.RANGEEND', "End date/time")
+                )
             )->setDescription(
-                "You should set the end time to 23:59:59, if you want to include the entire end day."
+                _t(__CLASS__.'.ENDTIMEDAYNOTE', "You should set the end time to 23:59:59, if you want to include the entire end day.")
             )
         );
     }
