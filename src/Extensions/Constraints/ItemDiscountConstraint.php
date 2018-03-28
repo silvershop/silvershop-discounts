@@ -25,11 +25,11 @@ abstract class ItemDiscountConstraint extends DiscountConstraint
     public static function match(OrderItem $item, Discount $discount)
     {
         $singletons = [];
-        $itemconstraints = ClassInfo::subclassesFor("ItemDiscountConstraint");
+        $itemconstraints = ClassInfo::subclassesFor(self::class);
 
         array_shift($itemconstraints); //exclude abstract base class
 
-        $configuredconstraints = Config::inst()->forClass(Discount::class)->constraints;
+        $configuredconstraints = Injector::inst()->get(Discount::class)->getConstraints();
 
         //get only the configured item constraints
         $classes = array_intersect($itemconstraints, $configuredconstraints);

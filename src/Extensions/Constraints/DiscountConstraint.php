@@ -2,7 +2,6 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
-
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\ORM\DataExtension;
 use SilverShop\Model\Order;
@@ -67,20 +66,6 @@ abstract class DiscountConstraint extends DataExtension
      * @return boolean
      */
     abstract public function check(Discount $discount);
-
-
-    /**
-     * Set up constraints via _config.php
-     */
-    public static function set_up_constraints()
-    {
-        $discount = Injector::inst()->get(Discount::class);
-        $constraints = $discount->config()->constraints;
-
-        foreach ($constraints as $constraint) {
-            Discount::add_extension($constraint);
-        }
-    }
 
     protected function message($messsage, $type = "good")
     {

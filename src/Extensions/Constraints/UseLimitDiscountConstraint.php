@@ -2,15 +2,10 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
-
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\NumericField;
 
-
-/**
- * @package silvershop-discounts
- */
 class UseLimitDiscountConstraint extends DiscountConstraint
 {
     private static $db = [

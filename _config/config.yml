@@ -10,11 +10,13 @@ SilverShop\Model\Variation\Variation:
 SilverShop\Model\Order:
   extensions:
     - SilverShop\Discounts\Extensions\DiscountedOrderExtension
+  modifiers:
+    - SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier
 SilverShop\Model\OrderItem:
   extensions:
     - SilverShop\Discounts\Extensions\DiscountedOrderItem
 SilverShop\Discounts\Model\Discount:
-  constraints:
+  extensions:
     - SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint
     - SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint
     - SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint

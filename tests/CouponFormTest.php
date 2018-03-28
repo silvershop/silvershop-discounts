@@ -3,9 +3,9 @@
 namespace SilverShop\Discounts\Tests;
 
 use SilverStripe\Dev\FunctionalTest;
-
-use CheckoutPage_Controller;
-
+use SilverShop\Page\Product;
+use SilverShop\Page\CheckoutPage;
+use SilverShop\Page\CheckoutPageController;
 use SilverStripe\Control\Session;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Discounts\Form\CouponForm;
@@ -14,18 +14,16 @@ class CouponFormTest extends FunctionalTest {
 
     protected static $fixture_file = [
         'shop.yml',
-        'fixtures/Pages.yml'
+        'Pages.yml'
     ];
 
-    function setUp() {
+    protected function setUp() {
         parent::setUp();
 
-        $this->objFromFixture("Product", "socks")
-            ->publish("Stage", "Live");
+        $this->objFromFixture(Product::class, "socks")->publishRecursive();
     }
 
-    function testCouponForm() {
-
+    public function testCouponForm() {
         OrderCoupon::create([
             "Title" => "40% off each item",
             "Code" => "5B97AA9D75",
@@ -33,9 +31,9 @@ class CouponFormTest extends FunctionalTest {
             "Percent" => 0.40
         ])->write();
 
-        $checkoutpage = $this->objFromFixture("CheckoutPage", "checkout");
-        $checkoutpage->publish("Stage", "Live");
-        $controller = new CheckoutPage_Controller($checkoutpage);
+        $checkoutpage = $this->objFromFixture(CheckoutPage::class, "checkout");
+        $checkoutpage->publishRecursive();
+        $controller = new CheckoutPageController($checkoutpage);
         $order =  $this->objFromFixture(Order::class, "cart");
         $form = new CouponForm($controller, CouponForm::class, $order);
         $data = ["Code" => "5B97AA9D75"];

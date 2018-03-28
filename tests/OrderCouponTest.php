@@ -2,16 +2,16 @@
 
 namespace SilverShop\Discounts\Tests;
 
-use SilverShop\Discount\Calculator;
+use SilverShop\Discounts\Calculator;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
 use SilverStripe\Core\Config\Config;
-
 use SilverShop\Discounts\Model\OrderCoupon;
+use SilverShop\Page\Product;
+use SilverShop\Model\Order;
 
-
-
-class OrderCouponTest extends SapphireTest{
+class OrderCouponTest extends SapphireTest
+{
 
     protected static $fixture_file = [
         'shop.yml'
@@ -23,12 +23,12 @@ class OrderCouponTest extends SapphireTest{
 
         Config::inst()->update(OrderCoupon::class, 'minimum_code_length', null);
 
-        $this->socks = $this->objFromFixture("Product", "socks");
-        $this->socks->publish("Stage", "Live");
-        $this->tshirt = $this->objFromFixture("Product", "tshirt");
-        $this->tshirt->publish("Stage", "Live");
-        $this->mp3player = $this->objFromFixture("Product", "mp3player");
-        $this->mp3player->publish("Stage", "Live");
+        $this->socks = $this->objFromFixture(Product::class, "socks");
+        $this->socks->publishRecursive();
+        $this->tshirt = $this->objFromFixture(Product::class, "tshirt");
+        $this->tshirt->publishRecursive();
+        $this->mp3player = $this->objFromFixture(Product::class, "mp3player");
+        $this->mp3player->publishRecursive();
 
         $this->unpaid = $this->objFromFixture(Order::class, "unpaid");
         $this->cart = $this->objFromFixture(Order::class, "cart");

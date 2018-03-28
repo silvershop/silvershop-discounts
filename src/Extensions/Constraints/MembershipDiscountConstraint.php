@@ -39,9 +39,9 @@ class MembershipDiscountConstraint extends DiscountConstraint
             $memberid = $member->ID;
         }
         $list = $list->leftJoin(
-            "Discount_Members",
-            "\"Discount_Members\".\"DiscountID\" = \"Discount\".\"ID\""
-        )->where("(\"Discount_Members\".\"MemberID\" IS NULL) OR \"Discount_Members\".\"MemberID\" = $memberid");
+            "SilverShop_Discount_Members",
+            "\"SilverShop_Discount_Members\".\"SilverShop_DiscountID\" = \"SilverShop_Discount\".\"ID\""
+        )->where("(\"SilverShop_Discount_Members\".\"MemberID\" IS NULL) OR \"SilverShop_Discount_Members\".\"MemberID\" = $memberid");
 
         return $list;
     }

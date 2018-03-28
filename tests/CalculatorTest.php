@@ -2,7 +2,7 @@
 
 namespace SilverShop\Discounts\Tests;
 
-use SilverShop\Discount\Calculator;
+use SilverShop\Discounts\Calculator;
 use SilverShop\Discount\Adjustment;
 use SilverShop\Discount\PriceInfo;
 use SilverStripe\Dev\SapphireTest;
@@ -13,13 +13,13 @@ use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\OrderCoupon;
+use SilverShop\Page\Product;
 
 class CalculatorTest extends SapphireTest
 {
     protected static $fixture_file = [
         'Discounts.yml',
         'shop.yml'
-
     ];
 
     public function setUp()
@@ -31,12 +31,12 @@ class CalculatorTest extends SapphireTest
             OrderDiscountModifier::class
         ];
 
-        $this->socks = $this->objFromFixture("Product", "socks");
-        $this->socks->publish("Stage", "Live");
-        $this->tshirt = $this->objFromFixture("Product", "tshirt");
-        $this->tshirt->publish("Stage", "Live");
-        $this->mp3player = $this->objFromFixture("Product", "mp3player");
-        $this->mp3player->publish("Stage", "Live");
+        $this->socks = $this->objFromFixture(Product::class, "socks");
+        $this->socks->publishRecursive();
+        $this->tshirt = $this->objFromFixture(Product::class, "tshirt");
+        $this->tshirt->publishRecursive();
+        $this->mp3player = $this->objFromFixture(Product::class, "mp3player");
+        $this->mp3player->publishRecursive();
 
         $this->cart = $this->objFromFixture(Order::class, "cart");
         $this->othercart = $this->objFromFixture(Order::class, "othercart");

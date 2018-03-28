@@ -6,7 +6,9 @@ use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverShop\Discounts\Actions\ItemPercentDiscount;
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Injector\Injector;
 use SilverShop\Model\Order;
+use SilverStripe\ORM\DataList;
 
 class Calculator
 {
@@ -50,8 +52,8 @@ class Calculator
 
             // item discounts will update info items
             $action = $discount->Type === "Percent" ?
-                \Injector::inst()->createWithArgs(ItemPercentDiscount::class, [$infoitems, $discount]) :
-                \Injector::inst()->createWithArgs(\ItemFixedDiscount::class, [$infoitems, $discount]);
+                Injector::inst()->createWithArgs(ItemPercentDiscount::class, [$infoitems, $discount]) :
+                Injector::inst()->createWithArgs(ItemFixedDiscount::class, [$infoitems, $discount]);
 
             $action->perform();
         }

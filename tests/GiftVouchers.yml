@@ -1,4 +1,4 @@
-SIlverShop\Discounts\Page\GiftVoucherProduct:
+SilverShop\Discounts\Page\GiftVoucherProduct:
     variable:
         Title: Variable Gift Voucher
         BasePrice: 0
@@ -17,7 +17,7 @@ SilverShop\Model\Order:
         Status: Cart
         Total: 20
 
-SilverShop\Model\GiftVoucherOrderItem:
+SilverShop\Discounts\Model\GiftVoucherOrderItem:
     giftcart_10fixed:
-        Product: =>GiftVoucherProduct.10fixed
+        Product: '=>SilverShop\Discounts\Page\GiftVoucherProduct.10fixed'
         Quantity: 2

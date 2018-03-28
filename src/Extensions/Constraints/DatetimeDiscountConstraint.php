@@ -8,7 +8,6 @@ use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\DatetimeField;
 use SilverStripe\ORM\DataList;
 
-
 class DatetimeDiscountConstraint extends DiscountConstraint
 {
     private static $db = [
@@ -35,17 +34,15 @@ class DatetimeDiscountConstraint extends DiscountConstraint
 
         //to bad ORM filtering for NULL doesn't work...so we need to use where
         return $list->where(
-            "(\"Discount\".\"StartDate\" IS NULL) OR (\"Discount\".\"StartDate\" < '$datetime')"
+            "(\"SilverShop_Discount\".\"StartDate\" IS NULL) OR (\"SilverShop_Discount\".\"StartDate\" < '$datetime')"
         )
         ->where(
-            "(\"Discount\".\"EndDate\" IS NULL) OR (\"Discount\".\"EndDate\" > '$datetime')"
+            "(\"SilverShop_Discount\".\"EndDate\" IS NULL) OR (\"SilverShop_Discount\".\"EndDate\" > '$datetime')"
         );
     }
 
     public function check(Discount $discount)
     {
-
-        //time period
         $startDate = strtotime($discount->StartDate);
         $endDate = strtotime($discount->EndDate);
 

@@ -5,7 +5,7 @@ namespace SilverShop\Discounts\Tests;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
 use SilverShop\Discounts\Model\OrderCoupon;
-
+use SilverShop\Model\Order;
 
 class UseLimitDiscountConstraintTest extends SapphireTest
 {

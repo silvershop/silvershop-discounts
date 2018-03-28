@@ -33,6 +33,8 @@ use SilverShop\Model\OrderItem;
 use SilverStripe\Dev\Deprecation;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverShop\Discounts\Model\Discount;
+use SilverStripe\Core\Injector\Injector;
+use SilverShop\Discounts\Extensions\Constraints\DiscountConstraint;
 
 class Discount extends DataObject
 {
@@ -94,6 +96,24 @@ class Discount extends DataObject
     private static $unpaid_use_timeout = 10;
 
     /**
+     * @return array
+     */
+    public function getConstraints()
+    {
+        $extensions = $this->getExtensionInstances();
+        $output = [];
+
+        foreach ($extensions as $extension)
+        {
+            if ($extension instanceof DiscountConstraint) {
+                $output[] = get_class($extension);
+            }
+        }
+
+        return $output;
+    }
+
+    /**
      * Get the smallest possible list of discounts that can apply
      * to a given order.
      * @param  Order  $order order to check against
@@ -110,7 +130,7 @@ class Discount extends DataObject
                 "Percent:GreaterThan" => 0
         ]);
 
-        $constraints = self::config()->constraints;
+        $constraints = Injector::inst()->create(static::class)->getConstraints();
 
         foreach ($constraints as $constraint) {
             $discounts = singleton($constraint)
@@ -285,7 +305,7 @@ class Discount extends DataObject
             return false;
         }
 
-        $constraints = self::config()->constraints;
+        $constraints = $this->getConstraints();
 
         foreach ($constraints as $constraint) {
             $constraint = singleton($constraint)
@@ -473,12 +493,12 @@ class Discount extends DataObject
     public function getSavingsTotal()
     {
         $itemsavings = $this->OrderItems()
-                        ->innerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"")
-                        ->where("\"Order\".\"Paid\" IS NOT NULL")
+                        ->innerJoin("SilverShop_Order", "\"SilverShop_OrderAttribute\".\"OrderID\" = \"SilverShop_Order\".\"ID\"")
+                        ->where("\"SilverShop_Order\".\"Paid\" IS NOT NULL")
                         ->sum("DiscountAmount");
         $modifiersavings = $this->DiscountModifiers()
-                        ->innerJoin("Order", "\"OrderAttribute\".\"OrderID\" = \"Order\".\"ID\"")
-                        ->where("\"Order\".\"Paid\" IS NOT NULL")
+                        ->innerJoin("SilverShop_Order", "\"SilverShop_OrderAttribute\".\"OrderID\" = \"SilverShop_Order\".\"ID\"")
+                        ->where("\"SilverShop_Order\".\"Paid\" IS NOT NULL")
                         ->sum("DiscountAmount");
 
         return $itemsavings + $modifiersavings;
@@ -493,13 +513,13 @@ class Discount extends DataObject
     public function getSavingsForOrder(Order $order)
     {
         $itemsavings = OrderAttribute::get()
-            ->innerJoin("SilverShop_OrderItem_Discounts", "\"OrderAttribute\".\"ID\" = \"SilverShop_OrderItem_Discounts\".\"SilverShop_OrderItemID\"")
+            ->innerJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderAttribute\".\"ID\" = \"SilverShop_OrderItem_Discounts\".\"SilverShop_OrderItemID\"")
             ->filter("SilverShop_OrderItem_Discounts.DiscountID", $this->ID)
             ->filter("OrderAttribute.OrderID", $order->ID)
             ->sum("DiscountAmount");
 
         $modifiersavings = OrderAttribute::get()
-            ->innerJoin("SilverShop_OrderDiscountModifier_Discounts", "\"OrderAttribute\".\"ID\" = \"SilverShop_OrderDiscountModifier_Discounts\".\"OrderDiscountModifierID\"")
+            ->innerJoin("SilverShop_OrderDiscountModifier_Discounts", "\"SilverShop_OrderAttribute\".\"ID\" = \"SilverShop_OrderDiscountModifier_Discounts\".\"SilverShop_OrderDiscountModifierID\"")
             ->filter("SilverShop_OrderDiscountModifier_Discounts.DiscountID", $this->ID)
             ->filter("OrderAttribute.OrderID", $order->ID)
             ->sum("DiscountAmount");

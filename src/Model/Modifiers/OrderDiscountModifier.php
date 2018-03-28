@@ -60,7 +60,7 @@ class OrderDiscountModifier extends OrderModifier
         $code = Controller::curr()->getRequest()->getSession()->get("cart.couponcode");
 
         if (!$code && $this->Order()->exists()) {
-            $discount = $this->Order()->Discounts();
+            $discounts = $this->Order()->Discounts();
 
             foreach ($discounts as $discount) {
                 if ($discount->Code) {

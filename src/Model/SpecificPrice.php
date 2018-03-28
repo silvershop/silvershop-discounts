@@ -3,6 +3,10 @@
 namespace SilverShop\Discounts\Model;
 
 use SilverStripe\ORM\DataObject;
+use SilverShop\Page\Product;
+use SilverShop\Model\Variation\Variation;
+use SilverStripe\Security\Group;
+use SilverStripe\ORM\DataList;
 
 /**
  * Represents a price change applied to a Product or ProductVariation, for a
@@ -29,9 +33,9 @@ class SpecificPrice extends DataObject
     ];
 
     private static $has_one = [
-        "Product" => "Product",
-        "ProductVariation" => "ProductVariation",
-        "Group" => "Group"
+        "Product" => Product::class,
+        "ProductVariation" => Variation::class,
+        "Group" => Group::class
     ];
 
     private static $summary_fields = [
@@ -56,10 +60,10 @@ class SpecificPrice extends DataObject
         }
 
         $list = $list->where(
-            "(\"SpecificPrice\".\"StartDate\" IS NULL) OR (\"SpecificPrice\".\"StartDate\" < '$now')"
+            "(\"SilverShop_SpecificPrice\".\"StartDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"StartDate\" < '$now')"
         )
         ->where(
-            "(\"SpecificPrice\".\"EndDate\" IS NULL) OR (\"SpecificPrice\".\"EndDate\" > '$nowminusone')"
+            "(\"SilverShop_SpecificPrice\".\"EndDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"EndDate\" > '$nowminusone')"
         )
         ->filter("GroupID", $groupids);
 

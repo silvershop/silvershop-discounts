@@ -1,22 +1,18 @@
 <?php
 
-namespace SilverShop\Discounts\Checkout\Extensions;
+namespace SilverShop\Discounts\Extensions;
 
 use SilverStripe\ORM\DataExtension;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
-use GridFieldConfig_RecordEditor;
-use SpecificPrice;
-use Member;
+use SilverStripe\Forms\GridField\Config_RecordEditor;
+use SilverShop\Discounts\Model\SpecificPrice;
+use SilverStripe\Security\Member;
 
-
-/**
- * @package silvershop-discounts
- */
 class SpecificPricingExtension extends DataExtension
 {
     private static $has_many = [
-        "SpecificPrices" => "SpecificPrice"
+        "SpecificPrices" => SpecificPrice::class
     ];
 
     public function updateCMSFields(FieldList $fields)

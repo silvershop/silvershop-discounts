@@ -1,6 +1,6 @@
 <?php
 
-namespace Shop\Discount;
+namespace SilverShop\Discounts;
 
 /**
  * Represent a price, along with adjustments made to it.
@@ -8,9 +8,11 @@ namespace Shop\Discount;
 class PriceInfo
 {
     protected $originalprice;
+
     protected $currentprice; //for compounding discounts
 
     protected $adjustments = [];
+
     protected $bestadjustment;
 
     public function __construct($price)

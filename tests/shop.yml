@@ -64,7 +64,6 @@ SilverShop\Page\Product:
     URLSegment: pdf-brochure
     Parent: =>SilverShop\Page\ProductCategory.products
     AllowPurchase: 1
-
 SilverShop\Model\Address:
   foobar:
     Address: 12 Foo Street

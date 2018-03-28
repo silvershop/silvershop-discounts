@@ -3,54 +3,55 @@
 namespace SilverShop\Discounts\Tests;
 
 use SilverStripe\Dev\SapphireTest;
-use Object;
 use SilverShop\Discounts\Extensions\SpecificPricingExtension;
+use SilverShop\Page\Product;
+use SilverShop\Model\Variation\Variation;
+use SilverShop\Discounts\Model\SpecificPrice;
 
-
-
-class SpecificPriceTest extends SapphireTest{
-
+class SpecificPriceTest extends SapphireTest
+{
     protected static $fixture_file = [
         'SpecificPrices.yml'
     ];
 
-    function setUp(){
+    protected function setUp() {
         parent::setUp();
-        Object::add_extension("Product", SpecificPricingExtension::class);
-        Object::add_extension("ProductVariation", SpecificPricingExtension::class);
+
+        Product::add_extension(SpecificPricingExtension::class);
+        Variation::add_extension(SpecificPricingExtension::class);
     }
 
-    function testProductPrice() {
-        $product = $this->objFromFixture("Product", "raspberrypi");
+    public function testProductPrice() {
+        $product = $this->objFromFixture(Product::class, "raspberrypi");
         $this->assertEquals(45, $product->sellingPrice());
         $this->assertTrue($product->IsReduced());
         $this->assertEquals(5, $product->getTotalReduction());
     }
 
-    function testProductVariationPrice() {
-        $variation = $this->objFromFixture("ProductVariation", "robot_30gb");
+    public function testProductVariationPrice() {
+        $variation = $this->objFromFixture(Variation::class, "robot_30gb");
         $this->assertEquals(90, $variation->sellingPrice());
         $this->assertTrue($variation->IsReduced());
         $this->assertEquals(10, $variation->getTotalReduction());
     }
 
-    function testProductPricePercentage() {
-        $discount = $this->objFromFixture("SpecificPrice", "raspberrypi_dateconstrained");
+    public function testProductPricePercentage() {
+        $discount = $this->objFromFixture(SpecificPrice::class, "raspberrypi_dateconstrained");
         $discount->DiscountPercent = 0.5;
         $discount->Price = 0;
         $discount->write();
-        $product = $this->objFromFixture("Product", "raspberrypi");
+        $product = $this->objFromFixture(Product::class, "raspberrypi");
         $this->assertEquals(25, $product->sellingPrice());
         $this->assertTrue($product->IsReduced());
         $this->assertEquals(25, $product->getTotalReduction());
     }
 
-    function testProductVariationPricePercentage() {
-        $discount = $this->objFromFixture("SpecificPrice", "robot_30gb_specific");
+    public function testProductVariationPricePercentage() {
+        $discount = $this->objFromFixture(SpecificPrice::class, "robot_30gb_specific");
         $discount->DiscountPercent = 0.5;
         $discount->Price = 0;
         $discount->write();
-        $variation = $this->objFromFixture("ProductVariation", "robot_30gb");
+        $variation = $this->objFromFixture(Variation::class, "robot_30gb");
         $this->assertEquals(50, $variation->sellingPrice());
         $this->assertTrue($variation->IsReduced());
         $this->assertEquals(50, $variation->getTotalReduction());

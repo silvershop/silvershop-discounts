@@ -41,9 +41,9 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
 
         // if no products in the discount even
         if (!$products->exists()) {
-            $curr = Versioned::current_stage();
+            $curr = Versioned::get_stage();
 
-            Versioned::reading_stage('Stage');
+            Versioned::set_stage('Stage');
             $products = $discount->Products();
 
             if (!$products->exists()) {
@@ -51,7 +51,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
             }
 
             $constraintproductids = $products->map('ID', 'ID')->toArray();
-            Versioned::reading_stage($curr);
+            Versioned::set_stage($curr);
         } else {
             $constraintproductids = $products->map('ID', 'ID')->toArray();
         }

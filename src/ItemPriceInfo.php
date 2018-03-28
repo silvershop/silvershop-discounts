@@ -1,6 +1,9 @@
 <?php
 
-namespace Shop\Discount;
+namespace SilverShop\Discounts;
+
+use SilverShop\Discounts\PriceInfo;
+use SilverShop\Model\OrderItem;
 
 /**
  * Wrap PriceInfo with order item info
@@ -8,9 +11,10 @@ namespace Shop\Discount;
 class ItemPriceInfo extends PriceInfo
 {
     protected $item;
+
     protected $quantity;
 
-    public function __construct(\OrderItem $item)
+    public function __construct(OrderItem $item)
     {
         $this->item = $item;
         $this->quantity = $item->Quantity;
@@ -44,7 +48,7 @@ class ItemPriceInfo extends PriceInfo
         $val = "item: ".$this->getItem()->TableTitle();
         $price = $this->getOriginalPrice();
         $val .= " price:$price discount:$discount total:$total.\n";
-        
+
         if ($best = $this->getBestAdjustment()) {
             $val .= $this->getBestAdjustment()." ";
             $val .= $this->getBestAdjustment()->getAdjuster()->Title;

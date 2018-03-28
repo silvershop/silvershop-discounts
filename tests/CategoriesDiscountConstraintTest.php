@@ -2,14 +2,10 @@
 
 namespace SilverShop\Discounts\Tests;
 
-
-use SilverShop\Discount\Calculator;
+use SilverShop\Discounts\Calculator;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
-
 use SilverShop\Discounts\Model\OrderDiscount;
-
-
 
 class CategoriesDiscountConstraintTest extends SapphireTest{
 

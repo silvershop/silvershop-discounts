@@ -2,34 +2,36 @@
 
 namespace SilverShop\Discounts\Tests;
 
-
-use SilverShop\Discount\Calculator;
+use SilverShop\Discounts\Calculator;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
 use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Discounts\Model\OrderCoupon;
+use SilverShop\Page\Product;
+use SilverShop\Model\Order;
 
-
-class ProductsDiscountConstraintTest extends SapphireTest{
-
+class ProductsDiscountConstraintTest extends SapphireTest
+{
     protected static $fixture_file = [
         'shop.yml'
     ];
 
     public function setUp() {
         parent::setUp();
+
         ShopTest::setConfiguration();
+
         $this->cart = $this->objFromFixture(Order::class, "cart");
         $this->placedorder = $this->objFromFixture(Order::class, "unpaid");
         $this->megacart = $this->objFromFixture(Order::class, "megacart");
         $this->modifiedcart = $this->objFromFixture(Order::class, "modifiedcart");
 
-        $this->socks = $this->objFromFixture("Product", "socks");
-        $this->socks->publish("Stage", "Live");
-        $this->tshirt = $this->objFromFixture("Product", "tshirt");
-        $this->tshirt->publish("Stage", "Live");
-        $this->mp3player = $this->objFromFixture("Product", "mp3player");
-        $this->mp3player->publish("Stage", "Live");
+        $this->socks = $this->objFromFixture(Product::class, "socks");
+        $this->socks->publishRecursive();
+        $this->tshirt = $this->objFromFixture(Product::class, "tshirt");
+        $this->tshirt->publishRecursive();
+        $this->mp3player = $this->objFromFixture(Product::class, "mp3player");
+        $this->mp3player->publishRecursive();
     }
 
     public function testProducts() {
@@ -38,12 +40,12 @@ class ProductsDiscountConstraintTest extends SapphireTest{
             "Percent" => 0.2
         ]);
         $discount->write();
-        $discount->Products()->add($this->objFromFixture("Product", "tshirt"));
+        $discount->Products()->add($this->objFromFixture(Product::class, "tshirt"));
         $this->assertFalse($discount->validateOrder($this->cart));
         //no products match
         $this->assertDOSEquals([], OrderDiscount::get_matching($this->cart));
         //add product discount list
-        $discount->Products()->add($this->objFromFixture("Product", "tshirt"));
+        $discount->Products()->add($this->objFromFixture(Product::class, "tshirt"));
         $this->assertFalse($discount->validateOrder($this->cart));
         //no products match
         $this->assertDOSEquals([], OrderDiscount::get_matching($this->cart));
@@ -56,12 +58,15 @@ class ProductsDiscountConstraintTest extends SapphireTest{
             "Percent" => 0.2
         ]);
         $coupon->write();
-        $coupon->Products()->add($this->objFromFixture("Product", "tshirt"));
+        $coupon->Products()->add($this->objFromFixture(Product::class, "tshirt"));
 
-        $calculator = new Calculator($this->placedorder, ["CouponCode" => $coupon->Code]);
+        $calculator = new Calculator($this->placedorder, [
+            "CouponCode" => $coupon->Code
+        ]);
+
         $this->assertEquals($calculator->calculate(), 20);
         //add another product to coupon product list
-        $coupon->Products()->add($this->objFromFixture("Product", "mp3player"));
+        $coupon->Products()->add($this->objFromFixture(Product::class, "mp3player"));
         $this->assertEquals($calculator->calculate(), 100);
     }
 
@@ -125,10 +130,9 @@ class ProductsDiscountConstraintTest extends SapphireTest{
         $discount->write();
         $discount->Products()->add($unpublishedSocks);
 
-        $order = $this->objFromFixture('Order', 'othercart');
+        $order = $this->objFromFixture(Order::class, 'othercart');
         $calculator = new Calculator($order);
 
         $this->assertEquals(0, $calculator->calculate(), "Product coupon does not apply as draft products don't exist");
     }
-
 }
