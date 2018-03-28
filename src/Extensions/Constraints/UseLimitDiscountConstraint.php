@@ -20,9 +20,7 @@ class UseLimitDiscountConstraint extends DiscountConstraint
     {
         $fields->addFieldToTab("Root.Constraints.ConstraintsTabs.General",
             NumericField::create(
-                "UseLimit",
-                $this->owner->config()->get('field_labels')['UseLimit'],
-                0
+                "UseLimit", _t(__CLASS__.'.USELIMIT', $this->owner->fieldLabel('UseLimit')), 0
             )
             ->setDescription("Note: 0 = unlimited")
         );
