@@ -2,7 +2,7 @@
 
 namespace SilverShop\Discounts\Actions;
 
-use SilverShop\Discount\Adjustment;
+use SilverShop\Discounts\Adjustment;
 use SilverShop\Discounts\Actions\ItemDiscountAction;
 
 class ItemPercentDiscount extends ItemDiscountAction

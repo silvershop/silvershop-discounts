@@ -2,6 +2,8 @@
 
 namespace SilverShop\Discounts\Model;
 
+use SilverShop\Discounts\Model\Discount;
+
 /**
  * Order discounts.
  *

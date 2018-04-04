@@ -2,9 +2,9 @@
 
 namespace SilverShop\Discounts\Actions;
 
-use SilverShop\Discount\ItemPriceInfo;
-use SilverShop\Discount\Model\Discount;
-use SilverShop\Discount\Model\ItemDiscountConstraint;
+use SilverShop\Discounts\ItemPriceInfo;
+use SilverShop\Discounts\Model\Discount;
+use SilverShop\Discounts\Extensions\Constraints\ItemDiscountConstraint;
 
 abstract class ItemDiscountAction extends DiscountAction
 {
