@@ -1,6 +1,6 @@
 <?php
 
-namespace Shop\Discount;
+namespace SilverShop\Discounts;
 
 /**
  * Stores the calculated adjustment,
