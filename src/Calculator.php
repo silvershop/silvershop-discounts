@@ -12,6 +12,8 @@ use SilverStripe\ORM\DataList;
 
 class Calculator
 {
+    use Injectable;
+
     protected $order;
 
     protected $discounts;
