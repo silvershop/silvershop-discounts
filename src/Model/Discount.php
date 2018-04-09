@@ -155,8 +155,8 @@ class Discount extends DataObject
     {
         //fields that shouldn't be changed once coupon is used
         $fields = new FieldList([
-            $tabset = new TabSet("Root",
-                $maintab = new Tab("Main",
+            new TabSet("Root",
+                new Tab("Main",
                     TextField::create("Title"),
                     CheckboxField::create("Active", "Active")
                         ->setDescription("Enable/disable all use of this discount."),
@@ -165,6 +165,7 @@ class Discount extends DataObject
                         new SelectionGroup_Item("Percent",
                             $percentgroup = FieldGroup::create(
                                 $percentfield = NumericField::create("Percent", "Percentage", "0.00")
+                                    ->setScale(null)
                                     ->setDescription("e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%"),
                                 $maxamountfield = CurrencyField::create("MaxAmount",
                                     _t("MaxAmount", "Maximum Amount")
@@ -180,20 +181,21 @@ class Discount extends DataObject
                         )
                     ])->setTitle("Type"),
                     OptionSetField::create("For", "Applies to", [
-                        "Order" => "Entire Order",
-                        "Cart" => "Cart Subtotal",
-                        "Shipping" => "Shipping Subtotal",
-                        "Items" => "Each Individual Item"
+                        "Order" => "Entire order",
+                        "Cart" => "Cart subtotal",
+                        "Shipping" => "Shipping subtotal",
+                        "Items" => "Each individual item"
                     ])
                 ),
-                $constraints = new Tab("Constraints",
-                    HeaderField::create("ConstraintsTitle", "Constraints", 3)
+                new Tab(
+                    "Constraints",
+                    TabSet::create("ConstraintsTabs", $general = new Tab("General", "General"))
                 )
             )
         ]);
 
         if (!$this->isInDB()) {
-            $fields->addFieldToTab("Root.Constraints",
+            $general->push(
                 LiteralField::create("SaveNote",
                     sprintf(
                         "<p class=\"message good\">%s</p>",

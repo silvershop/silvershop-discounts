@@ -29,7 +29,7 @@ class OrderCoupon extends Discount
     private static $summary_fields = [
         "Title",
         "Code",
-        "DiscountNice",
+        "DiscountNice" => "Discount",
         "StartDate",
         "EndDate"
     ];

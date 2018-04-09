@@ -7,6 +7,8 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Tab;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
+use SilverStripe\Forms\GridField\GridFieldEditButton;
 use SilverShop\Model\OrderItem;
 use SilverShop\Page\ProductCategory;
 
@@ -19,15 +21,16 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
     public function updateCMSFields(FieldList $fields)
     {
         if ($this->owner->isInDB()) {
-            $fields->fieldByName("Root.Constraints")->push(new Tab("Categories",
-                GridField::create("Categories", "Categories", $this->owner->Categories(),
+            $fields->addFieldToTab("Root.Constraints.ConstraintsTabs.Product",
+                GridField::create(
+                    "Categories",
+                    _t(__CLASS__.'.PRODUCTCATEGORIES', "Product categories"),
+                    $this->owner->Categories(),
                     GridFieldConfig_RelationEditor::create()
-                        ->removeComponentsByType("GridFieldAddNewButton")
-                        ->removeComponentsByType("GridFieldEditButton")
-                )->setDescription(
-                    "Select specific product categories that this discount applies to"
+                        ->removeComponentsByType(GridFieldAddNewButton::class)
+                        ->removeComponentsByType(GridFieldEditButton::class)
                 )
-            ));
+            );
         }
     }
 
@@ -42,7 +45,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         $incart = $this->itemsInCart($discount);
 
         if (!$incart) {
-            $this->error("The required products (categories) are not in the cart.");
+            $this->error(_t(__CLASS__.'.CATEGORIESNOTINCART', "The required products (categories) are not in the cart."));
         }
 
         return $incart;

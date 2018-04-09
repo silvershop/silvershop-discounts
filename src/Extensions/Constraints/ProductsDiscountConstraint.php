@@ -6,6 +6,8 @@ use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
+use SilverStripe\Forms\GridField\GridFieldAddNewButton;
+use SilverStripe\Forms\GridField\GridFieldEditButton;
 use SilverStripe\Forms\CheckboxField;
 use SilverStripe\Versioned\Versioned;
 use SilverShop\Model\OrderItem;
@@ -24,14 +26,23 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
     public function updateCMSFields(FieldList $fields)
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldsToTab("Root.Constraints", [
-                GridField::create("Products", "Specific Products", $this->owner->Products(),
-                    GridFieldConfig_RelationEditor::create()
-                        ->removeComponentsByType("GridFieldAddNewButton")
-                        ->removeComponentsByType("GridFieldEditButton")
-                )->setDescription("Select specific products that this discount applies to"),
-                CheckboxField::create("ExactProducts", "All the selected products must be present in cart."),
-            ]);
+            $fields->addFieldsToTab(
+                "Root.Constraints.ConstraintsTabs.Product",
+                [
+                    GridField::create(
+                        "Products",
+                        _t(__CLASS__.'SPECIFICPRODUCTS', "Specific products"),
+                        $this->owner->Products(),
+                        GridFieldConfig_RelationEditor::create()
+                            ->removeComponentsByType(GridFieldAddNewButton::class)
+                            ->removeComponentsByType(GridFieldEditButton::class)
+                    ),
+                    CheckboxField::create(
+                        "ExactProducts",
+                        _t(__CLASS__.'.ALLPRODUCTSINCART', "All the selected products must be present in cart.")
+                    ),
+                ]
+            );
         }
     }
 
