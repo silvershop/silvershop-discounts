@@ -5,6 +5,7 @@ namespace SilverShop\Discounts\Extensions;
 use SilverStripe\ORM\DataExtension;
 use SilverShop\Model\OrderItem;
 use SilverShop\Discounts\Model\Discount;
+use SilverShop\Discounts\ItemPriceInfo;
 
 class DiscountedOrderItem extends DataExtension
 {
@@ -30,5 +31,14 @@ class DiscountedOrderItem extends DataExtension
         $productKey = OrderItem::config()->buyable_relationship . "ID";
 
         return $this->owner->{$productKey};
+    }
+
+    /**
+     * @return string
+     */
+    public function getPriceInfoClass() {
+        $class = ItemPriceInfo::class;
+        $this->owner->extend('updatePriceInfoClass', $class);
+        return $class;
     }
 }
