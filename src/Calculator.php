@@ -5,6 +5,8 @@ namespace SilverShop\Discounts;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverShop\Discounts\Actions\ItemPercentDiscount;
+use SilverShop\Discounts\Actions\ItemFixedDiscount;
+use SilverShop\Discounts\ItemPriceInfo;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverShop\Model\Order;
@@ -195,9 +197,12 @@ class Calculator
         $output = [];
 
         foreach ($list as $item) {
-            $output[] = new ItemPriceInfo($item);
+            $priceInfoClass = $item->getPriceInfoClass();
+            if (!$priceInfoClass) {
+                $priceInfoClass = ItemPriceInfo::class;
+            }
+            $output[] = Injector::inst()->createWithArgs($priceInfoClass, [$item]);
         }
-
         return $output;
     }
 
