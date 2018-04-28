@@ -44,12 +44,12 @@ class CouponCheckoutComponent extends CheckoutComponent
         // check the coupon exists, and can be used
         if ($coupon = OrderCoupon::get_by_code($code)) {
             if (!$coupon->validateOrder($order, ["CouponCode" => $code])) {
-                $result->error($coupon->getMessage(), "Code");
+                $result->addError($coupon->getMessage(), "Code");
 
                 throw new ValidationException($result);
             }
         } else {
-            $result->error(
+            $result->addError(
                 _t("OrderCouponModifier.NOTFOUND", "Coupon could not be found"),
                 "Code"
             );
