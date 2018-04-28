@@ -9,7 +9,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\ORM\ValidationException;
-use SilverStripe\Control\Session;
+use SilverStripe\Control\Controller;
 use SilverShop\Model\Order;
 
 class CouponCheckoutComponent extends CheckoutComponent
@@ -44,12 +44,12 @@ class CouponCheckoutComponent extends CheckoutComponent
         // check the coupon exists, and can be used
         if ($coupon = OrderCoupon::get_by_code($code)) {
             if (!$coupon->validateOrder($order, ["CouponCode" => $code])) {
-                $result->error($coupon->getMessage(), "Code");
+                $result->addError($coupon->getMessage(), "Code");
 
                 throw new ValidationException($result);
             }
         } else {
-            $result->error(
+            $result->addError(
                 _t("OrderCouponModifier.NOTFOUND", "Coupon could not be found"),
                 "Code"
             );
@@ -64,13 +64,13 @@ class CouponCheckoutComponent extends CheckoutComponent
     public function getData(Order $order)
     {
         return [
-            'Code' => Session::get("cart.couponcode")
+            'Code' => Controller::curr()->getRequest()->getSession()->get("cart.couponcode")
         ];
     }
 
     public function setData(Order $order, array $data)
     {
-        Session::set("cart.couponcode", strtoupper($data['Code']));
+        Controller::curr()->getRequest()->getSession()->set("cart.couponcode", strtoupper($data['Code']));
 
         $order->getModifier(OrderDiscountModifier::class, true);
     }
