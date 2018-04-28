@@ -15,7 +15,7 @@ class CouponFormCheckoutDecorator extends Extension
     public function CouponForm()
     {
         if ($cart = ShoppingCart::curr()) {
-            return new CouponForm($this->owner, CouponForm::class, $cart);
+            return new CouponForm($this->owner, 'CouponForm', $cart);
         }
     }
 }
