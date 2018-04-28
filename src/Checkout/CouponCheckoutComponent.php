@@ -9,7 +9,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\ORM\ValidationException;
-use SilverStripe\Control\Session;
+use SilverStripe\Control\Controller;
 use SilverShop\Model\Order;
 
 class CouponCheckoutComponent extends CheckoutComponent
@@ -64,13 +64,13 @@ class CouponCheckoutComponent extends CheckoutComponent
     public function getData(Order $order)
     {
         return [
-            'Code' => Session::get("cart.couponcode")
+            'Code' => Controller::curr()->getRequest()->getSession()->get("cart.couponcode")
         ];
     }
 
     public function setData(Order $order, array $data)
     {
-        Session::set("cart.couponcode", strtoupper($data['Code']));
+        Controller::curr()->getRequest()->getSession()->set("cart.couponcode", strtoupper($data['Code']));
 
         $order->getModifier(OrderDiscountModifier::class, true);
     }
