@@ -4,12 +4,13 @@ namespace SilverShop\Discounts\Form;
 
 use SilverStripe\Forms\Form;
 use SilverShop\Model\Order;
-use CheckoutComponentConfig;
-use CouponCheckoutComponent;
+use SilverShop\Checkout\CheckoutComponentConfig;
+use SilverShop\Discounts\Checkout\CouponCheckoutComponent;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Control\Session;
+use SilverShop\Forms\CheckoutComponentValidator;
 
 /**
  * Enter coupon codes at checkout.
@@ -23,7 +24,7 @@ class CouponForm extends Form
         $this->config = new CheckoutComponentConfig($order, false);
         $this->config->addComponent($couponcompoent = new CouponCheckoutComponent());
 
-        $validator = Injector::inst()->create('CheckoutComponentValidator', $this->config);
+        $validator = Injector::inst()->create(CheckoutComponentValidator::class, $this->config);
 
         $fields = $this->config->getFormFields();
 
