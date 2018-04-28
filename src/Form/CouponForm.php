@@ -9,7 +9,7 @@ use SilverShop\Discounts\Checkout\CouponCheckoutComponent;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
-use SilverStripe\Control\Session;
+use SilverStripe\Control\Controller;
 use SilverShop\Forms\CheckoutComponentValidator;
 
 /**
@@ -59,7 +59,7 @@ class CouponForm extends Form
 
     public function removeCoupon($data, $form)
     {
-        Session::clear("cart.couponcode");
+        Controller::curr()->getRequest()->getSession()->clear("cart.couponcode");
 
         $order = $this->config->getOrder();
 
