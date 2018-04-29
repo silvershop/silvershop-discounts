@@ -3,10 +3,10 @@
 namespace SilverShop\Discounts\Checkout\Step;
 
 use SilverShop\Checkout\Step\CheckoutStep;
-use CheckoutComponentConfig;
+use SilverShop\Checkout\CheckoutComponentConfig;
 use SilverShop\Cart\ShoppingCart;
-use CouponCheckoutComponent;
-use CheckoutForm;
+use SilverShop\Discounts\Checkout\CouponCheckoutComponent;
+use SilverShop\Forms\CheckoutForm;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverShop\Discounts\Form\CouponForm;
