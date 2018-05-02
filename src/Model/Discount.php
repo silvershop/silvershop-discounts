@@ -35,6 +35,7 @@ use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Core\Injector\Injector;
 use SilverShop\Discounts\Extensions\Constraints\DiscountConstraint;
+use SilverStripe\ORM\FieldType\DBCurrency;
 
 class Discount extends DataObject
 {
@@ -350,7 +351,7 @@ class Discount extends DataObject
     {
         $discount = 0;
         if ($this->Type === "Amount") {
-            $discount += $this->Amount;
+            $discount += $this->getAmount();
         } elseif ($this->Percent) {
             $discount += $value * $this->Percent;
         }
@@ -358,6 +359,8 @@ class Discount extends DataObject
         if ($discount > $value) {
             $discount = $value;
         }
+
+        $this->extend('updateDiscountValue', $discount);
 
         return $discount;
     }
@@ -368,7 +371,18 @@ class Discount extends DataObject
             return $this->dbObject("Percent")->Nice();
         }
 
-        return $this->dbObject("Amount")->Nice();
+        return DBCurrency::create_field(DBCurrency::class, $this->getAmount())->Nice();
+    }
+
+    /**
+     * Get discounting amount
+     */
+    public function getAmount(){
+        $amount = $this->getField('Amount');
+
+        $this->extend('updateAmount', $amount);
+
+        return $amount;
     }
 
     /**
