@@ -61,7 +61,9 @@ class PartialUseDiscount extends Discount
         }
         $remainder = null;
         //only create remainder if used less than amount
-        if ($used < $this->Amount) {
+        $amount = $this->getAmount();
+
+        if ($used < $amount) {
             //duplicate dataobject and update accordingly
             $remainder = $this->duplicate(false);
             $remainder->write();
@@ -71,7 +73,7 @@ class PartialUseDiscount extends Discount
             $this->duplicateManyManyRelations($this, $remainder);
 
             //TODO: there may be some relationships that shouldn't be copied?
-            $remainder->Amount = $this->Amount - $used;
+            $remainder->Amount = $amount - $used;
             $remainder->ParentID = $this->ID;
             //unset old code
             $remainder->Code = "";
