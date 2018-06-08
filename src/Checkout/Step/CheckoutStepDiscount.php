@@ -11,8 +11,6 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverShop\Discounts\Form\CouponForm;
 
-
-
 class CheckoutStepDiscount extends CheckoutStep
 {
     private static $allowed_actions = [

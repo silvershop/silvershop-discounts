@@ -25,7 +25,7 @@ Discounts can be globally enabled/disabled.
 
 ## Requirements
 
- * Shop Module + its requirements
+ * SilverShop Module
 
 ## Installation Instructions
 
@@ -40,34 +40,26 @@ via composer:
 If you are using the stepped checkout, add the `CheckoutStep_Discount` checkout step:
 
 ```yaml
-CheckoutPage:
+SilverShop\Page\CheckoutPage:
   steps:
-    'contactdetails' : 'CheckoutStep_ContactDetails'
-    'shippingaddress' : 'CheckoutStep_Address'
-    'billingaddress' : 'CheckoutStep_Address'
-    'shippingmethod' : 'CheckoutStep_ShippingMethod'
-    'discount' : 'CheckoutStep_Discount' #here!
-    'paymentmethod' : 'CheckoutStep_PaymentMethod'
-    'summary' : 'CheckoutStep_Summary'
+    'discount' : 'SilverShop\Discounts\Checkout\Step\CheckoutStepDiscount'
 ```
 
 If you would like to display the coupon form seperately to the checkout form,
 apply the following extension. This will make `CouponForm` available in the checkout template:
 
 ```yaml
-CheckoutPage_Controller:
+SilverShop\Page\CheckoutPageController:
   extensions:
-    - CouponFormCheckoutDecorator
+    - SilverShop\Discounts\Extensions\CouponFormCheckoutDecorator
 ```
 
 Add the `OrderDiscountModifier` modifier to your order modifiers yaml config:
 
 ```yaml
-Order:
+SilverShop\Model\Order:
   modifiers:
-    - Blah
-    - OrderDiscountModifier #here!
-    - Blah
+    - SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier
 ```
 
 ## Specific Pricing
@@ -76,14 +68,7 @@ Extend `Product` and/or `ProductVariation` with the `SpecificPricingExtension` t
 
 Configure as follows:
 ```yaml
-Product:
+SilverShop\Page\Product:
   extensions:
-    - SpecificPricingExtension
-ProductVariation:
-  extensions:
-    - SpecificPricingExtension
+    - SilverShop\Discounts\Extensions\SpecificPricingExtension
 ```
-
-## Upgrading
-
-`OrderCoupon` has become a subclass of `Discount`, so if your existing database contains `OrderCoupon`, it might be best to rename it to `Discount` before running `dev/build?flush=1`.

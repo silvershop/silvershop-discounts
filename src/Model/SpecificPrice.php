@@ -6,6 +6,7 @@ use SilverStripe\ORM\DataObject;
 use SilverShop\Page\Product;
 use SilverShop\Model\Variation\Variation;
 use SilverStripe\Security\Group;
+use SilverStripe\Security\Permission;
 use SilverStripe\ORM\DataList;
 
 /**
@@ -48,6 +49,27 @@ class SpecificPrice extends DataObject
     private static $default_sort = "\"Price\" ASC";
 
     private static $table_name = 'SilverShop_SpecificPrice';
+
+    public function canEdit($member = null)
+    {
+        return
+            Permission::check('ADMIN') ||
+            Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+    }
+
+    public function canCreate($member = null, $context = [])
+    {
+        return
+            Permission::check('ADMIN') ||
+            Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+    }
+
+    public function canDelete($member = null)
+    {
+        return
+            Permission::check('ADMIN') ||
+            Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+    }
 
     public static function filter(DataList $list, $member = null)
     {

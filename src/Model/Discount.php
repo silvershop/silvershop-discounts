@@ -26,6 +26,8 @@ use SilverStripe\Forms\DateField;
 use SilverStripe\Forms\ListboxField;
 use SilverShop\Page\Product;
 use SilverShop\Page\ProductCategory;
+use SilverStripe\Security\PermissionProvider;
+use SilverStripe\Security\Permission;
 use SilverStripe\ORM\Filters\GreaterThanOrEqualFilter;
 use SilverStripe\ORM\Filters\LessThanOrEqualFilter;
 use SilverShop\Model\OrderAttribute;
@@ -37,7 +39,7 @@ use SilverStripe\Core\Injector\Injector;
 use SilverShop\Discounts\Extensions\Constraints\DiscountConstraint;
 use SilverStripe\ORM\FieldType\DBCurrency;
 
-class Discount extends DataObject
+class Discount extends DataObject implements PermissionProvider
 {
     private static $db = [
         "Title" => "Varchar(255)", //store the promotion name, or whatever you like
@@ -551,7 +553,7 @@ class Discount extends DataObject
 
     public function canCreate($member = null, $context = [])
     {
-        return true;
+        return Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
     public function canDelete($member = null)
@@ -561,7 +563,7 @@ class Discount extends DataObject
 
     public function canEdit($member = null)
     {
-        return true;
+        return Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
     protected function message($messsage, $type = "good")
@@ -585,6 +587,12 @@ class Discount extends DataObject
         return $this->messagetype;
     }
 
+    public function providePermissions()
+    {
+        return [
+            'MANAGE_DISCOUNTS' => 'Manage discounts',
+        ];
+    }
 
     /**
      * @deprecated
