@@ -2,7 +2,6 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
-
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
