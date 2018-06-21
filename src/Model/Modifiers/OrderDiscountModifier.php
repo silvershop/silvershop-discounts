@@ -83,6 +83,7 @@ class OrderDiscountModifier extends OrderModifier
             $this->Order()->Discounts()
                 ->filter("Code:not", "")
                 ->map('ID', 'Title')
+                ->toArray()
         );
     }
 
