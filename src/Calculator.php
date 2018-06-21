@@ -2,6 +2,8 @@
 
 namespace SilverShop\Discounts;
 
+use SilverShop\Discounts\Actions\SubtotalDiscountAction;
+use SilverShop\Discounts\Extensions\Constraints\ItemDiscountConstraint;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverShop\Discounts\Actions\ItemPercentDiscount;
@@ -93,7 +95,7 @@ class Calculator
         $cartpriceinfo = new PriceInfo($this->order->SubTotal());
 
         foreach ($this->getCartDiscounts() as $discount) {
-            $action = new \SubtotalDiscountAction(
+            $action = new SubtotalDiscountAction(
                 $this->getDiscountableAmount($discount),
                 $discount
             );
