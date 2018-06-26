@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts;
 
+use SilverShop\Discounts\Adjustment;
 use SilverShop\Discounts\Actions\SubtotalDiscountAction;
 use SilverShop\Discounts\Extensions\Constraints\ItemDiscountConstraint;
 use SilverShop\Discounts\Model\Discount;
@@ -126,12 +127,12 @@ class Calculator
             $this->logDiscountAmount("Cart", $amount, $discount);
         }
 
-        if (class_exists('ShippingFrameworkModifier') && $shipping = $this->order->getModifier("ShippingFrameworkModifier")) {
+        if (class_exists('SilverShop\Shipping\ShippingFrameworkModifier') && $shipping = $this->order->getModifier('SilverShop\Shipping\ShippingFrameworkModifier')) {
             // work out all shipping-level discounts, and load into shippingpriceinfo
             $shippingpriceinfo = new PriceInfo($shipping->Amount);
 
             foreach ($this->getShippingDiscounts() as $discount) {
-                $action = new \SubtotalDiscountAction($shipping->Amount, $discount);
+                $action = new SubtotalDiscountAction($shipping->Amount, $discount);
                 $action->reduceRemaining($this->discountSubtotal($discount));
                 $shippingpriceinfo->adjustPrice(
                     new Adjustment($action->perform(), $discount)
