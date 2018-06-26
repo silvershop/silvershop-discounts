@@ -80,7 +80,7 @@ class OrderDiscountModifier extends OrderModifier
     public function getUsedCodes()
     {
         return implode(",",
-            $this->Discounts()
+            $this->Order()->Discounts()
                 ->filter("Code:not", "")
                 ->map('ID', 'Title')
                 ->toArray()
@@ -91,5 +91,4 @@ class OrderDiscountModifier extends OrderModifier
     {
         return $this->Amount() > 0;
     }
-
 }
