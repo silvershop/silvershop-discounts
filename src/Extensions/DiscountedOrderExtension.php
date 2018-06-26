@@ -10,6 +10,7 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
 use SilverStripe\ORM\ArrayList;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\PartialUseDiscount;
+use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 
 class DiscountedOrderExtension extends DataExtension
 {
