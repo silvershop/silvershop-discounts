@@ -30,7 +30,7 @@ class GiftVoucherProduct extends Product
 
     private static $order_item = GiftVoucherProduct::class;
 
-    private static $table_name = 'GiftVoucherProduct';
+    private static $table_name = 'SilverShop_GiftVoucherProduct';
 
     public function getCMSFields()
     {
