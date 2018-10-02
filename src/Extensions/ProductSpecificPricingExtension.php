@@ -32,10 +32,11 @@ class SpecificPricingExtension extends DataExtension
 
     public function updateSellingPrice(&$price)
     {
-        if ($specificprice = SpecificPrice::filter(
-            $this->owner->SpecificPrices()
-                ->filter("Price:LessThan", $price), Member::currentUser()
-        )->first()) {
+        
+        $list = SpecificPrice::get()->filter( array('ProductID'=>$this->owner->ID, "Price:LessThan"=> $price ));
+        
+        if ( $list->exists() && $specificprice = SpecificPrice::filter(
+             $list, Member::currentUser() )->first()) {
             if ($specificprice->Price > 0) {
                 $price = $specificprice->Price;
             } elseif ($specificprice->DiscountPercent > 0) {
