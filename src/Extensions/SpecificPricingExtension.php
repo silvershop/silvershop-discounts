@@ -7,7 +7,7 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverShop\Discounts\Model\SpecificPrice;
-use SilverStripe\Security\Member;
+use SilverStripe\Security\Security;
 
 class SpecificPricingExtension extends DataExtension
 {
@@ -39,7 +39,7 @@ class SpecificPricingExtension extends DataExtension
 
         if ($list->exists() && $specificprice = SpecificPrice::filter(
             $list,
-            Member::currentUser()
+                Security::getCurrentUser()
         )->first()
         ) {
             if ($specificprice->Price > 0) {
