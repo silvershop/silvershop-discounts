@@ -610,9 +610,9 @@ class Discount extends DataObject implements PermissionProvider
         return Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
-    protected function message($messsage, $type = 'good')
+    protected function message($message, $type = 'good')
     {
-        $this->message = $messsage;
+        $this->message = $message;
         $this->messagetype = $type;
     }
 
