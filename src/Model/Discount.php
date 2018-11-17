@@ -242,11 +242,11 @@ class Discount extends DataObject implements PermissionProvider
         }
 
         if ($params && isset($params['forcetype'])) {
-            $valuefield = $params['forcetype'] == 'Percent' ? $percentfield : $amountfield;
+            $valuefield = $params['forcetype'] === 'Percent' ? $percentfield : $amountfield;
             $fields->insertAfter($valuefield, 'Type');
             $fields->makeFieldReadonly('Type');
         } elseif ($this->Type && (double)$this->{$this->Type}) {
-            $valuefield = $this->Type == 'Percent' ? $percentfield : $amountfield;
+            $valuefield = $this->Type === 'Percent' ? $percentfield : $amountfield;
 
             $fields->makeFieldReadonly('Type');
             $fields->insertAfter($valuefield, 'ActionTitle');
@@ -255,7 +255,7 @@ class Discount extends DataObject implements PermissionProvider
                 $valuefield->performReadonlyTransformation()
             );
 
-            if ($this->Type == 'Percent') {
+            if ($this->Type === 'Percent') {
                 $fields->insertAfter($maxamountfield, 'Percent');
             }
         }
@@ -370,7 +370,7 @@ class Discount extends DataObject implements PermissionProvider
      */
     public function setCastedField($fieldName, $value)
     {
-        if ($fieldName == 'Percent' && $value > 1) {
+        if ($fieldName === 'Percent' && $value > 1) {
             $value /= 100.0;
         }
 
@@ -403,7 +403,7 @@ class Discount extends DataObject implements PermissionProvider
 
     public function getDiscountNice()
     {
-        if ($this->Type == 'Percent') {
+        if ($this->Type === 'Percent') {
             return $this->dbObject('Percent')->Nice();
         }
 
