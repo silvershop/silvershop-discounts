@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts\Page;
 
+use SilverShop\Discounts\Form\GiftVoucherFormValidator;
 use SilverShop\Page\ProductController;
 use SilverStripe\Forms\CurrencyField;
 use SilverShop\Discounts\Form\GiftVoucherFormValidator;

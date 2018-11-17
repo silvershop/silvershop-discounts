@@ -21,7 +21,7 @@ use SilverStripe\ORM\DataList;
  * @property int ProductVariationID
  * @property int GroupID
  * @method   Product Product()
- * @method   ProductVariation ProductVariation()
+ * @method   Variation ProductVariation()
  * @method   Group Group()
  */
 class SpecificPrice extends DataObject

@@ -119,7 +119,8 @@ class Discount extends DataObject implements PermissionProvider
      * to a given order.
      *
      * @param  Order $order order to check against
-     * @return DataList matching discounts
+     * @param array $context
+     * @return ArrayList matching discounts
      */
     public static function get_matching(Order $order, $context = [])
     {
@@ -507,10 +508,10 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get the orders that this discount has been used on.
      *
-     * @param $includeunpaid include orders where the payment process has started
+     * @param bool $includeunpaid include orders where the payment process has started
      * less than 'unpaid_use_timeout' minutes ago.
      *
-     * @return DataList list of orders
+     * @return \SilverStripe\ORM\DataList list of orders
      */
     public function getAppliedOrders($includeunpaid = false)
     {

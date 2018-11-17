@@ -114,7 +114,7 @@ class DiscountModelAdmin extends ModelAdmin
 
     public function GenerateCouponsForm()
     {
-        $fields = Object::create(OrderCoupon::class)->getCMSFields();
+        $fields = OrderCoupon::create()->getCMSFields();
         $fields->removeByName('Code');
         $fields->removeByName('GiftVoucherID');
         $fields->removeByName('SaveNote');

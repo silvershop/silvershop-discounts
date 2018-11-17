@@ -2,6 +2,8 @@
 
 namespace SilverShop\Discounts;
 
+use Exception;
+
 /**
  * Stores the calculated adjustment,
  * and the associated object that made the adjustment.
