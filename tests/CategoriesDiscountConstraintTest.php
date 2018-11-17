@@ -30,33 +30,32 @@ class CategoriesDiscountConstraintTest extends SapphireTest
         $this->mp3player = $this->objFromFixture(Product::class, "mp3player");
         $this->mp3player->publishRecursive();
 
-        $this->cart = $this->objFromFixture(Order::class, "cart");
-        $this->othercart = $this->objFromFixture(Order::class, "othercart");
-        $this->kitecart = $this->objFromFixture(Order::class, "kitecart");
+        $this->cart = $this->objFromFixture(Order::class, 'cart');
+        $this->othercart = $this->objFromFixture(Order::class, 'othercart');
+        $this->kitecart = $this->objFromFixture(Order::class, 'kitecart');
     }
 
     public function testCategoryDiscount()
     {
         $discount = OrderDiscount::create(
             [
-            "Title" => "5% off clothing",
-            "Type" => "Percent",
-            "Percent" => 0.05
+            'Title' => '5% off clothing',
+            'Type' => 'Percent',
+            'Percent' => 0.05
             ]
         );
-
         $discount->write();
         $discount->Categories()->add(
             $this->objFromFixture(ProductCategory::class, "clothing")
         );
 
-        $this->assertTrue($discount->validateOrder($this->cart), "Order contains a t-shirt. ".$discount->getMessage());
+        $this->assertTrue($discount->validateOrder($this->cart), 'Order contains a t-shirt. ' .$discount->getMessage());
         $calculator = new Calculator($this->cart);
-        $this->assertEquals($calculator->calculate(), 0.4, "5% discount for socks in cart");
+        $this->assertEquals($calculator->calculate(), 0.4, '5% discount for socks in cart');
 
-        $this->assertFalse($discount->validateOrder($this->othercart), "Order does not contain clothing");
+        $this->assertFalse($discount->validateOrder($this->othercart), 'Order does not contain clothing');
         $calculator = new Calculator($this->othercart);
-        $this->assertEquals($calculator->calculate(), 0, "No discount, because no product in category");
+        $this->assertEquals($calculator->calculate(), 0, 'No discount, because no product in category');
 
         $discount->Categories()->removeAll();
 
@@ -66,6 +65,6 @@ class CategoriesDiscountConstraintTest extends SapphireTest
 
         $this->assertTrue($discount->validateOrder($this->kitecart), "Order contains a kite. ".$discount->getMessage());
         $calculator = new Calculator($this->kitecart);
-        $this->assertEquals($calculator->calculate(), 1.75, "5% discount for kite in cart");
+        $this->assertEquals($calculator->calculate(), 1.75, '5% discount for kite in cart');
     }
 }

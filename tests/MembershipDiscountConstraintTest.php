@@ -19,29 +19,29 @@ class MembershipDiscountConstraintTest extends SapphireTest
     {
         parent::setUp();
         ShopTest::setConfiguration();
-        $this->cart = $this->objFromFixture(Order::class, "cart");
+        $this->cart = $this->objFromFixture(Order::class, 'cart');
     }
 
     public function testMembership()
     {
         $discount = OrderDiscount::create(
             [
-            "Title" => "Membership Coupon",
-            "Type" => "Amount",
-            "Amount" => 1.33
+            'Title' => 'Membership Coupon',
+            'Type' => 'Amount',
+            'Amount' => 1.33
             ]
         );
         $discount->write();
 
-        $member = $this->objFromFixture(Member::class, "joebloggs");
+        $member = $this->objFromFixture(Member::class, 'joebloggs');
         $discount->Members()->add($member);
 
-        $this->assertFalse($discount->validateOrder($this->cart), "Invalid, because no member");
+        $this->assertFalse($discount->validateOrder($this->cart), 'Invalid, because no member');
         $context = [
-            "Member" => $this->objFromFixture(Member::class, "bobjones")
+            'Member' => $this->objFromFixture(Member::class, 'bobjones')
         ];
-        $this->assertFalse($discount->validateOrder($this->cart, $context), "Invalid because wrong member present");
-        $context = ["Member" => $member];
-        $this->assertTrue($discount->validateOrder($this->cart, $context), "Valid because correct member present".$discount->getMessage());
+        $this->assertFalse($discount->validateOrder($this->cart, $context), 'Invalid because wrong member present');
+        $context = ['Member' => $member];
+        $this->assertTrue($discount->validateOrder($this->cart, $context), 'Valid because correct member present' .$discount->getMessage());
     }
 }

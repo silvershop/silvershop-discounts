@@ -20,7 +20,7 @@ class OrderDiscountTest extends SapphireTest
     {
         parent::setUp();
         ShopTest::setConfiguration();
-        $this->cart = $this->objFromFixture(Order::class, "cart");
+        $this->cart = $this->objFromFixture(Order::class, 'cart');
     }
 
     /**
@@ -30,23 +30,23 @@ class OrderDiscountTest extends SapphireTest
     {
         OrderDiscount::create(
             [
-            "Title" => "10% off",
-            "Type" => "Percent",
-            "Percent" => 0.10
+            'Title' => '10% off',
+            'Type' => 'Percent',
+            'Percent' => 0.10
             ]
         )->write();
         OrderDiscount::create(
             [
-            "Title" => "$5 off",
-            "Type" => "Amount",
-            "Amount" => 5
+            'Title' => '$5 off',
+            'Type' => 'Amount',
+            'Amount' => 5
             ]
         )->write();
         $matches = OrderDiscount::get_matching($this->cart);
         $this->assertListEquals(
             [
-            ["Title" => "10% off"],
-            ["Title" => "$5 off"],
+            ['Title' => '10% off'],
+            ['Title' => '$5 off'],
             ],
             $matches
         );
@@ -56,14 +56,14 @@ class OrderDiscountTest extends SapphireTest
     {
         OrderDiscount::create(
             [
-            "Title" => "10% off",
-            "Type" => "Percent",
-            "Percent" => 0.10
+            'Title' => '10% off',
+            'Type' => 'Percent',
+            'Percent' => 0.10
             ]
         )->write();
         $this->assertListEquals(
             [
-            ["Title" => "10% off"]
+            ['Title' => '10% off']
             ],
             OrderDiscount::get_matching($this->cart)
         );
@@ -73,14 +73,14 @@ class OrderDiscountTest extends SapphireTest
     {
         OrderDiscount::create(
             [
-            "Title" => "$5 off",
-            "Type" => "Amount",
-            "Amount" => 5
+            'Title' => '$5 off',
+            'Type' => 'Amount',
+            'Amount' => 5
             ]
         )->write();
         $this->assertListEquals(
             [
-            ["Title" => "$5 off"]
+            ['Title' => '$5 off']
             ],
             OrderDiscount::get_matching($this->cart)
         );
@@ -89,21 +89,21 @@ class OrderDiscountTest extends SapphireTest
     public function testUseCount()
     {
         //check that order with payment started counts as a use
-        $discount = $this->objFromFixture(OrderDiscount::class, "paymentused");
-        $payment = $this->objFromFixture(Payment::class, "paymentstarted_recent");
+        $discount = $this->objFromFixture(OrderDiscount::class, 'paymentused');
+        $payment = $this->objFromFixture(Payment::class, 'paymentstarted_recent');
 
         // set timeout to 60 minutes
         Discount::config()->unpaid_use_timeout = 60;
         //set payment to be created 20 min ago
-        $payment->Created = date('Y-m-d H:i:s', strtotime("-20 minutes"));
+        $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->write();
         $this->assertEquals(1, $discount->getUseCount());
         //set payment ot be created 2 days ago
-        $payment->Created = date('Y-m-d H:i:s', strtotime("-2 days"));
+        $payment->Created = date('Y-m-d H:i:s', strtotime('-2 days'));
         $payment->write();
         $this->assertEquals(0, $discount->getUseCount());
         //failed payments should be ignored
-        $payment->Created = date('Y-m-d H:i:s', strtotime("-20 minutes"));
+        $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->Status = 'Void';
         $payment->write();
         $this->assertEquals(0, $discount->getUseCount());

@@ -16,10 +16,10 @@ class GiftVoucherTest extends SapphireTest
     {
         parent::setUp();
 
-        $this->variable = $this->objFromFixture(GiftVoucherProduct::class, "variable");
+        $this->variable = $this->objFromFixture(GiftVoucherProduct::class, 'variable');
         $this->variable->publish('Stage', 'Live');
 
-        $this->fixed10 = $this->objFromFixture(GiftVoucherProduct::class, "10fixed");
+        $this->fixed10 = $this->objFromFixture(GiftVoucherProduct::class, '10fixed');
         $this->fixed10->publish('Stage', 'Live');
     }
 
@@ -30,27 +30,27 @@ class GiftVoucherTest extends SapphireTest
 
         $form->loadDataFrom(
             $data = [
-            "UnitPrice" => 32.35,
-            "Quantity" => 1
+            'UnitPrice' => 32.35,
+            'Quantity' => 1
             ]
         );
-        $this->assertTrue($form->validationResult()->isValid(), "Voucher form is valid");
+        $this->assertTrue($form->validationResult()->isValid(), 'Voucher form is valid');
 
         $form->loadDataFrom(
             [
-            "UnitPrice" => 3,
-            "Quantity" => 5
+            'UnitPrice' => 3,
+            'Quantity' => 5
             ]
         );
-        $this->assertFalse($form->validationResult()->isValid(), "Tested unit price is below minimum amount");
+        $this->assertFalse($form->validationResult()->isValid(), 'Tested unit price is below minimum amount');
 
         $form->loadDataFrom(
             [
-            "UnitPrice" => 0,
-            "Quantity" => 5
+            'UnitPrice' => 0,
+            'Quantity' => 5
             ]
         );
-        $this->assertFalse($form->validationResult()->isValid(), "Tested unit price is zero");
+        $this->assertFalse($form->validationResult()->isValid(), 'Tested unit price is zero');
     }
 
     public function testFixedVoucher()
@@ -59,11 +59,11 @@ class GiftVoucherTest extends SapphireTest
         $form = $controller->Form();
         $form->loadDataFrom(
             [
-            "Quantity" => 2
+            'Quantity' => 2
             ]
         );
 
-        $this->assertTrue($form->validationResult()->isValid(), "Valid voucher");
+        $this->assertTrue($form->validationResult()->isValid(), 'Valid voucher');
     }
 
     public function testCreateCoupon()
@@ -71,13 +71,13 @@ class GiftVoucherTest extends SapphireTest
         $item = $this->variable->createItem(
             1,
             [
-            "UnitPrice" => 15.00
+            'UnitPrice' => 15.00
             ]
         );
 
         $coupon = $item->createCoupon();
 
-        $this->assertEquals($coupon->Amount, 15, "Coupon value is $15, as per order item");
-        $this->assertEquals($coupon->Type, "Amount", "Coupon type is 'Amount'");
+        $this->assertEquals($coupon->Amount, 15, 'Coupon value is $15, as per order item');
+        $this->assertEquals($coupon->Type, 'Amount', "Coupon type is 'Amount'");
     }
 }

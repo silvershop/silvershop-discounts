@@ -16,31 +16,31 @@ class PartialUseDiscountTest extends SapphireTest
     public function testCreateRemainder()
     {
         //basic remainder
-        $discount = $this->objFromFixture(PartialUseDiscount::class, "partial");
+        $discount = $this->objFromFixture(PartialUseDiscount::class, 'partial');
         $this->assertNull($discount->createRemainder(5000));
         $this->assertNull($discount->createRemainder(90));
         $remainderdiscount = $discount->createRemainder(40);
-        $this->assertEquals(50, $remainderdiscount->Amount, "Subtract $40 from $90 discount");
+        $this->assertEquals(50, $remainderdiscount->Amount, 'Subtract $40 from $90 discount');
 
         $discount->Active = false;
         $discount->write();
-        $this->assertNull($discount->createRemainder(30), "Cannot recreate remainder");
+        $this->assertNull($discount->createRemainder(30), 'Cannot recreate remainder');
 
         //TODO: check basic relationships match, e.g. group
 
         //check constraints copying works
-        $discount = $this->objFromFixture(PartialUseDiscount::class, "constrained");
+        $discount = $this->objFromFixture(PartialUseDiscount::class, 'constrained');
         $remainder = $discount->createRemainder(40);
         $this->assertListEquals(
             [
-            ["FirstName" => "Joe"]
+            ['FirstName' => 'Joe']
             ],
             $remainder->Members()
         );
         $this->assertListEquals(
             [
-            ["Title" => "ProductA"],
-            ["Title" => "ProductB"]
+            ['Title' => 'ProductA'],
+            ['Title' => 'ProductB']
             ],
             $remainder->Products()
         );
