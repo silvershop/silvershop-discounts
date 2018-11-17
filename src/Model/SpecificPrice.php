@@ -27,26 +27,26 @@ use SilverStripe\ORM\DataList;
 class SpecificPrice extends DataObject
 {
     private static $db = [
-        "Price" => "Currency",
-        "DiscountPercent" => "Percentage",
-        "StartDate" => "Date",
-        "EndDate" => "Date"
+        'Price' => 'Currency',
+        'DiscountPercent' => 'Percentage',
+        'StartDate' => 'Date',
+        'EndDate' => 'Date'
     ];
 
     private static $has_one = [
-        "Product" => Product::class,
-        "ProductVariation" => Variation::class,
-        "Group" => Group::class
+        'Product' => Product::class,
+        'ProductVariation' => Variation::class,
+        'Group' => Group::class
     ];
 
     private static $summary_fields = [
-        "Price" => "Price",
-        "StartDate" => "Start",
-        "EndDate" => "End",
-        "Group.Code" => "Group"
+        'Price' => 'Price',
+        'StartDate' => 'Start',
+        'EndDate' => 'End',
+        'Group.Code' => 'Group'
     ];
 
-    private static $default_sort = "\"Price\" ASC";
+    private static $default_sort = '"Price" ASC';
 
     private static $table_name = 'SilverShop_SpecificPrice';
 
@@ -74,7 +74,7 @@ class SpecificPrice extends DataObject
     public static function filter(DataList $list, $member = null)
     {
         $now = date('Y-m-d H:i:s');
-        $nowminusone = date('Y-m-d H:i:s', strtotime("-1 day"));
+        $nowminusone = date('Y-m-d H:i:s', strtotime('-1 day'));
         $groupids = [0];
 
         if ($member) {
@@ -87,7 +87,7 @@ class SpecificPrice extends DataObject
             ->where(
                 "(\"SilverShop_SpecificPrice\".\"EndDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"EndDate\" > '$nowminusone')"
             )
-            ->filter("GroupID", $groupids);
+            ->filter('GroupID', $groupids);
 
         return $list;
     }
@@ -95,8 +95,8 @@ class SpecificPrice extends DataObject
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        $fields->removeByName("ProductID");
-        $fields->removeByName("ProductVariationID");
+        $fields->removeByName('ProductID');
+        $fields->removeByName('ProductVariationID');
 
         return $fields;
     }

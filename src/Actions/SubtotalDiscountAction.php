@@ -17,7 +17,7 @@ class SubtotalDiscountAction extends DiscountAction
         // for Amount discounts on Subtotals, prevent amount from ever being greater than the Amount
         $amount = $discount->getAmount();
 
-        if ($discount->Type === "Amount" && $amount > $this->remaining) {
+        if ($discount->Type === 'Amount' && $amount > $this->remaining) {
             $this->remaining = (float) $amount;
             $this->limited = true;
         }

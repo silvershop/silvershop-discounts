@@ -7,11 +7,11 @@ use SilverShop\Discounts\Model\Discount;
 
 class DiscountReport extends ShopPeriodReport
 {
-    protected $title = "Discounts";
+    protected $title = 'Discounts';
 
     protected $dataClass = Discount::class;
 
-    protected $periodfield = "\"SilverShop_Order\".\"Paid\"";
+    protected $periodfield = '"SilverShop_Order"."Paid"';
 
     protected $description = "See the total savings for discounts. Note that the 'Entered' field may not be
 										accurate if old/expired carts have been deleted from the database.";
@@ -19,12 +19,12 @@ class DiscountReport extends ShopPeriodReport
     public function columns()
     {
         return [
-            "Name" => "Title",
-            "Code" => "Code",
-            "DiscountNice" => Discount::class,
-            "Entered" => "Entered",
-            "UseCount" => "Uses",
-            "SavingsTotal" => "Total Savings"
+            'Name' => 'Title',
+            'Code' => 'Code',
+            'DiscountNice' => Discount::class,
+            'Entered' => 'Entered',
+            'UseCount' => 'Uses',
+            'SavingsTotal' => 'Total Savings'
         ];
     }
 

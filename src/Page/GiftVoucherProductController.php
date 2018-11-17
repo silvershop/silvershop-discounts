@@ -19,18 +19,19 @@ class GiftVoucherProductController extends ProductController
         if ($this->VariableAmount) {
             $form->setSaveableFields(
                 [
-                "UnitPrice"
+                    'UnitPrice'
                 ]
             );
             $form->Fields()->push(
-                $giftamount = CurrencyField::create("UnitPrice", _t('GiftVoucherProduct.Amount', 'Amount'), $this->BasePrice)
+                $giftamount = CurrencyField::create('UnitPrice', _t('GiftVoucherProduct.Amount', 'Amount'), $this->BasePrice)
             );
             $giftamount->setForm($form);
         }
         $form->setValidator(
             $validator = new GiftVoucherFormValidator(
                 [
-                "Quantity", "UnitPrice"
+                'Quantity',
+            'UnitPrice'
                 ]
             )
         );

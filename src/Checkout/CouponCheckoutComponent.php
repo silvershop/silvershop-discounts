@@ -22,7 +22,7 @@ class CouponCheckoutComponent extends CheckoutComponent
             TextField::create(
                 'Code',
                 _t(
-                    "CouponForm.COUPON",
+                    'CouponForm.COUPON',
                     'Enter your coupon code if you have one.'
                 )
             )
@@ -47,15 +47,15 @@ class CouponCheckoutComponent extends CheckoutComponent
 
         // check the coupon exists, and can be used
         if ($coupon = OrderCoupon::get_by_code($code)) {
-            if (!$coupon->validateOrder($order, ["CouponCode" => $code])) {
-                $result->addError($coupon->getMessage(), "Code");
+            if (!$coupon->validateOrder($order, ['CouponCode' => $code])) {
+                $result->addError($coupon->getMessage(), 'Code');
 
                 throw new ValidationException($result);
             }
         } else {
             $result->addError(
-                _t("OrderCouponModifier.NOTFOUND", "Coupon could not be found"),
-                "Code"
+                _t('OrderCouponModifier.NOTFOUND', 'Coupon could not be found'),
+                'Code'
             );
 
             throw new ValidationException($result);
@@ -68,13 +68,13 @@ class CouponCheckoutComponent extends CheckoutComponent
     public function getData(Order $order)
     {
         return [
-            'Code' => Controller::curr()->getRequest()->getSession()->get("cart.couponcode")
+            'Code' => Controller::curr()->getRequest()->getSession()->get('cart.couponcode')
         ];
     }
 
     public function setData(Order $order, array $data)
     {
-        Controller::curr()->getRequest()->getSession()->set("cart.couponcode", strtoupper($data['Code']));
+        Controller::curr()->getRequest()->getSession()->set('cart.couponcode', strtoupper($data['Code']));
 
         $order->getModifier(OrderDiscountModifier::class, true);
     }

@@ -8,15 +8,15 @@ use SilverStripe\Control\Email\Email;
 class GiftVoucherOrderItem extends OrderItem
 {
     private static $db = [
-        "GiftedTo" => "Varchar"
+        'GiftedTo' => 'Varchar'
     ];
 
     private static $has_many = [
-        "Coupons" => OrderCoupon::class
+        'Coupons' => OrderCoupon::class
     ];
 
     private static $required_fields = [
-        "UnitPrice"
+        'UnitPrice'
     ];
 
     private static $table_name = 'SilverShop_GiftVoucherOrderItem';
@@ -64,15 +64,15 @@ class GiftVoucherOrderItem extends OrderItem
 
         $coupon = new OrderCoupon(
             [
-            "Title" => $this->Product()->Title,
-            "Type" => "Amount",
-            "Amount" => $this->UnitPrice,
-            "UseLimit" => 1,
-            "MinOrderValue" => $this->UnitPrice //safeguard that means coupons must be used entirely
+            'Title' => $this->Product()->Title,
+            'Type' => 'Amount',
+            'Amount' => $this->UnitPrice,
+            'UseLimit' => 1,
+            'MinOrderValue' => $this->UnitPrice //safeguard that means coupons must be used entirely
             ]
         );
 
-        $this->extend("updateCreateCupon", $coupon);
+        $this->extend('updateCreateCupon', $coupon);
 
         $coupon->write();
 
@@ -88,12 +88,12 @@ class GiftVoucherOrderItem extends OrderItem
     {
         $from = Email::getAdminEmail();
         $to = $this->Order()->getLatestEmail();
-        $subject = _t("Order.GIFTVOUCHERSUBJECT", "Gift voucher");
+        $subject = _t('Order.GIFTVOUCHERSUBJECT', 'Gift voucher');
         $email = Email::create();
         $email->setFrom($from);
         $email->setTo($to);
         $email->setSubject($subject);
-        $email->setTemplate("GiftVoucherEmail");
+        $email->setTemplate('GiftVoucherEmail');
         $email->setData(
             [
             'Coupon' => $coupon

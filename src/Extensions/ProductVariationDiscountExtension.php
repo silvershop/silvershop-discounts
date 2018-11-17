@@ -17,7 +17,7 @@ class ProductVariationDiscountExtension extends DataExtension
      *
      * @return float
      */
-    public function getTotalReduction($original = "Price")
+    public function getTotalReduction($original = 'Price')
     {
         $reduction = $this->owner->{$original} - $this->owner->sellingPrice();
         //keep it above 0;

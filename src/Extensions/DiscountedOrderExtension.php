@@ -62,7 +62,7 @@ class DiscountedOrderExtension extends DataExtension
      */
     public function onPlaceOrder()
     {
-        $partials = $this->owner->Discounts()->filter("ClassName", PartialUseDiscount::class);
+        $partials = $this->owner->Discounts()->filter('ClassName', PartialUseDiscount::class);
 
         foreach ($partials as $discount) {
             //only bother creating a remainder discount, if savings have been made

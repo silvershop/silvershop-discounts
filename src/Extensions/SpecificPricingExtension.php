@@ -12,20 +12,20 @@ use SilverStripe\Security\Security;
 class SpecificPricingExtension extends DataExtension
 {
     private static $has_many = [
-        "SpecificPrices" => SpecificPrice::class
+        'SpecificPrices' => SpecificPrice::class
     ];
 
     public function updateCMSFields(FieldList $fields)
     {
-        if ($tab = $fields->fieldByName("Root.Pricing")) {
+        if ($tab = $fields->fieldByName('Root.Pricing')) {
             $fields = $tab->Fields();
         }
 
-        if ($this->owner->isInDB() && ($fields->fieldByName("BasePrice") || $fields->fieldByName("Price"))) {
+        if ($this->owner->isInDB() && ($fields->fieldByName('BasePrice') || $fields->fieldByName('Price'))) {
             $fields->push(
                 GridField::create(
-                    "SpecificPrices",
-                    "Specific Prices",
+                    'SpecificPrices',
+                    'Specific Prices',
                     $this->owner->SpecificPrices(),
                     GridFieldConfig_RecordEditor::create()
                 )
@@ -35,7 +35,7 @@ class SpecificPricingExtension extends DataExtension
 
     public function updateSellingPrice(&$price)
     {
-        $list = $this->owner->SpecificPrices()->filter( array("Price:LessThan"=> $price ));
+        $list = $this->owner->SpecificPrices()->filter( array('Price:LessThan' => $price ));
 
         if ($list->exists() && $specificprice = SpecificPrice::filter(
             $list,

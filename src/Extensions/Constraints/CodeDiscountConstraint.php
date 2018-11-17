@@ -8,7 +8,7 @@ use SilverStripe\ORM\DataList;
 class CodeDiscountConstraint extends DiscountConstraint
 {
     private static $db = [
-        "Code" => "Varchar(25)"
+        'Code' => 'Varchar(25)'
     ];
 
     public function filter(DataList $list)
@@ -17,7 +17,7 @@ class CodeDiscountConstraint extends DiscountConstraint
             $list = $list
                 ->where("(\"Code\" IS NULL) OR (\"Code\" = '$code')");
         } else {
-            $list = $list->where("\"Code\" IS NULL");
+            $list = $list->where('"Code" IS NULL');
         }
 
         return $list;

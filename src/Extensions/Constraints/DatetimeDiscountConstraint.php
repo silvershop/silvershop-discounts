@@ -11,26 +11,27 @@ use SilverStripe\ORM\DataList;
 class DatetimeDiscountConstraint extends DiscountConstraint
 {
     private static $db = [
-        "StartDate" => "Datetime",
-        "EndDate" => "Datetime"
+        'StartDate' => 'Datetime',
+        'EndDate' => 'Datetime'
     ];
 
     public function updateCMSFields(FieldList $fields)
     {
         $fields->addFieldToTab(
-            "Root.Constraints.ConstraintsTabs.General",
+            'Root.Constraints.ConstraintsTabs.General',
             FieldGroup::create(
-                _t(__CLASS__.'.VALIDDATERANGE', "Valid date range:"),
+                _t(__CLASS__.'.VALIDDATERANGE', 'Valid date range:'),
                 DatetimeField::create(
-                    "StartDate",
-                    _t(__CLASS__.'.RANGESTART', "Start date/time")
+                    'StartDate',
+                    _t(__CLASS__.'.RANGESTART', 'Start date/time')
                 ),
                 DatetimeField::create(
-                    "EndDate",
-                    _t(__CLASS__.'.RANGEEND', "End date/time")
+                    'EndDate',
+                    _t(__CLASS__.'.RANGEEND', 'End date/time')
                 )
             )->setDescription(
-                _t(__CLASS__.'.ENDTIMEDAYNOTE', "You should set the end time to 23:59:59, if you want to include the entire end day.")
+                _t(__CLASS__.'.ENDTIMEDAYNOTE',
+                    'You should set the end time to 23:59:59, if you want to include the entire end day.')
             )
         );
     }
@@ -58,12 +59,12 @@ class DatetimeDiscountConstraint extends DiscountConstraint
         $now = $this->order->Placed ? strtotime($this->order->Created) : time();
 
         if ($endDate && $endDate < $now) {
-            $this->error(_t("OrderCoupon.EXPIRED", "This coupon has already expired."));
+            $this->error(_t('OrderCoupon.EXPIRED', 'This coupon has already expired.'));
             return false;
         }
 
         if ($startDate && $startDate > $now) {
-            $this->error(_t("OrderCoupon.TOOEARLY", "It is too early to use this coupon."));
+            $this->error(_t('OrderCoupon.TOOEARLY', 'It is too early to use this coupon.'));
             return false;
         }
 

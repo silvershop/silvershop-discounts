@@ -35,14 +35,14 @@ class DiscountModelAdmin extends ModelAdmin
     ];
 
     private static $allowed_actions = [
-        "generatecoupons",
-        "GenerateCouponsForm"
+        'generatecoupons',
+        'GenerateCouponsForm'
     ];
 
     private static $model_descriptions = [
-        "OrderDiscount" => "Discounts are applied at the checkout, based on defined constraints. If not constraints are given, then the discount will always be applied.",
-        "OrderCoupon" => "Coupons are like discounts, but have an associated code.",
-        "PartialUseDiscount" => "Partial use discounts are 'amount only' discounts that allow remainder amounts to be used."
+        'OrderDiscount' => 'Discounts are applied at the checkout, based on defined constraints. If not constraints are given, then the discount will always be applied.',
+        'OrderCoupon' => 'Coupons are like discounts, but have an associated code.',
+        'PartialUseDiscount' => "Partial use discounts are 'amount only' discounts that allow remainder amounts to be used."
     ];
 
     public function getEditForm($id = null, $fields = null)
@@ -52,10 +52,10 @@ class DiscountModelAdmin extends ModelAdmin
         if ($grid = $form->Fields()->fieldByName(OrderCoupon::class)) {
             $grid->getConfig()
                 ->addComponent(
-                    $link = new GridField_LinkComponent("Generate Multiple Coupons", $this->Link()."/generatecoupons"),
-                    "GridFieldExportButton"
+                    $link = new GridField_LinkComponent('Generate Multiple Coupons', $this->Link(). '/generatecoupons'),
+                    'GridFieldExportButton'
                 );
-            $link->addExtraClass("ss-ui-action-constructive");
+            $link->addExtraClass('ss-ui-action-constructive');
         }
 
         $descriptions = self::config()->model_descriptions;
@@ -79,15 +79,17 @@ class DiscountModelAdmin extends ModelAdmin
 
         if (isset($params['HasBeenUsed'])) {
             $list = $list
-                ->leftJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
-                ->leftJoin("SilverShop_OrderDiscountModifier_Discounts", "\"SilverShop_OrderDiscountModifier_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
+                ->leftJoin('SilverShop_OrderItem_Discounts',
+                    '"SilverShop_OrderItem_Discounts"."DiscountID" = "Discount"."ID"')
+                ->leftJoin('SilverShop_OrderDiscountModifier_Discounts',
+                    '"SilverShop_OrderDiscountModifier_Discounts"."DiscountID" = "Discount"."ID"')
                 ->innerJoin(
-                    "OrderAttribute",
+                    'OrderAttribute',
                     implode(
-                        " OR ",
+                        ' OR ',
                         [
-                        "\"SilverShop_OrderAttribute\".\"ID\" = \"SilverShop_OrderItem_Discounts\".\"Product_OrderItemID\"",
-                        "\"SilverShop_OrderAttribute\".\"ID\" = \"SilverShop_OrderDiscountModifier_Discounts\".\"SilverShop_OrderDiscountModifierID\""
+                        '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."Product_OrderItemID"',
+                        '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID"'
                         ]
                     )
                 );
@@ -95,14 +97,14 @@ class DiscountModelAdmin extends ModelAdmin
 
         if (isset($params['Products'])) {
             $list = $list
-                ->innerJoin("Discount_Products", "Discount_Products.DiscountID = Discount.ID")
-                ->filter("Discount_Products.ProductID", $params['Products']);
+                ->innerJoin('Discount_Products', 'Discount_Products.DiscountID = Discount.ID')
+                ->filter('Discount_Products.ProductID', $params['Products']);
         }
 
         if (isset($params['Categories'])) {
             $list = $list
-                ->innerJoin("Discount_Categories", "Discount_Categories.DiscountID = Discount.ID")
-                ->filter("Discount_Categories.ProductCategoryID", $params['Categories']);
+                ->innerJoin('Discount_Categories', 'Discount_Categories.DiscountID = Discount.ID')
+                ->filter('Discount_Categories.ProductCategoryID', $params['Categories']);
         }
 
         $this->extend('updateList', $list);
@@ -118,22 +120,22 @@ class DiscountModelAdmin extends ModelAdmin
         $fields->removeByName('SaveNote');
 
         $fields->addFieldsToTab(
-            "Root.Main",
+            'Root.Main',
             [
             NumericField::create('Number', 'Number of Coupons'),
             FieldGroup::create(
-                "Code",
-                TextField::create("Prefix", "Code Prefix")
+                'Code',
+                TextField::create('Prefix', 'Code Prefix')
                     ->setMaxLength(5),
                 DropdownField::create(
-                    "Length",
-                    "Code Characters Length",
+                    'Length',
+                    'Code Characters Length',
                     array_combine(range(5, 20), range(5, 20)),
                     OrderCoupon::config()->generated_code_length
-                )->setDescription("This is in addition to the length of the prefix.")
+                )->setDescription('This is in addition to the length of the prefix.')
             )
             ],
-            "Title"
+            'Title'
         );
 
         $actions = new FieldList(
@@ -146,8 +148,8 @@ class DiscountModelAdmin extends ModelAdmin
             'Type'
             ]
         );
-        $form = new Form($this, "GenerateCouponsForm", $fields, $actions, $validator);
-        $form->addExtraClass("cms-edit-form cms-panel-padded center ui-tabs-panel ui-widget-content ui-corner-bottom");
+        $form = new Form($this, 'GenerateCouponsForm', $fields, $actions, $validator);
+        $form->addExtraClass('cms-edit-form cms-panel-padded center ui-tabs-panel ui-widget-content ui-corner-bottom');
         $form->setAttribute('data-pjax-fragment', 'CurrentForm');
         $form->setHTMLID('Form_EditForm');
         $form->loadDataFrom(
@@ -169,7 +171,7 @@ class DiscountModelAdmin extends ModelAdmin
             $count = (int) $data['Number'];
         }
 
-        $prefix = isset($data['Prefix']) ? $data['Prefix'] : "";
+        $prefix = isset($data['Prefix']) ? $data['Prefix'] : '';
         $length = isset($data['Length']) ? (int) $data['Length'] : OrderCoupon::config()->generated_code_length;
 
         for ($i = 0; $i < $count; $i++) {

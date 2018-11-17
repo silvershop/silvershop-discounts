@@ -46,7 +46,7 @@ class CouponForm extends Form
 
         $order = $this->config->getOrder();
 
-        $controller->extend("updateCouponForm", $this, $order);
+        $controller->extend('updateCouponForm', $this, $order);
     }
 
     public function applyCoupon($data, $form)
@@ -59,7 +59,7 @@ class CouponForm extends Form
 
     public function removeCoupon($data, $form)
     {
-        Controller::curr()->getRequest()->getSession()->clear("cart.couponcode");
+        Controller::curr()->getRequest()->getSession()->clear('cart.couponcode');
 
         $order = $this->config->getOrder();
 

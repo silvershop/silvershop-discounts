@@ -10,19 +10,19 @@ use SilverStripe\ORM\DataList;
 class ValueDiscountConstraint extends DiscountConstraint
 {
     private static $db = [
-        "MinOrderValue" => "Currency"
+        'MinOrderValue' => 'Currency'
     ];
 
     private static $field_labels = [
-        "MinOrderValue" => "Minimum subtotal of order"
+        'MinOrderValue' => 'Minimum subtotal of order'
     ];
 
     public function updateCMSFields(FieldList $fields)
     {
         $fields->addFieldToTab(
-            "Root.Constraints.ConstraintsTabs.General",
+            'Root.Constraints.ConstraintsTabs.General',
             CurrencyField::create(
-                "MinOrderValue",
+                'MinOrderValue',
                 _t(__CLASS__.'.MINORDERVALUE', $this->owner->fieldLabel('MinOrderValue'))
             )
         );
@@ -32,8 +32,8 @@ class ValueDiscountConstraint extends DiscountConstraint
     {
         return $list->filterAny(
             [
-            "MinOrderValue" => 0,
-            "MinOrderValue:LessThanOrEqual" => $this->order->SubTotal()
+            'MinOrderValue' => 0,
+            'MinOrderValue:LessThanOrEqual' => $this->order->SubTotal()
             ]
         );
     }
@@ -44,10 +44,10 @@ class ValueDiscountConstraint extends DiscountConstraint
             $this->error(
                 sprintf(
                     _t(
-                        "Discount.MINORDERVALUE",
-                        "Your cart subtotal must be at least %s to use this discount"
+                        'Discount.MINORDERVALUE',
+                        'Your cart subtotal must be at least %s to use this discount'
                     ),
-                    $discount->dbObject("MinOrderValue")->Nice()
+                    $discount->dbObject('MinOrderValue')->Nice()
                 )
             );
             return false;

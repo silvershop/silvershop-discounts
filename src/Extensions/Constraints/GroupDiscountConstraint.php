@@ -11,16 +11,16 @@ use SilverStripe\ORM\DataList;
 class GroupDiscountConstraint extends DiscountConstraint
 {
     private static $has_one = [
-        "Group" => Group::class
+        'Group' => Group::class
     ];
 
     public function updateCMSFields(FieldList $fields)
     {
         $fields->addFieldToTab(
-            "Root.Constraints.ConstraintsTabs.Membership",
+            'Root.Constraints.ConstraintsTabs.Membership',
             DropdownField::create(
-                "GroupID",
-                _t(__CLASS__.'.MEMBERISINGROUP', "Member is in group"),
+                'GroupID',
+                _t(__CLASS__.'.MEMBERISINGROUP', 'Member is in group'),
                 Group::get()->map('ID', 'Title')
             )->setHasEmptyDefault(true)
             ->setEmptyString(_t(__CLASS__.'.ANYORNOGROUP', 'Any or no group'))
@@ -36,7 +36,7 @@ class GroupDiscountConstraint extends DiscountConstraint
                 ->toArray();
         }
 
-        return $list->filter("GroupID", $groupids);
+        return $list->filter('GroupID', $groupids);
     }
 
     public function check(Discount $discount)
@@ -46,8 +46,8 @@ class GroupDiscountConstraint extends DiscountConstraint
         if ($group->exists() && (!$member || !$member->inGroup($group))) {
             $this->error(
                 _t(
-                    "Discount.GROUPED",
-                    "Only specific members can use this discount."
+                    'Discount.GROUPED',
+                    'Only specific members can use this discount.'
                 )
             );
             return false;

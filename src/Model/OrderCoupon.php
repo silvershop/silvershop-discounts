@@ -17,25 +17,25 @@ class OrderCoupon extends Discount
     ];
 
     private static $has_one = [
-        "GiftVoucher" => GiftVoucherOrderItem::class
+        'GiftVoucher' => GiftVoucherOrderItem::class
     ];
 
     private static $searchable_fields = [
-        "Title",
-        "Code"
+        'Title',
+        'Code'
     ];
 
     private static $summary_fields = [
-        "Title",
-        "Code",
-        "DiscountNice" => "Discount",
-        "StartDate",
-        "EndDate"
+        'Title',
+        'Code',
+        'DiscountNice' => 'Discount',
+        'StartDate',
+        'EndDate'
     ];
 
-    private static $singular_name = "Coupon";
+    private static $singular_name = 'Coupon';
 
-    private static $plural_name = "Coupons";
+    private static $plural_name = 'Coupons';
 
     private static $minimum_code_length = null;
 
@@ -57,14 +57,14 @@ class OrderCoupon extends Discount
      *       codes have been generated.
      * @return string the new code
      */
-    public static function generate_code($length = null, $prefix = "")
+    public static function generate_code($length = null, $prefix = '')
     {
         $length = ($length) ? $length : self::config()->generated_code_length;
         $code = null;
         $generator = Injector::inst()->create(RandomGenerator::class);
         do {
             $code = $prefix.strtoupper(substr($generator->randomToken(), 0, $length));
-        } while (self::get()->filter("Code:nocase", $code)->exists()
+        } while (self::get()->filter('Code:nocase', $code)->exists()
         );
 
         return $code;
@@ -74,15 +74,15 @@ class OrderCoupon extends Discount
     {
         $fields = parent::getCMSFields();
         $fields->addFieldsToTab(
-            "Root.Main",
+            'Root.Main',
             [
-                $codefield = TextField::create("Code")->setMaxLength(25),
+                $codefield = TextField::create('Code')->setMaxLength(25),
             ],
-            "Active"
+            'Active'
         );
         if ($this->owner->Code && $codefield) {
             $fields->replaceField(
-                "Code",
+                'Code',
                 $codefield->performReadonlyTransformation()
             );
         }
@@ -130,7 +130,7 @@ class OrderCoupon extends Discount
     public function setCode($code)
     {
         $code = trim(preg_replace('/[^0-9a-zA-Z]+/', '', $code));
-        $this->setField("Code", strtoupper($code));
+        $this->setField('Code', strtoupper($code));
 
         return $this;
     }
