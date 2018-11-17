@@ -59,7 +59,7 @@ class OrderCoupon extends Discount
      */
     public static function generate_code($length = null, $prefix = '')
     {
-        $length = ($length) ? $length : self::config()->generated_code_length;
+        $length = $length ? $length : self::config()->generated_code_length;
         $code = null;
         $generator = Injector::inst()->create(RandomGenerator::class);
         do {
