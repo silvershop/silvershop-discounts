@@ -2,9 +2,9 @@
 
 namespace SilverShop\Discounts\Tests;
 
-use SilverStripe\Dev\SapphireTest;
 use SilverShop\Discounts\Page\GiftVoucherProduct;
 use SilverShop\Discounts\Page\GiftVoucherProductController;
+use SilverStripe\Dev\SapphireTest;
 
 class GiftVoucherTest extends SapphireTest
 {

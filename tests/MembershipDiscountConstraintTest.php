@@ -8,8 +8,8 @@ use SilverStripe\Security\Member;
 use SilverShop\Model\Order;
 use SilverShop\Discounts\Model\OrderDiscount;
 
-class MembershipDiscountConstraintTest extends SapphireTest
-{
+
+class MembershipDiscountConstraintTest extends SapphireTest{
 
     protected static $fixture_file = [
         'shop.yml'

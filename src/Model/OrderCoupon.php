@@ -4,6 +4,7 @@ namespace SilverShop\Discounts\Model;
 
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\TextField;
+use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\RandomGenerator;
 use SilverStripe\ORM\ValidationResult;
 

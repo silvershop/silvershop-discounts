@@ -3,12 +3,12 @@
 namespace SilverShop\Discounts\Tests;
 
 use SilverShop\Discounts\Calculator;
-use SilverStripe\Dev\SapphireTest;
-use SilverShop\Tests\ShopTest;
 use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Model\Order;
 use SilverShop\Page\Product;
 use SilverShop\Page\ProductCategory;
+use SilverShop\Tests\ShopTest;
+use SilverStripe\Dev\SapphireTest;
 
 class CategoriesDiscountConstraintTest extends SapphireTest
 {
@@ -39,9 +39,9 @@ class CategoriesDiscountConstraintTest extends SapphireTest
     {
         $discount = OrderDiscount::create(
             [
-            'Title' => '5% off clothing',
-            'Type' => 'Percent',
-            'Percent' => 0.05
+                'Title' => '5% off clothing',
+                'Type' => 'Percent',
+                'Percent' => 0.05
             ]
         );
         $discount->write();
@@ -49,7 +49,8 @@ class CategoriesDiscountConstraintTest extends SapphireTest
             $this->objFromFixture(ProductCategory::class, "clothing")
         );
 
-        $this->assertTrue($discount->validateOrder($this->cart), 'Order contains a t-shirt. ' .$discount->getMessage());
+        $this->assertTrue($discount->validateOrder($this->cart),
+            'Order contains a t-shirt. ' . $discount->getMessage());
         $calculator = new Calculator($this->cart);
         $this->assertEquals($calculator->calculate(), 0.4, '5% discount for socks in cart');
 
@@ -63,7 +64,8 @@ class CategoriesDiscountConstraintTest extends SapphireTest
             $this->objFromFixture(ProductCategory::class, "kites")
         );
 
-        $this->assertTrue($discount->validateOrder($this->kitecart), "Order contains a kite. ".$discount->getMessage());
+        $this->assertTrue($discount->validateOrder($this->kitecart),
+            "Order contains a kite. " . $discount->getMessage());
         $calculator = new Calculator($this->kitecart);
         $this->assertEquals($calculator->calculate(), 1.75, '5% discount for kite in cart');
     }

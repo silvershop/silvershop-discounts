@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts\Tests;
 
+use SilverShop\Model\Order;
 use SilverStripe\Dev\FunctionalTest;
 use SilverShop\Page\Product;
 use SilverShop\Page\CheckoutPage;

@@ -2,9 +2,9 @@
 
 namespace SilverShop\Discounts\Tests;
 
+use SilverShop\Model\Order;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
-use SilverShop\Model\Order;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;

@@ -2,12 +2,11 @@
 
 namespace SilverShop\Discounts\Tests;
 
-use SilverShop\Discounts\Calculator;
+use SilverShop\Model\Order;
+use SilverShop\Page\Product;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
 use SilverStripe\Core\Config\Config;
-use SilverShop\Model\Order;
-use SilverShop\Page\Product;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Page\GiftVoucherProduct;
 use SilverShop\Discounts\Model\OrderDiscount;
