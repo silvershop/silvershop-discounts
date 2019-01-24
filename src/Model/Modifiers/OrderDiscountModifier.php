@@ -9,6 +9,8 @@ use SilverShop\Discounts\Calculator;
 
 class OrderDiscountModifier extends OrderModifier
 {
+    private static $subtitle_separator = ', ';
+
     private static $defaults = [
         "Type" => "Deductable"
     ];
@@ -28,6 +30,11 @@ class OrderDiscountModifier extends OrderModifier
     private static $plural_name = "Discounts";
 
     private static $table_name = 'SilverShop_OrderDiscountModifier';
+
+    private static $casting = [
+        'SubTitle' => 'HTMLFragment',
+        'UsedCodes' => 'HTMLFragment'
+    ];
 
     public function value($incoming)
     {
@@ -79,7 +86,7 @@ class OrderDiscountModifier extends OrderModifier
 
     public function getUsedCodes()
     {
-        return implode(",",
+        return implode($this->config()->subtitle_separator,
             $this->Order()->Discounts()
                 ->filter("Code:not", "")
                 ->map('ID', 'Title')
