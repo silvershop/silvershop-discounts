@@ -84,14 +84,20 @@ class OrderDiscountModifier extends OrderModifier
         return $this->getUsedCodes();
     }
 
+    /**
+     * @return string
+     */
     public function getUsedCodes()
     {
+        $discounts = $this->Order()->Discounts()->filter("Code:not", "");
+
+        if (!$discounts->count()) {
+            return '';
+        }
+
         return implode(
             $this->config()->subtitle_separator,
-            $this->Order()->Discounts()
-                ->filter("Code:not", "")
-                ->map('ID', 'Title')
-                ->toArray()
+            $discounts->map('ID', 'Title')->toArray()
         );
     }
 
