@@ -3,8 +3,8 @@
 namespace SilverShop\Discounts\Tests;
 
 use SilverShop\Discounts\Calculator;
-use SilverShop\Discount\Adjustment;
-use SilverShop\Discount\PriceInfo;
+use SilverShop\Discounts\Adjustment;
+use SilverShop\Discounts\PriceInfo;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
 use SilverShop\Model\Order;
@@ -88,7 +88,7 @@ class CalculatorTest extends SapphireTest
         $this->assertEquals(1, $discount->getDiscountValue(10), "10% of 10 is 1");
         //check that discount matches order
         $matching = Discount::get_matching($this->cart);
-        $this->assertDOSEquals(
+        $this->assertListEquals(
             [
             ["Title" => "10% off"]
             ],
@@ -138,7 +138,7 @@ class CalculatorTest extends SapphireTest
 
         //check that discount matches order
         $matching = Discount::get_matching($this->cart);
-        $this->assertDOSEquals(
+        $this->assertListEquals(
             [
             ["Title" => "10% off"],
             ["Title" => "$5 off"]
@@ -162,7 +162,7 @@ class CalculatorTest extends SapphireTest
         $calculator = new Calculator($this->megacart);
         $this->assertEquals(190, $calculator->calculate(), "complex savings example");
 
-        $this->assertDOSEquals(
+        $this->assertListEquals(
             [
             ["Title" => "10% off"],
             ["Title" => "$5 off"]

@@ -26,7 +26,7 @@ class GiftVoucherTest extends SapphireTest
 
     public function testCusomisableVoucher()
     {
-        $controller =  new GiftVoucherProduct_Controller($this->variable);
+        $controller =  new GiftVoucherProductController($this->variable);
         $form = $controller->Form();
 
         $form->loadDataFrom(

@@ -5,6 +5,7 @@ namespace SilverShop\Discounts\Model;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Security\RandomGenerator;
+use SilverStripe\ORM\ValidationResult;
 
 /**
  * Applies a discount to current order, if applicable, when entered at checkout.
@@ -94,13 +95,15 @@ class OrderCoupon extends Discount
         $result = parent::validate();
         $minLength = $this->config()->minimum_code_length;
         $code = $this->getField('Code');
+
         if ($minLength && $code && $this->isChanged('Code') && strlen($code) < $minLength) {
-            $result->error(
+            $result->addError(
                 _t(
                     'OrderCoupon.INVALIDMINLENGTH',
                     'Coupon code must be at least {length} characters in length',
                     ['length' => $this->config()->minimum_code_length]
                 ),
+                ValidationResult::TYPE_ERROR,
                 'INVALIDMINLENGTH'
             );
         }

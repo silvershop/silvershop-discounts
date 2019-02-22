@@ -29,23 +29,20 @@ class PartialUseDiscount extends Discount
 
     public function getCMSFields($params = null)
     {
-        $fields = parent::getCMSFields(
-            [
+        $fields = parent::getCMSFields([
             'forcetype' => 'Amount'
-            ]
-        );
+        ]);
 
-        $fields->removeByName(
-            [
+        $fields->removeByName([
             "ForCart",
             "ForItems",
             "ForShipping",
             "For"
-            ]
-        );
-        $limitfield = $fields->fieldByName("Root.Main.Constraints")
-            ->fieldByName("Main.UseLimit");
-        $fields->replaceField("UseLimit", $limitfield->performReadOnlyTransformation());
+        ]);
+
+        $limitfield = $fields->dataFieldByName('UseLimit');
+
+        $fields->replaceField("UseLimit", $limitfield->performReadonlyTransformation());
         return $fields;
     }
 
@@ -66,13 +63,16 @@ class PartialUseDiscount extends Discount
         $amount = $this->getAmount();
 
         if ($used < $amount) {
-            //duplicate dataobject and update accordingly
+            // duplicate dataobject and update accordingly
             $remainder = $this->duplicate(false);
             $remainder->write();
-            //delete any relationships that might be sitting in DB for whatever reason
+
+            // delete any relationships that might be sitting in DB for whatever
+            // reason
             $remainder->deleteRelationships();
-            //create proper new relationships
-            $this->duplicateManyManyRelations($this, $remainder);
+
+            // create proper new relationships
+            $this->duplicateManyManyRelations($this, $remainder, true);
 
             //TODO: there may be some relationships that shouldn't be copied?
             $remainder->Amount = $amount - $used;
@@ -103,8 +103,8 @@ class PartialUseDiscount extends Discount
      */
     protected function deleteRelationships()
     {
-        if ($this->many_many()) {
-            foreach ($this->many_many() as $name => $type) {
+        if ($this->manyMany()) {
+            foreach ($this->manyMany() as $name => $type) {
                 $this->{$name}()->removeAll();
             }
         }

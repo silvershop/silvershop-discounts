@@ -6,13 +6,16 @@ use SilverShop\Discounts\Calculator;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
 use SilverShop\Discounts\Model\OrderDiscount;
+use SilverShop\Model\Order;
+use SilverShop\Page\Product;
+use SilverShop\Page\ProductCategory;
 
 class CategoriesDiscountConstraintTest extends SapphireTest
 {
 
     protected static $fixture_file = [
         'shop.yml',
-        'Carts.yml'
+        'vendor/silvershop/core/tests/php/Fixtures/Carts.yml'
     ];
 
     public function setUp()
@@ -20,12 +23,12 @@ class CategoriesDiscountConstraintTest extends SapphireTest
         parent::setUp();
         ShopTest::setConfiguration();
 
-        $this->socks = $this->objFromFixture("Product", "socks");
-        $this->socks->publish("Stage", "Live");
-        $this->tshirt = $this->objFromFixture("Product", "tshirt");
-        $this->tshirt->publish("Stage", "Live");
-        $this->mp3player = $this->objFromFixture("Product", "mp3player");
-        $this->mp3player->publish("Stage", "Live");
+        $this->socks = $this->objFromFixture(Product::class, "socks");
+        $this->socks->publishRecursive();
+        $this->tshirt = $this->objFromFixture(Product::class, "tshirt");
+        $this->tshirt->publishRecursive();
+        $this->mp3player = $this->objFromFixture(Product::class, "mp3player");
+        $this->mp3player->publishRecursive();
 
         $this->cart = $this->objFromFixture(Order::class, "cart");
         $this->othercart = $this->objFromFixture(Order::class, "othercart");
@@ -41,8 +44,11 @@ class CategoriesDiscountConstraintTest extends SapphireTest
             "Percent" => 0.05
             ]
         );
+
         $discount->write();
-        $discount->Categories()->add($this->objFromFixture("ProductCategory", "clothing"));
+        $discount->Categories()->add(
+            $this->objFromFixture(ProductCategory::class, "clothing")
+        );
 
         $this->assertTrue($discount->validateOrder($this->cart), "Order contains a t-shirt. ".$discount->getMessage());
         $calculator = new Calculator($this->cart);
@@ -54,7 +60,10 @@ class CategoriesDiscountConstraintTest extends SapphireTest
 
         $discount->Categories()->removeAll();
 
-        $discount->Categories()->add($this->objFromFixture("ProductCategory", "kites"));
+        $discount->Categories()->add(
+            $this->objFromFixture(ProductCategory::class, "kites")
+        );
+
         $this->assertTrue($discount->validateOrder($this->kitecart), "Order contains a kite. ".$discount->getMessage());
         $calculator = new Calculator($this->kitecart);
         $this->assertEquals($calculator->calculate(), 1.75, "5% discount for kite in cart");

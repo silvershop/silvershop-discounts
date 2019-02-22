@@ -4,8 +4,10 @@ namespace SilverShop\Discounts\Tests;
 
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
-
+use SilverShop\Model\Order;
 use SilverShop\Discounts\Model\OrderCoupon;
+use SilverStripe\Security\Group;
+use SilverStripe\Security\Member;
 
 class GroupDiscountConstraintTest extends SapphireTest
 {
@@ -31,7 +33,7 @@ class GroupDiscountConstraintTest extends SapphireTest
             "Type" => "Percent",
             "Percent" => 0.9,
             "Active" => 1,
-            "GroupID" => $this->objFromFixture("Group", "resellers")->ID
+            "GroupID" => $this->objFromFixture(Group::class, "resellers")->ID
             ]
         );
         $coupon->write();

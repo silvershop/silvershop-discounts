@@ -9,6 +9,7 @@ use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Page\Product;
 use SilverShop\Model\Order;
+use SilverShop\Model\Product\OrderItem;
 
 class ProductsDiscountConstraintTest extends SapphireTest
 {
@@ -47,12 +48,12 @@ class ProductsDiscountConstraintTest extends SapphireTest
         $discount->Products()->add($this->objFromFixture(Product::class, "tshirt"));
         $this->assertFalse($discount->validateOrder($this->cart));
         //no products match
-        $this->assertDOSEquals([], OrderDiscount::get_matching($this->cart));
+        $this->assertListEquals([], OrderDiscount::get_matching($this->cart));
         //add product discount list
         $discount->Products()->add($this->objFromFixture(Product::class, "tshirt"));
         $this->assertFalse($discount->validateOrder($this->cart));
         //no products match
-        $this->assertDOSEquals([], OrderDiscount::get_matching($this->cart));
+        $this->assertListEquals([], OrderDiscount::get_matching($this->cart));
     }
 
     public function testProductsCoupon()
@@ -122,7 +123,7 @@ class ProductsDiscountConstraintTest extends SapphireTest
         $this->assertEquals(0, $calculator->calculate(), "20% off selected products");
 
         //get individual item discounts
-        $discount = $this->objFromFixture("Product_OrderItem", "megacart_socks")
+        $discount = $this->objFromFixture(OrderItem::class, "megacart_socks")
             ->Discounts()->first();
         $this->assertEquals(32, $discount->DiscountAmount);
     }

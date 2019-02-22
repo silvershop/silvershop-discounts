@@ -31,13 +31,13 @@ class PartialUseDiscountTest extends SapphireTest
         //check constraints copying works
         $discount = $this->objFromFixture(PartialUseDiscount::class, "constrained");
         $remainder = $discount->createRemainder(40);
-        $this->assertDOSEquals(
+        $this->assertListEquals(
             [
             ["FirstName" => "Joe"]
             ],
             $remainder->Members()
         );
-        $this->assertDOSEquals(
+        $this->assertListEquals(
             [
             ["Title" => "ProductA"],
             ["Title" => "ProductB"]

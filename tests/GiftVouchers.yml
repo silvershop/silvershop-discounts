@@ -19,5 +19,5 @@ SilverShop\Model\Order:
 
 SilverShop\Discounts\Model\GiftVoucherOrderItem:
     giftcart_10fixed:
-        Product: '=>SilverShop\Discounts\Page\GiftVoucherProduct.10fixed'
+        Product: =>SilverShop\Discounts\Page\GiftVoucherProduct.10fixed
         Quantity: 2

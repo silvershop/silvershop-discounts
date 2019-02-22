@@ -4,7 +4,7 @@ namespace SilverShop\Discounts\Tests;
 
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
-
+use SilverStripe\Security\Member;
 use SilverShop\Discounts\Model\OrderDiscount;
 
 class MembershipDiscountConstraintTest extends SapphireTest
@@ -32,12 +32,12 @@ class MembershipDiscountConstraintTest extends SapphireTest
         );
         $discount->write();
 
-        $member = $this->objFromFixture("Member", "joebloggs");
+        $member = $this->objFromFixture(Member::class, "joebloggs");
         $discount->Members()->add($member);
 
         $this->assertFalse($discount->validateOrder($this->cart), "Invalid, because no member");
         $context = [
-            "Member" => $this->objFromFixture("Member", "bobjones")
+            "Member" => $this->objFromFixture(Member::class, "bobjones")
         ];
         $this->assertFalse($discount->validateOrder($this->cart, $context), "Invalid because wrong member present");
         $context = ["Member" => $member];

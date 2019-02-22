@@ -7,6 +7,7 @@ use SilverShop\Tests\ShopTest;
 use SilverShop\Model\Order;
 use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Discounts\Model\Discount;
+use SilverStripe\Omnipay\Model\Payment;
 
 class OrderDiscountTest extends SapphireTest
 {
@@ -42,7 +43,7 @@ class OrderDiscountTest extends SapphireTest
             ]
         )->write();
         $matches = OrderDiscount::get_matching($this->cart);
-        $this->assertDOSEquals(
+        $this->assertListEquals(
             [
             ["Title" => "10% off"],
             ["Title" => "$5 off"],
@@ -60,7 +61,7 @@ class OrderDiscountTest extends SapphireTest
             "Percent" => 0.10
             ]
         )->write();
-        $this->assertDOSEquals(
+        $this->assertListEquals(
             [
             ["Title" => "10% off"]
             ],
@@ -77,7 +78,7 @@ class OrderDiscountTest extends SapphireTest
             "Amount" => 5
             ]
         )->write();
-        $this->assertDOSEquals(
+        $this->assertListEquals(
             [
             ["Title" => "$5 off"]
             ],
@@ -89,8 +90,9 @@ class OrderDiscountTest extends SapphireTest
     {
         //check that order with payment started counts as a use
         $discount = $this->objFromFixture(OrderDiscount::class, "paymentused");
-        $payment = $this->objFromFixture("Payment", "paymentstarted_recent");
-        //set timeout to 60 minutes
+        $payment = $this->objFromFixture(Payment::class, "paymentstarted_recent");
+
+        // set timeout to 60 minutes
         Discount::config()->unpaid_use_timeout = 60;
         //set payment to be created 20 min ago
         $payment->Created = date('Y-m-d H:i:s', strtotime("-20 minutes"));

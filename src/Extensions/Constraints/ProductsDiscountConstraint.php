@@ -53,7 +53,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
 
         if (!$products->exists()) {
             Versioned::withVersionedMode(
-                function () use ($discount, $productIds) {
+                function () use ($discount, &$productIds) {
                     Versioned::set_stage(Versioned::DRAFT);
 
                     $products = $discount->Products();
@@ -67,7 +67,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
             $productIds = $products->map('ID', 'ID')->toArray();
         }
 
-        if (!productIds) {
+        if (!$productIds) {
             return true;
         }
 
