@@ -49,31 +49,37 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
     public function check(Discount $discount)
     {
         $products = $discount->Products();
+        $productIds = [];
 
-        // if no products in the discount even
         if (!$products->exists()) {
-            $curr = Versioned::get_stage();
+            Versioned::withVersionedMode(function() use ($discount, $productIds) {
+                Versioned::set_stage(Versioned::DRAFT);
 
-            Versioned::set_stage('Stage');
-            $products = $discount->Products();
+                $products = $discount->Products();
 
-            if (!$products->exists()) {
-                return true;
-            }
-
-            $constraintproductids = $products->map('ID', 'ID')->toArray();
-            Versioned::set_stage($curr);
+                if ($products->exists()) {
+                    $productIds = $products->map('ID', 'ID')->toArray();
+                }
+            });
         } else {
-            $constraintproductids = $products->map('ID', 'ID')->toArray();
+            $productIds = $products->map('ID', 'ID')->toArray();
+        }
+
+        if (!productIds) {
+            return true;
         }
 
         // uses 'DiscountedProductID' so that subclasses of projects (say a custom nested set of products) can define the
         // underlying DiscountedProductID.
-        $cartproductids = $this->order->Items()->map('ProductID', 'DiscountedProductID')->toArray();
-        $intersection = array_intersect($constraintproductids, $cartproductids);
+        $cartproductids = $this->order->Items()->map(
+            'ProductID',
+            'DiscountedProductID'
+        )->toArray();
+
+        $intersection = array_intersect($productIds, $cartproductids);
 
         $incart = $discount->ExactProducts ?
-            array_values($constraintproductids) === array_values($intersection) :
+            array_values($productIds) === array_values($intersection) :
             count($intersection) > 0;
 
         if (!$incart) {
