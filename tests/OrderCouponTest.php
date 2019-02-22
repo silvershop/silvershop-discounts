@@ -17,7 +17,8 @@ class OrderCouponTest extends SapphireTest
         'shop.yml'
     ];
 
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
         ShopTest::setConfiguration();
 
@@ -35,7 +36,8 @@ class OrderCouponTest extends SapphireTest
         $this->othercart = $this->objFromFixture(Order::class, "othercart");
     }
 
-    public function testMinimumLengthCode() {
+    public function testMinimumLengthCode()
+    {
         Config::inst()->update(OrderCoupon::class, 'minimum_code_length', 8);
         $coupon = new OrderCoupon();
         $coupon->Code = '1234567';
@@ -57,15 +59,18 @@ class OrderCouponTest extends SapphireTest
         $this->assertNotContains('INVALIDMINLENGTH', $result->codeList());
     }
 
-    public function testPercent() {
-        $coupon = OrderCoupon::create([
+    public function testPercent()
+    {
+        $coupon = OrderCoupon::create(
+            [
             "Title" => "40% off each item",
             "Code" => "5B97AA9D75",
             "Type" => "Percent",
             "Percent" => 0.40,
             "StartDate" => "2000-01-01 12:00:00",
             "EndDate" => "2200-01-01 12:00:00"
-        ]);
+            ]
+        );
         $coupon->write();
         $context = ["CouponCode" => $coupon->Code];
         $this->assertTrue($coupon->validateOrder($this->cart, $context), $coupon->getMessage());
@@ -73,14 +78,17 @@ class OrderCouponTest extends SapphireTest
         $this->assertEquals(200, $this->calc($this->unpaid, $coupon), "40% off order");
     }
 
-    public function testAmount() {
-        $coupon = OrderCoupon::create([
+    public function testAmount()
+    {
+        $coupon = OrderCoupon::create(
+            [
             "Title" => "$10 off each item",
             "Code" => "TENDOLLARSOFF",
             "Type" => "Amount",
             "Amount" => 10,
             "Active" => 1
-        ]);
+            ]
+        );
         $coupon->write();
 
         $context = ["CouponCode" => $coupon->Code];
@@ -91,25 +99,29 @@ class OrderCouponTest extends SapphireTest
         //TODO: test amount that is greater than item value
     }
 
-    public function testInactiveCoupon() {
-        $inactivecoupon = OrderCoupon::create([
+    public function testInactiveCoupon()
+    {
+        $inactivecoupon = OrderCoupon::create(
+            [
             "Title" => "Not active",
             "Code" => "EE891574D6",
             "Type" => "Amount",
             "Amount" => 10,
             "Active" => 0
-        ]);
+            ]
+        );
         $inactivecoupon->write();
         $context = ["CouponCode" => $inactivecoupon->Code];
         $this->assertFalse($inactivecoupon->validateOrder($this->cart, $context), "Coupon is not set to active");
     }
 
-    protected function getCalculator($order, $coupon) {
+    protected function getCalculator($order, $coupon)
+    {
         return new Calculator($order, ["CouponCode" => $coupon->Code]);
     }
 
-    protected function calc($order, $coupon) {
+    protected function calc($order, $coupon)
+    {
         return $this->getCalculator($order, $coupon)->calculate();
     }
-
 }

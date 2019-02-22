@@ -20,8 +20,11 @@ class MembershipDiscountConstraint extends DiscountConstraint
     public function updateCMSFields(FieldList $fields)
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldToTab("Root.Constraints.ConstraintsTabs.Membership",
-                GridField::create("Members", _t(__CLASS__ . '.MEMBERS', "Members"),
+            $fields->addFieldToTab(
+                "Root.Constraints.ConstraintsTabs.Membership",
+                GridField::create(
+                    "Members",
+                    _t(__CLASS__ . '.MEMBERS', "Members"),
                     $this->owner->Members(),
                     GridFieldConfig_RelationEditor::create()
                         ->removeComponentsByType(GridFieldAddNewButton::class)
@@ -50,10 +53,12 @@ class MembershipDiscountConstraint extends DiscountConstraint
         $members = $discount->Members();
         $member = $this->getMember();
         if ($members->exists() && (!$member || !$members->byID($member->ID))) {
-            $this->error(_t(
-                "Discount.MEMBERSHIP",
-                "Only specific members can use this discount."
-            ));
+            $this->error(
+                _t(
+                    "Discount.MEMBERSHIP",
+                    "Only specific members can use this discount."
+                )
+            );
             return false;
         }
 

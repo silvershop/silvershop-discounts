@@ -2,7 +2,6 @@
 
 namespace SilverShop\Discounts;
 
-use SilverShop\Discounts\PriceInfo;
 use SilverShop\Model\OrderItem;
 
 /**

@@ -4,8 +4,6 @@ namespace SilverShop\Discounts\Model;
 
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\TextField;
-use SilverShop\Discounts\Model\GiftVoucher_OrderItem;
-use SilverShop\Discounts\Model\OrderCoupon;
 use SilverStripe\Security\RandomGenerator;
 
 /**
@@ -47,16 +45,17 @@ class OrderCoupon extends Discount
     public static function get_by_code($code)
     {
         return self::get()
-                ->filter('Code:nocase', $code)
-                ->first();
+            ->filter('Code:nocase', $code)
+            ->first();
     }
 
     /**
-    * Generates a unique code.
-    * @todo depending on the length, it may be possible that all the possible
-    *       codes have been generated.
-    * @return string the new code
-    */
+     * Generates a unique code.
+     *
+     * @todo   depending on the length, it may be possible that all the possible
+     *       codes have been generated.
+     * @return string the new code
+     */
     public static function generate_code($length = null, $prefix = "")
     {
         $length = ($length) ? $length : self::config()->generated_code_length;
@@ -64,8 +63,7 @@ class OrderCoupon extends Discount
         $generator = Injector::inst()->create(RandomGenerator::class);
         do {
             $code = $prefix.strtoupper(substr($generator->randomToken(), 0, $length));
-        } while (
-            self::get()->filter("Code:nocase", $code)->exists()
+        } while (self::get()->filter("Code:nocase", $code)->exists()
         );
 
         return $code;
@@ -75,13 +73,15 @@ class OrderCoupon extends Discount
     {
         $fields = parent::getCMSFields();
         $fields->addFieldsToTab(
-            "Root.Main", [
+            "Root.Main",
+            [
                 $codefield = TextField::create("Code")->setMaxLength(25),
             ],
             "Active"
         );
         if ($this->owner->Code && $codefield) {
-            $fields->replaceField("Code",
+            $fields->replaceField(
+                "Code",
                 $codefield->performReadonlyTransformation()
             );
         }

@@ -17,7 +17,6 @@ use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\CurrencyField;
 use SilverStripe\Forms\OptionsetField;
-use SilverStripe\Forms\LabelField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
@@ -34,7 +33,6 @@ use SilverShop\Model\OrderAttribute;
 use SilverShop\Model\OrderItem;
 use SilverStripe\Dev\Deprecation;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
-use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Core\Injector\Injector;
 use SilverShop\Discounts\Extensions\Constraints\DiscountConstraint;
 use SilverStripe\ORM\FieldType\DBCurrency;
@@ -94,6 +92,7 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Number of minutes ago to include for carts with paymetn start
      * in the {@link getAppliedOrders()} function
+     *
      * @var integer
      */
     private static $unpaid_use_timeout = 10;
@@ -106,8 +105,7 @@ class Discount extends DataObject implements PermissionProvider
         $extensions = $this->getExtensionInstances();
         $output = [];
 
-        foreach ($extensions as $extension)
-        {
+        foreach ($extensions as $extension) {
             if ($extension instanceof DiscountConstraint) {
                 $output[] = get_class($extension);
             }
@@ -119,7 +117,8 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get the smallest possible list of discounts that can apply
      * to a given order.
-     * @param  Order  $order order to check against
+     *
+     * @param  Order $order order to check against
      * @return DataList matching discounts
      */
     public static function get_matching(Order $order, $context = [])
@@ -128,10 +127,12 @@ class Discount extends DataObject implements PermissionProvider
         $discounts = self::get()
             ->filter("Active", true)
             //amount or percent > 0
-            ->filterAny([
+            ->filterAny(
+                [
                 "Amount:GreaterThan" => 0,
                 "Percent:GreaterThan" => 0
-        ]);
+                ]
+            );
 
         $constraints = Injector::inst()->create(static::class)->getConstraints();
 
@@ -157,20 +158,27 @@ class Discount extends DataObject implements PermissionProvider
     public function getCMSFields($params = null)
     {
         //fields that shouldn't be changed once coupon is used
-        $fields = new FieldList([
-            new TabSet("Root",
-                new Tab("Main",
+        $fields = new FieldList(
+            [
+            new TabSet(
+                "Root",
+                new Tab(
+                    "Main",
                     TextField::create("Title"),
                     CheckboxField::create("Active", "Active")
                         ->setDescription("Enable/disable all use of this discount."),
                     HeaderField::create("ActionTitle", "Action", 3),
-                    $typefield = SelectionGroup::create("Type", [
-                        new SelectionGroup_Item("Percent",
+                    $typefield = SelectionGroup::create(
+                        "Type",
+                        [
+                        new SelectionGroup_Item(
+                            "Percent",
                             $percentgroup = FieldGroup::create(
                                 $percentfield = NumericField::create("Percent", "Percentage", "0.00")
                                     ->setScale(null)
                                     ->setDescription("e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%"),
-                                $maxamountfield = CurrencyField::create("MaxAmount",
+                                $maxamountfield = CurrencyField::create(
+                                    "MaxAmount",
                                     _t("MaxAmount", "Maximum Amount")
                                 )->setDescription(
                                     "The total allowable discount. 0 means unlimited."
@@ -178,28 +186,36 @@ class Discount extends DataObject implements PermissionProvider
                             ),
                             "Discount by percentage"
                         ),
-                        new SelectionGroup_Item("Amount",
+                        new SelectionGroup_Item(
+                            "Amount",
                             $amountfield = CurrencyField::create("Amount", "Amount", "$0.00"),
                             "Discount by fixed amount"
                         )
-                    ])->setTitle("Type"),
-                    OptionSetField::create("For", "Applies to", [
+                        ]
+                    )->setTitle("Type"),
+                    OptionSetField::create(
+                        "For",
+                        "Applies to",
+                        [
                         "Order" => "Entire order",
                         "Cart" => "Cart subtotal",
                         "Shipping" => "Shipping subtotal",
                         "Items" => "Each individual item"
-                    ])
+                        ]
+                    )
                 ),
                 new Tab(
                     "Constraints",
                     TabSet::create("ConstraintsTabs", $general = new Tab("General", "General"))
                 )
             )
-        ]);
+            ]
+        );
 
         if (!$this->isInDB()) {
             $general->push(
-                LiteralField::create("SaveNote",
+                LiteralField::create(
+                    "SaveNote",
                     sprintf(
                         "<p class=\"message good\">%s</p>",
                         _t(__CLASS__ . 'SaveNote', 'More constraints will show up after you save for the first time.')
@@ -209,7 +225,9 @@ class Discount extends DataObject implements PermissionProvider
         }
 
         if ($count = $this->getUseCount()) {
-            $fields->addFieldsToTab("Root.Usage", [
+            $fields->addFieldsToTab(
+                "Root.Usage",
+                [
                 HeaderField::create("UseCount", sprintf("This discount has been used $count time%s.", $count > 1 ? "s" : "")),
                 GridField::create(
                     "Orders",
@@ -218,7 +236,8 @@ class Discount extends DataObject implements PermissionProvider
                     GridFieldConfig_RecordViewer::create()
                         ->removeComponentsByType("GridFieldViewButton")
                 )
-            ]);
+                ]
+            );
         }
 
         if ($params && isset($params['forcetype'])) {
@@ -230,7 +249,8 @@ class Discount extends DataObject implements PermissionProvider
 
             $fields->makeFieldReadonly("Type");
             $fields->insertAfter($valuefield, "ActionTitle");
-            $fields->replaceField($this->Type,
+            $fields->replaceField(
+                $this->Type,
                 $valuefield->performReadonlyTransformation()
             );
 
@@ -250,14 +270,26 @@ class Discount extends DataObject implements PermissionProvider
         $fields = $context->getFields();
         $fields->push(CheckboxField::create("HasBeenUsed"));
         //add date range filtering
-        $fields->push(ToggleCompositeField::create("StartDate", "Start Date", [
-            DateField::create("q[StartDateFrom]", "From"),
-            DateField::create("q[StartDateTo]", "To")
-        ]));
-        $fields->push(ToggleCompositeField::create("EndDate", "End Date", [
-            DateField::create("q[EndDateFrom]", "From"),
-            DateField::create("q[EndDateTo]", "To")
-        ]));
+        $fields->push(
+            ToggleCompositeField::create(
+                "StartDate",
+                "Start Date",
+                [
+                DateField::create("q[StartDateFrom]", "From"),
+                DateField::create("q[StartDateTo]", "To")
+                ]
+            )
+        );
+        $fields->push(
+            ToggleCompositeField::create(
+                "EndDate",
+                "End Date",
+                [
+                DateField::create("q[EndDateFrom]", "From"),
+                DateField::create("q[EndDateTo]", "To")
+                ]
+            )
+        );
         //must be enabled in config, because some sites may have many products = slow load time, or memory maxes out
         //future solution is using an ajaxified field
         if (self::config()->filter_by_product) {
@@ -289,8 +321,8 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Check if this coupon can be used with a given order
      *
-     * @param Order $order
-     * @param array $context addional data to be checked in constraints.
+     * @param  Order $order
+     * @param  array $context addional data to be checked in constraints.
      * @return boolean
      */
     public function validateOrder($order, $context = [])
@@ -331,8 +363,8 @@ class Discount extends DataObject implements PermissionProvider
      * field. This is a common user error and it's nice to just fix it
      * for them.
      *
-     * @param string $fieldName Name of the field
-     * @param mixed $value New field value
+     * @param  string $fieldName Name of the field
+     * @param  mixed  $value     New field value
      * @return DataObject $this
      */
     public function setCastedField($fieldName, $value)
@@ -346,7 +378,8 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Works out the discount on a given value.
-     * @param float $subTotal
+     *
+     * @param  float $subTotal
      * @return calculated discount
      */
     public function getDiscountValue($value)
@@ -379,7 +412,8 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get discounting amount
      */
-    public function getAmount(){
+    public function getAmount()
+    {
         $amount = $this->getField('Amount');
 
         $this->extend('updateAmount', $amount);
@@ -426,6 +460,7 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Map the single 'For' to the For"X" boolean fields
+     *
      * @param string $val
      */
     public function setFor($val)
@@ -483,8 +518,10 @@ class Discount extends DataObject implements PermissionProvider
             ->innerJoin("SilverShop_OrderAttribute", "\"SilverShop_OrderAttribute\".\"OrderID\" = \"SilverShop_Order\".\"ID\"")
             ->leftJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderItem_Discounts\".\"SilverShop_OrderItemID\" = \"SilverShop_OrderAttribute\".\"ID\"")
             ->leftJoin("SilverShop_OrderDiscountModifier_Discounts", "\"SilverShop_OrderDiscountModifier_Discounts\".\"SilverShop_OrderDiscountModifierID\" = \"SilverShop_OrderAttribute\".\"ID\"")
-            ->where("SilverShop_OrderItem_Discounts.SilverShop_DiscountID = $this->ID OR SilverShop_OrderDiscountModifier_Discounts.SilverShop_DiscountID = $this->ID
-            ");
+            ->where(
+                "SilverShop_OrderItem_Discounts.SilverShop_DiscountID = $this->ID OR SilverShop_OrderDiscountModifier_Discounts.SilverShop_DiscountID = $this->ID
+            "
+            );
 
         if ($includeunpaid) {
             $minutes = self::config()->unpaid_use_timeout;
@@ -506,18 +543,19 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get the total amount saved through the use of this discount,
      * accross all paid orders.
+     *
      * @return float amount saved
      */
     public function getSavingsTotal()
     {
         $itemsavings = $this->OrderItems()
-                        ->innerJoin("SilverShop_Order", "\"SilverShop_OrderAttribute\".\"OrderID\" = \"SilverShop_Order\".\"ID\"")
-                        ->where("\"SilverShop_Order\".\"Paid\" IS NOT NULL")
-                        ->sum("DiscountAmount");
+            ->innerJoin("SilverShop_Order", "\"SilverShop_OrderAttribute\".\"OrderID\" = \"SilverShop_Order\".\"ID\"")
+            ->where("\"SilverShop_Order\".\"Paid\" IS NOT NULL")
+            ->sum("DiscountAmount");
         $modifiersavings = $this->DiscountModifiers()
-                        ->innerJoin("SilverShop_Order", "\"SilverShop_OrderAttribute\".\"OrderID\" = \"SilverShop_Order\".\"ID\"")
-                        ->where("\"SilverShop_Order\".\"Paid\" IS NOT NULL")
-                        ->sum("DiscountAmount");
+            ->innerJoin("SilverShop_Order", "\"SilverShop_OrderAttribute\".\"OrderID\" = \"SilverShop_Order\".\"ID\"")
+            ->where("\"SilverShop_Order\".\"Paid\" IS NOT NULL")
+            ->sum("DiscountAmount");
 
         return $itemsavings + $modifiersavings;
     }
@@ -525,7 +563,7 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get the amount saved on the given order with this discount.
      *
-     * @param  Order  $order order to match against
+     * @param  Order $order order to match against
      * @return double  savings amount
      */
     public function getSavingsForOrder(Order $order)

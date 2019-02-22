@@ -2,14 +2,12 @@
 
 namespace SilverShop\Discounts;
 
-use SilverShop\Discounts\Adjustment;
 use SilverShop\Discounts\Actions\SubtotalDiscountAction;
 use SilverShop\Discounts\Extensions\Constraints\ItemDiscountConstraint;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverShop\Discounts\Actions\ItemPercentDiscount;
 use SilverShop\Discounts\Actions\ItemFixedDiscount;
-use SilverShop\Discounts\ItemPriceInfo;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Core\Injector\Injector;
 use SilverShop\Model\Order;
@@ -38,13 +36,14 @@ class Calculator
     /**
      * Work out the discount for a given order.
      *
-     * @param Order $order
+     * @param  Order $order
      * @return double - discount amount
      */
     public function calculate()
     {
         $this->modifier = $this->order->getModifier(
-            OrderDiscountModifier::class, true
+            OrderDiscountModifier::class,
+            true
         );
 
         $total = 0;
@@ -56,7 +55,6 @@ class Calculator
         $infoitems = $this->createPriceInfoList($this->order->Items());
 
         foreach ($this->getItemDiscounts() as $discount) {
-
             // item discounts will update info items
             $action = $discount->Type === "Percent" ?
                 Injector::inst()->createWithArgs(ItemPercentDiscount::class, [$infoitems, $discount]) :
@@ -186,8 +184,8 @@ class Calculator
     protected function discountSubtotal($discount)
     {
         return $this->modifier->Discounts()
-                    ->filter("ID", $discount->ID)
-                    ->sum("DiscountAmount");
+            ->filter("ID", $discount->ID)
+            ->sum("DiscountAmount");
     }
 
     /**
@@ -226,9 +224,10 @@ class Calculator
 
     /**
      * Store details about discounts for loggging / debubgging
-     * @param  string   $level
-     * @param  double   $amount
-     * @param  Discount $discount
+     *
+     * @param string   $level
+     * @param double   $amount
+     * @param Discount $discount
      */
     public function logDiscountAmount($level, $amount, Discount $discount)
     {

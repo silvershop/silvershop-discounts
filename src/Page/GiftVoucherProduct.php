@@ -5,13 +5,7 @@ namespace SilverShop\Discounts\Page;
 use SilverShop\Page\Product;
 use SilverStripe\Forms\OptionsetField;
 use SilverStripe\Forms\TextField;
-use SilverShop\Page\ProductController;
-use SilverStripe\Forms\CurrencyField;
-use SilverStripe\Forms\RequiredFields;
-use SilverShop\Model\Product\OrderItem;
 use SilverStripe\Control\Email\Email;
-use SilverShop\Discounts\Model\GiftVoucherOrderItem;
-use SilverShop\Discounts\Model\OrderCoupon;
 
 /**
  * Gift voucher products, when purchased will send out a voucher code to the
@@ -35,18 +29,26 @@ class GiftVoucherProduct extends Product
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
-        $fields->addFieldToTab("Root.Pricing",
-            new OptionsetField("VariableAmount", "Price", [
+        $fields->addFieldToTab(
+            "Root.Pricing",
+            new OptionsetField(
+                "VariableAmount",
+                "Price",
+                [
                 0 => "Fixed",
                 1 => "Allow customer to choose"
-            ]),
+                ]
+            ),
             "BasePrice"
         );
 
-        $fields->addFieldsToTab("Root.Pricing", [
+        $fields->addFieldsToTab(
+            "Root.Pricing",
+            [
             //text field, because of CMS js validation issue
             $minimumamount = new TextField("MinimumAmount", "Minimum Amount")
-        ]);
+            ]
+        );
 
         $fields->removeByName("CostPrice");
         $fields->removeByName("Variations");

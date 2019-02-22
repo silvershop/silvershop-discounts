@@ -23,7 +23,10 @@ class SpecificPricingExtension extends DataExtension
 
         if ($this->owner->isInDB() && ($fields->fieldByName("BasePrice") || $fields->fieldByName("Price"))) {
             $fields->push(
-                GridField::create("SpecificPrices", "Specific Prices", $this->owner->SpecificPrices(),
+                GridField::create(
+                    "SpecificPrices",
+                    "Specific Prices",
+                    $this->owner->SpecificPrices(),
                     GridFieldConfig_RecordEditor::create()
                 )
             );
@@ -32,11 +35,13 @@ class SpecificPricingExtension extends DataExtension
 
     public function updateSellingPrice(&$price)
     {
-        
         $list = $this->owner->SpecificPrices()->filter( array("Price:LessThan"=> $price ));
-        
-        if ( $list->exists() && $specificprice = SpecificPrice::filter(
-             $list, Member::currentUser() )->first()) {
+
+        if ($list->exists() && $specificprice = SpecificPrice::filter(
+            $list,
+            Member::currentUser()
+        )->first()
+        ) {
             if ($specificprice->Price > 0) {
                 $price = $specificprice->Price;
             } elseif ($specificprice->DiscountPercent > 0) {

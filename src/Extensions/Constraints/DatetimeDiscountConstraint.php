@@ -17,7 +17,8 @@ class DatetimeDiscountConstraint extends DiscountConstraint
 
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldToTab("Root.Constraints.ConstraintsTabs.General",
+        $fields->addFieldToTab(
+            "Root.Constraints.ConstraintsTabs.General",
             FieldGroup::create(
                 _t(__CLASS__.'.VALIDDATERANGE', "Valid date range:"),
                 DatetimeField::create(
@@ -43,9 +44,9 @@ class DatetimeDiscountConstraint extends DiscountConstraint
         return $list->where(
             "(\"SilverShop_Discount\".\"StartDate\" IS NULL) OR (\"SilverShop_Discount\".\"StartDate\" < '$datetime')"
         )
-        ->where(
-            "(\"SilverShop_Discount\".\"EndDate\" IS NULL) OR (\"SilverShop_Discount\".\"EndDate\" > '$datetime')"
-        );
+            ->where(
+                "(\"SilverShop_Discount\".\"EndDate\" IS NULL) OR (\"SilverShop_Discount\".\"EndDate\" > '$datetime')"
+            );
     }
 
     public function check(Discount $discount)

@@ -4,7 +4,6 @@ namespace SilverShop\Discounts\Form;
 
 use SilverStripe\Forms\GridField\GridField_HTMLProvider;
 
-
 class GridField_LinkComponent implements GridField_HTMLProvider
 {
     protected $title;

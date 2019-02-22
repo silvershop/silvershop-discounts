@@ -2,8 +2,6 @@
 
 namespace SilverShop\Discounts\Model;
 
-use SilverShop\Discounts\Model\PartialUseDiscount;
-
 
 class PartialUseDiscount extends Discount
 {
@@ -31,18 +29,22 @@ class PartialUseDiscount extends Discount
 
     public function getCMSFields($params = null)
     {
-        $fields = parent::getCMSFields([
+        $fields = parent::getCMSFields(
+            [
             'forcetype' => 'Amount'
-        ]);
+            ]
+        );
 
-        $fields->removeByName([
+        $fields->removeByName(
+            [
             "ForCart",
             "ForItems",
             "ForShipping",
             "For"
-        ]);
+            ]
+        );
         $limitfield = $fields->fieldByName("Root.Main.Constraints")
-                        ->fieldByName("Main.UseLimit");
+            ->fieldByName("Main.UseLimit");
         $fields->replaceField("UseLimit", $limitfield->performReadOnlyTransformation());
         return $fields;
     }
@@ -50,7 +52,7 @@ class PartialUseDiscount extends Discount
     /**
      * Create remainder discount object.
      *
-     * @param  float  $used the amount of this discount that was used up
+     * @param  float $used the amount of this discount that was used up
      * @return PartialUseDiscount  new 'remainder' discount
      */
     public function createRemainder($used)

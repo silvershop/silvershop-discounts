@@ -3,7 +3,6 @@
 namespace SilverShop\Discounts\Actions;
 
 use SilverShop\Discounts\Adjustment;
-use SilverShop\Discounts\Actions\ItemDiscountAction;
 
 class ItemFixedDiscount extends ItemDiscountAction
 {

@@ -81,10 +81,16 @@ class DiscountModelAdmin extends ModelAdmin
             $list = $list
                 ->leftJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
                 ->leftJoin("SilverShop_OrderDiscountModifier_Discounts", "\"SilverShop_OrderDiscountModifier_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
-                ->innerJoin("OrderAttribute", implode(" OR ", [
-                    "\"SilverShop_OrderAttribute\".\"ID\" = \"SilverShop_OrderItem_Discounts\".\"Product_OrderItemID\"",
-                    "\"SilverShop_OrderAttribute\".\"ID\" = \"SilverShop_OrderDiscountModifier_Discounts\".\"SilverShop_OrderDiscountModifierID\""
-                ]));
+                ->innerJoin(
+                    "OrderAttribute",
+                    implode(
+                        " OR ",
+                        [
+                        "\"SilverShop_OrderAttribute\".\"ID\" = \"SilverShop_OrderItem_Discounts\".\"Product_OrderItemID\"",
+                        "\"SilverShop_OrderAttribute\".\"ID\" = \"SilverShop_OrderDiscountModifier_Discounts\".\"SilverShop_OrderDiscountModifierID\""
+                        ]
+                    )
+                );
         }
 
         if (isset($params['Products'])) {
@@ -111,36 +117,47 @@ class DiscountModelAdmin extends ModelAdmin
         $fields->removeByName('GiftVoucherID');
         $fields->removeByName('SaveNote');
 
-        $fields->addFieldsToTab("Root.Main", [
+        $fields->addFieldsToTab(
+            "Root.Main",
+            [
             NumericField::create('Number', 'Number of Coupons'),
-            FieldGroup::create("Code",
+            FieldGroup::create(
+                "Code",
                 TextField::create("Prefix", "Code Prefix")
                     ->setMaxLength(5),
-                DropdownField::create("Length", "Code Characters Length",
+                DropdownField::create(
+                    "Length",
+                    "Code Characters Length",
                     array_combine(range(5, 20), range(5, 20)),
                     OrderCoupon::config()->generated_code_length
                 )->setDescription("This is in addition to the length of the prefix.")
             )
-        ], "Title");
+            ],
+            "Title"
+        );
 
         $actions = new FieldList(
             new FormAction('generate', 'Generate')
         );
-        $validator = new RequiredFields([
+        $validator = new RequiredFields(
+            [
             'Title',
             'Number',
             'Type'
-        ]);
+            ]
+        );
         $form = new Form($this, "GenerateCouponsForm", $fields, $actions, $validator);
         $form->addExtraClass("cms-edit-form cms-panel-padded center ui-tabs-panel ui-widget-content ui-corner-bottom");
         $form->setAttribute('data-pjax-fragment', 'CurrentForm');
         $form->setHTMLID('Form_EditForm');
-        $form->loadDataFrom([
+        $form->loadDataFrom(
+            [
             'Number' => 1,
             'Active' => 1,
             'ForCart' => 1,
             'UseLimit' => 1
-        ]);
+            ]
+        );
         return $form;
     }
 

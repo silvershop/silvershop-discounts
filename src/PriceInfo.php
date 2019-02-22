@@ -63,6 +63,7 @@ class PriceInfo
     /**
      * Sets the best adjustment, if the passed adjustment
      * is indeed better.
+     *
      * @param Adjustment $candidate for better adjustment
      */
     protected function setBestAdjustment(Adjustment $candidate)

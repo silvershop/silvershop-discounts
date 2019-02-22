@@ -4,7 +4,6 @@ namespace SilverShop\Discounts\Extensions\Constraints;
 
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\Tab;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
 use SilverStripe\Forms\GridField\GridFieldAddNewButton;
@@ -21,7 +20,8 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
     public function updateCMSFields(FieldList $fields)
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldToTab("Root.Constraints.ConstraintsTabs.Product",
+            $fields->addFieldToTab(
+                "Root.Constraints.ConstraintsTabs.Product",
                 GridField::create(
                     "Categories",
                     _t(__CLASS__.'.PRODUCTCATEGORIES', "Product categories"),

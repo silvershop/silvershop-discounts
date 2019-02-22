@@ -2,7 +2,6 @@
 
 namespace SilverShop\Discounts\Model;
 
-use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Model\Product\OrderItem;
 use SilverStripe\Control\Email\Email;
 
@@ -63,13 +62,15 @@ class GiftVoucherOrderItem extends OrderItem
             return false;
         }
 
-        $coupon = new OrderCoupon([
+        $coupon = new OrderCoupon(
+            [
             "Title" => $this->Product()->Title,
             "Type" => "Amount",
             "Amount" => $this->UnitPrice,
             "UseLimit" => 1,
             "MinOrderValue" => $this->UnitPrice //safeguard that means coupons must be used entirely
-        ]);
+            ]
+        );
 
         $this->extend("updateCreateCupon", $coupon);
 
@@ -93,9 +94,11 @@ class GiftVoucherOrderItem extends OrderItem
         $email->setTo($to);
         $email->setSubject($subject);
         $email->setTemplate("GiftVoucherEmail");
-        $email->setData([
+        $email->setData(
+            [
             'Coupon' => $coupon
-        ]);
+            ]
+        );
 
         $this->extend('updateVoucherMail', $email, $coupon);
 

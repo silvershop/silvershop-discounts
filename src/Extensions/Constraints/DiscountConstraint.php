@@ -6,8 +6,6 @@ use SilverShop\Discounts\Model\Discount;
 use SilverStripe\ORM\DataExtension;
 use SilverShop\Model\Order;
 use SilverStripe\ORM\DataList;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\Injector\Injector;
 
 /**
  * Encapsulate a single kind of constraint.

@@ -19,9 +19,13 @@ class CouponCheckoutComponent extends CheckoutComponent
     public function getFormFields(Order $order)
     {
         $fields = FieldList::create(
-            TextField::create('Code', _t("CouponForm.COUPON",
-                'Enter your coupon code if you have one.'
-            ))
+            TextField::create(
+                'Code',
+                _t(
+                    "CouponForm.COUPON",
+                    'Enter your coupon code if you have one.'
+                )
+            )
         );
 
         return $fields;

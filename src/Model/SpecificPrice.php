@@ -20,9 +20,9 @@ use SilverStripe\ORM\DataList;
  * @property int ProductID
  * @property int ProductVariationID
  * @property int GroupID
- * @method Product Product()
- * @method ProductVariation ProductVariation()
- * @method Group Group()
+ * @method   Product Product()
+ * @method   ProductVariation ProductVariation()
+ * @method   Group Group()
  */
 class SpecificPrice extends DataObject
 {
@@ -84,10 +84,10 @@ class SpecificPrice extends DataObject
         $list = $list->where(
             "(\"SilverShop_SpecificPrice\".\"StartDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"StartDate\" < '$now')"
         )
-        ->where(
-            "(\"SilverShop_SpecificPrice\".\"EndDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"EndDate\" > '$nowminusone')"
-        )
-        ->filter("GroupID", $groupids);
+            ->where(
+                "(\"SilverShop_SpecificPrice\".\"EndDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"EndDate\" > '$nowminusone')"
+            )
+            ->filter("GroupID", $groupids);
 
         return $list;
     }

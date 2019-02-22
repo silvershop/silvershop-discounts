@@ -86,7 +86,8 @@ class OrderDiscountModifier extends OrderModifier
 
     public function getUsedCodes()
     {
-        return implode($this->config()->subtitle_separator,
+        return implode(
+            $this->config()->subtitle_separator,
             $this->Order()->Discounts()
                 ->filter("Code:not", "")
                 ->map('ID', 'Title')

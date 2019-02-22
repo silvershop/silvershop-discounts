@@ -2,7 +2,6 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
-use SilverShop\Discounts\Extensions\Constraints\DiscountConstraint;
 use SilverShop\Model\OrderItem;
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Core\ClassInfo;

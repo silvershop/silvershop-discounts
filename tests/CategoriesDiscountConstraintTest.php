@@ -7,14 +7,16 @@ use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
 use SilverShop\Discounts\Model\OrderDiscount;
 
-class CategoriesDiscountConstraintTest extends SapphireTest{
+class CategoriesDiscountConstraintTest extends SapphireTest
+{
 
     protected static $fixture_file = [
         'shop.yml',
         'Carts.yml'
     ];
 
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
         ShopTest::setConfiguration();
 
@@ -30,12 +32,15 @@ class CategoriesDiscountConstraintTest extends SapphireTest{
         $this->kitecart = $this->objFromFixture(Order::class, "kitecart");
     }
 
-    public function testCategoryDiscount() {
-        $discount = OrderDiscount::create([
+    public function testCategoryDiscount()
+    {
+        $discount = OrderDiscount::create(
+            [
             "Title" => "5% off clothing",
             "Type" => "Percent",
             "Percent" => 0.05
-        ]);
+            ]
+        );
         $discount->write();
         $discount->Categories()->add($this->objFromFixture("ProductCategory", "clothing"));
 
@@ -54,5 +59,4 @@ class CategoriesDiscountConstraintTest extends SapphireTest{
         $calculator = new Calculator($this->kitecart);
         $this->assertEquals($calculator->calculate(), 1.75, "5% discount for kite in cart");
     }
-
 }

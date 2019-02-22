@@ -7,30 +7,33 @@ use SilverShop\Tests\ShopTest;
 
 use SilverShop\Discounts\Model\OrderCoupon;
 
-
-
-class GroupDiscountConstraintTest extends SapphireTest{
+class GroupDiscountConstraintTest extends SapphireTest
+{
 
     protected static $fixture_file = [
         'shop.yml'
     ];
 
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
         ShopTest::setConfiguration();
         $this->cart = $this->objFromFixture(Order::class, "cart");
         $this->othercart = $this->objFromFixture(Order::class, "othercart");
     }
 
-    public function testMemberGroup() {
-        $coupon = OrderCoupon::create([
+    public function testMemberGroup()
+    {
+        $coupon = OrderCoupon::create(
+            [
             "Title" => "Special Members Coupon",
             "Code" => "GROUPED",
             "Type" => "Percent",
             "Percent" => 0.9,
             "Active" => 1,
             "GroupID" => $this->objFromFixture("Group", "resellers")->ID
-        ]);
+            ]
+        );
         $coupon->write();
 
         $context = ["CouponCode" => $coupon->Code];
@@ -41,5 +44,4 @@ class GroupDiscountConstraintTest extends SapphireTest{
         ];
         $this->assertTrue($coupon->validateOrder($this->othercart, $context), "Valid because member is in resellers group");
     }
-
 }

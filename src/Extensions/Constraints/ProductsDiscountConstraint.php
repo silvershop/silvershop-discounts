@@ -52,15 +52,17 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
         $productIds = [];
 
         if (!$products->exists()) {
-            Versioned::withVersionedMode(function() use ($discount, $productIds) {
-                Versioned::set_stage(Versioned::DRAFT);
+            Versioned::withVersionedMode(
+                function () use ($discount, $productIds) {
+                    Versioned::set_stage(Versioned::DRAFT);
 
-                $products = $discount->Products();
+                    $products = $discount->Products();
 
-                if ($products->exists()) {
-                    $productIds = $products->map('ID', 'ID')->toArray();
+                    if ($products->exists()) {
+                        $productIds = $products->map('ID', 'ID')->toArray();
+                    }
                 }
-            });
+            );
         } else {
             $productIds = $products->map('ID', 'ID')->toArray();
         }

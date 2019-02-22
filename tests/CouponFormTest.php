@@ -10,26 +10,31 @@ use SilverStripe\Control\Session;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Discounts\Form\CouponForm;
 
-class CouponFormTest extends FunctionalTest {
+class CouponFormTest extends FunctionalTest
+{
 
     protected static $fixture_file = [
         'shop.yml',
         'Pages.yml'
     ];
 
-    protected function setUp() {
+    protected function setUp()
+    {
         parent::setUp();
 
         $this->objFromFixture(Product::class, "socks")->publishRecursive();
     }
 
-    public function testCouponForm() {
-        OrderCoupon::create([
+    public function testCouponForm()
+    {
+        OrderCoupon::create(
+            [
             "Title" => "40% off each item",
             "Code" => "5B97AA9D75",
             "Type" => "Percent",
             "Percent" => 0.40
-        ])->write();
+            ]
+        )->write();
 
         $checkoutpage = $this->objFromFixture(CheckoutPage::class, "checkout");
         $checkoutpage->publishRecursive();
@@ -43,5 +48,4 @@ class CouponFormTest extends FunctionalTest {
         $this->assertEquals("5B97AA9D75", Session::get("cart.couponcode"));
         $form->removeCoupon([], $form);
     }
-
 }

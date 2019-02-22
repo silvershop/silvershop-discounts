@@ -2,13 +2,11 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
-
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\ListboxField;
 use SilverShop\Model\OrderItem;
 use SilverStripe\Core\ClassInfo;
-
 
 class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 {
@@ -20,7 +18,8 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
     {
         //multiselect subtypes of orderitem
         if ($this->owner->isInDB() && $this->owner->ForItems) {
-            $fields->addFieldToTab("Root.Constraints.ConstraintsTabs.Product",
+            $fields->addFieldToTab(
+                "Root.Constraints.ConstraintsTabs.Product",
                 ListBoxField::create(
                     "ProductTypes",
                     _t(__CLASS__.'.PRODUCTTYPES', "Product types"),

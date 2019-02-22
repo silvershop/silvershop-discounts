@@ -16,8 +16,9 @@ class DiscountedOrderExtension extends DataExtension
 {
     public function updateCMSFields(FieldList $fields)
     {
-        $fields->addFieldsToTab('Root.Discounts',
-           $grid = new GridField(
+        $fields->addFieldsToTab(
+            'Root.Discounts',
+            $grid = new GridField(
                 'Discounts',
                 Config::inst()->get(Discount::class, 'plural_name'),
                 $this->Discounts(),
@@ -82,11 +83,10 @@ class DiscountedOrderExtension extends DataExtension
         foreach ($this->owner->Items() as $item) {
             $item->Discounts()->removeAll();
         }
-         foreach ($this->owner->Modifiers() as $modifier) {
+        foreach ($this->owner->Modifiers() as $modifier) {
             if ($modifier instanceof OrderDiscountModifier) {
-               $modifier->Discounts()->removeAll();
+                $modifier->Discounts()->removeAll();
             }
         }
-      
     }
 }

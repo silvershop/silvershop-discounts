@@ -25,7 +25,7 @@ abstract class ItemDiscountAction extends DiscountAction
     /**
      * Checks if the given item qualifies for a discount.
      *
-     * @param ItemPriceInfo $info
+     * @param  ItemPriceInfo $info
      * @return boolean
      */
     protected function itemQualifies(ItemPriceInfo $info)

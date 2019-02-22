@@ -36,7 +36,8 @@ class DiscountedOrderItem extends DataExtension
     /**
      * @return string
      */
-    public function getPriceInfoClass() {
+    public function getPriceInfoClass()
+    {
         $class = ItemPriceInfo::class;
         $this->owner->extend('updatePriceInfoClass', $class);
         return $class;

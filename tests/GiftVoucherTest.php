@@ -29,22 +29,28 @@ class GiftVoucherTest extends SapphireTest
         $controller =  new GiftVoucherProduct_Controller($this->variable);
         $form = $controller->Form();
 
-        $form->loadDataFrom($data = [
+        $form->loadDataFrom(
+            $data = [
             "UnitPrice" => 32.35,
             "Quantity" => 1
-        ]);
+            ]
+        );
         $this->assertTrue($form->validate(), "Voucher form is valid");
 
-        $form->loadDataFrom([
+        $form->loadDataFrom(
+            [
             "UnitPrice" => 3,
             "Quantity" => 5
-        ]);
+            ]
+        );
         $this->assertFalse($form->validate(), "Tested unit price is below minimum amount");
 
-        $form->loadDataFrom([
+        $form->loadDataFrom(
+            [
             "UnitPrice" => 0,
             "Quantity" => 5
-        ]);
+            ]
+        );
         $this->assertFalse($form->validate(), "Tested unit price is zero");
     }
 
@@ -52,18 +58,23 @@ class GiftVoucherTest extends SapphireTest
     {
         $controller =  new GiftVoucherProductController($this->fixed10);
         $form = $controller->Form();
-        $form->loadDataFrom([
+        $form->loadDataFrom(
+            [
             "Quantity" => 2
-        ]);
+            ]
+        );
 
         $this->assertTrue($form->validate(), "Valid voucher");
     }
 
     public function testCreateCoupon()
     {
-        $item = $this->variable->createItem(1, [
+        $item = $this->variable->createItem(
+            1,
+            [
             "UnitPrice" => 15.00
-        ]);
+            ]
+        );
 
         $coupon = $item->createCoupon();
 
