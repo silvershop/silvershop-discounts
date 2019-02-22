@@ -44,9 +44,11 @@ class CouponFormTest extends FunctionalTest
         $form = new CouponForm($controller, CouponForm::class, $order);
         $data = ["Code" => "5B97AA9D75"];
         $form->loadDataFrom($data);
-        $this->assertTrue($form->validate());
+        $this->assertTrue($form->validationResult()->isValid());
         $form->applyCoupon($data, $form);
-        $this->assertEquals("5B97AA9D75", Session::get("cart.couponcode"));
+
+        $coupon = $controller->getRequest()->getSession()->get("cart.couponcode");
+        $this->assertEquals("5B97AA9D75", $coupon);
         $form->removeCoupon([], $form);
     }
 }

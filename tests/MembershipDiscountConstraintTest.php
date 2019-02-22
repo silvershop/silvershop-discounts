@@ -5,6 +5,7 @@ namespace SilverShop\Discounts\Tests;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
 use SilverStripe\Security\Member;
+use SilverShop\Model\Order;
 use SilverShop\Discounts\Model\OrderDiscount;
 
 class MembershipDiscountConstraintTest extends SapphireTest

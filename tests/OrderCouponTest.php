@@ -42,21 +42,21 @@ class OrderCouponTest extends SapphireTest
         $coupon = new OrderCoupon();
         $coupon->Code = '1234567';
         $result = $coupon->validate();
-        $this->assertContains('INVALIDMINLENGTH', $result->codeList());
+        $this->assertContains('INVALIDMINLENGTH', $result->getMessages());
 
         $coupon = new OrderCoupon();
         $result = $coupon->validate();
-        $this->assertNotContains('INVALIDMINLENGTH', $result->codeList(), 'Leaving the Code field generates a code');
+        $this->assertNotContains('INVALIDMINLENGTH', $result->getMessages(), 'Leaving the Code field generates a code');
 
         $coupon = new OrderCoupon(['Code' => '12345678']);
         $result = $coupon->validate();
-        $this->assertNotContains('INVALIDMINLENGTH', $result->codeList());
+        $this->assertNotContains('INVALIDMINLENGTH', $result->getMessages());
 
         Config::inst()->update(OrderCoupon::class, 'minimum_code_length', null);
 
         $coupon = new OrderCoupon(['Code' => '1']);
         $result = $coupon->validate();
-        $this->assertNotContains('INVALIDMINLENGTH', $result->codeList());
+        $this->assertNotContains('INVALIDMINLENGTH', $result->getMessages());
     }
 
     public function testPercent()

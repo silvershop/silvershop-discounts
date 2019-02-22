@@ -42,7 +42,7 @@ class GroupDiscountConstraintTest extends SapphireTest
         $this->assertFalse($coupon->validateOrder($this->cart, $context), "Invalid for memberless order");
         $context = [
             "CouponCode" => $coupon->Code,
-            "Member" => $this->objFromFixture("Member", "bobjones")
+            "Member" => $this->objFromFixture(Member::class, "bobjones")
         ];
         $this->assertTrue($coupon->validateOrder($this->othercart, $context), "Valid because member is in resellers group");
     }

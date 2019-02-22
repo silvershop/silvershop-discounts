@@ -3,12 +3,11 @@
 namespace SilverShop\Discounts\Tests;
 
 use SilverStripe\Dev\SapphireTest;
-use SilverShop\Discounts\Model\GiftVoucherProduct;
-use SilverShop\Discounts\Model\GiftVoucherProductController;
+use SilverShop\Discounts\Page\GiftVoucherProduct;
+use SilverShop\Discounts\Page\GiftVoucherProductController;
 
 class GiftVoucherTest extends SapphireTest
 {
-
     protected static $fixture_file = [
         'GiftVouchers.yml'
     ];
