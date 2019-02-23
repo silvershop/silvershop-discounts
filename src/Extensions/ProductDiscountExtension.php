@@ -26,13 +26,13 @@ class ProductDiscountExtension extends DataExtension
     }
 
     /**
-     * Check if this product has a reduced price.
+     * Check if this product or variation has a reduced price.
      *
      * @return bool
      */
     public function IsReduced()
     {
-        return (bool)$this->getTotalReduction();
+        return (bool) $this->getTotalReduction();
     }
 
     /**

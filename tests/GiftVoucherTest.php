@@ -34,7 +34,7 @@ class GiftVoucherTest extends SapphireTest
             "Quantity" => 1
             ]
         );
-        $this->assertTrue($form->validate(), "Voucher form is valid");
+        $this->assertTrue($form->validationResult()->isValid(), "Voucher form is valid");
 
         $form->loadDataFrom(
             [
@@ -42,7 +42,7 @@ class GiftVoucherTest extends SapphireTest
             "Quantity" => 5
             ]
         );
-        $this->assertFalse($form->validate(), "Tested unit price is below minimum amount");
+        $this->assertFalse($form->validationResult()->isValid(), "Tested unit price is below minimum amount");
 
         $form->loadDataFrom(
             [
@@ -50,7 +50,7 @@ class GiftVoucherTest extends SapphireTest
             "Quantity" => 5
             ]
         );
-        $this->assertFalse($form->validate(), "Tested unit price is zero");
+        $this->assertFalse($form->validationResult()->isValid(), "Tested unit price is zero");
     }
 
     public function testFixedVoucher()
@@ -63,7 +63,7 @@ class GiftVoucherTest extends SapphireTest
             ]
         );
 
-        $this->assertTrue($form->validate(), "Valid voucher");
+        $this->assertTrue($form->validationResult()->isValid(), "Valid voucher");
     }
 
     public function testCreateCoupon()
