@@ -117,7 +117,7 @@ class CalculatorTest extends SapphireTest
         $this->markTestIncomplete('Add assertions');
     }
 
-    function testItemLevelPercentAndAmountDiscounts()
+    public function testItemLevelPercentAndAmountDiscounts()
     {
         OrderDiscount::get()->removeAll();
         OrderDiscount::create(
@@ -171,7 +171,7 @@ class CalculatorTest extends SapphireTest
         );
     }
 
-    function testCouponAndDiscountItemLevel()
+    public function testCouponAndDiscountItemLevel()
     {
         OrderDiscount::create(
             [
@@ -208,7 +208,7 @@ class CalculatorTest extends SapphireTest
         //the order subtotal
     }
 
-    function testItemAndCartLevelAmountDiscounts()
+    public function testItemAndCartLevelAmountDiscounts()
     {
         OrderDiscount::create(
             [
@@ -236,7 +236,7 @@ class CalculatorTest extends SapphireTest
         $this->markTestIncomplete('test distribution of amounts');
     }
 
-    function testCartLevelAmount()
+    public function testCartLevelAmount()
     {
         //entire cart
         $discount = OrderDiscount::create(
@@ -258,7 +258,7 @@ class CalculatorTest extends SapphireTest
         $this->assertEquals(25, $calculator->calculate());
     }
 
-    function testCartLevelPercent()
+    public function testCartLevelPercent()
     {
         $discount = OrderDiscount::create(
             [
@@ -284,7 +284,7 @@ class CalculatorTest extends SapphireTest
         $this->assertEquals(205, $calculator->calculate());
     }
 
-    function testMaxAmount()
+    public function testMaxAmount()
     {
         //percent item discounts
         $discount = OrderDiscount::create(

@@ -31,7 +31,7 @@ class GroupDiscountConstraint extends DiscountConstraint
     {
         $groupids = [0];
         if ($member = $this->getMember()) {
-            $groupids = $groupids + $member->Groups()
+            $groupids += $member->Groups()
                 ->map('ID', 'ID')
                 ->toArray();
         }

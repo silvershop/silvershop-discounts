@@ -12,7 +12,7 @@ class DiscountReportTest extends SapphireTest
 
     protected static $fixture_file = 'Discounts.yml';
 
-    function testDiscountReport()
+    public function testDiscountReport()
     {
         $discount = $this->objFromFixture(OrderDiscount::class, 'used');
         $report = new DiscountReport();
