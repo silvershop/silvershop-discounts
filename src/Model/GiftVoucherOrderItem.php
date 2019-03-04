@@ -55,6 +55,7 @@ class GiftVoucherOrderItem extends OrderItem
      * Create a new coupon
      *
      * @return OrderCoupon
+     * @throws \SilverStripe\ORM\ValidationException
      */
     public function createCoupon()
     {

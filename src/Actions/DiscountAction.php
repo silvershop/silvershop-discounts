@@ -61,6 +61,7 @@ abstract class DiscountAction extends Action
 
     /**
      * @param float
+     * @return DiscountAction
      */
     public function reduceRemaining($amount)
     {

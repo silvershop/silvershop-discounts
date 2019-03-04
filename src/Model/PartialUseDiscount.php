@@ -51,6 +51,7 @@ class PartialUseDiscount extends Discount
      *
      * @param  float $used the amount of this discount that was used up
      * @return PartialUseDiscount  new 'remainder' discount
+     * @throws \SilverStripe\ORM\ValidationException
      */
     public function createRemainder($used)
     {

@@ -10,7 +10,6 @@ use SilverShop\Page\CheckoutPageController;
 use SilverStripe\Control\Session;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Discounts\Form\CouponForm;
-use SilverShop\Model\Order;
 
 class CouponFormTest extends FunctionalTest
 {

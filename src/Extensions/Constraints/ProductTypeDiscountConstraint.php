@@ -46,6 +46,9 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 
     /**
      * This function is used by ItemDiscountAction, and the check function above.
+     * @param OrderItem $item
+     * @param Discount $discount
+     * @return bool
      */
     public function itemMatchesCriteria(OrderItem $item, Discount $discount)
     {

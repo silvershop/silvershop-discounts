@@ -380,7 +380,7 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Works out the discount on a given value.
      *
-     * @param  float $subTotal
+     * @param $value
      * @return calculated discount
      */
     public function getDiscountValue($value)
@@ -641,6 +641,9 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * @deprecated
+     * @param $order
+     * @param array $context
+     * @return bool
      */
     public function valid($order, $context = [])
     {

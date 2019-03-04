@@ -36,7 +36,6 @@ class Calculator
     /**
      * Work out the discount for a given order.
      *
-     * @param  Order $order
      * @return double - discount amount
      */
     public function calculate()
@@ -180,6 +179,8 @@ class Calculator
     /**
      * Work out how much the given discount has already
      * been used.
+     * @param $discount Discount
+     * @return Discount[]
      */
     protected function discountSubtotal($discount)
     {

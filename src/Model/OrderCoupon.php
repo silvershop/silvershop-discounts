@@ -6,7 +6,6 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\TextField;
 use SilverStripe\ORM\ValidationResult;
 use SilverStripe\Security\RandomGenerator;
-use SilverStripe\ORM\ValidationResult;
 
 /**
  * Applies a discount to current order, if applicable, when entered at checkout.
@@ -56,6 +55,8 @@ class OrderCoupon extends Discount
      *
      * @todo   depending on the length, it may be possible that all the possible
      *       codes have been generated.
+     * @param null $length
+     * @param string $prefix
      * @return string the new code
      */
     public static function generate_code($length = null, $prefix = '')
