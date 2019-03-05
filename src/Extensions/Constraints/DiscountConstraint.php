@@ -65,15 +65,15 @@ abstract class DiscountConstraint extends DataExtension
      */
     abstract public function check(Discount $discount);
 
-    protected function message($messsage, $type = "good")
+    protected function message($message, $type = 'good')
     {
-        $this->message = $messsage;
+        $this->message = $message;
         $this->messagetype = $type;
     }
 
     protected function error($message)
     {
-        $this->message($message, "bad");
+        $this->message($message, 'bad');
     }
 
     public function getMessage()

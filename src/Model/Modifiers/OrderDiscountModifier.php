@@ -12,11 +12,11 @@ class OrderDiscountModifier extends OrderModifier
     private static $subtitle_separator = ', ';
 
     private static $defaults = [
-        "Type" => "Deductable"
+        'Type' => 'Deductable'
     ];
 
     private static $many_many = [
-        "Discounts" => Discount::class
+        'Discounts' => Discount::class
     ];
 
     private static $many_many_extraFields = [
@@ -27,7 +27,7 @@ class OrderDiscountModifier extends OrderModifier
 
     private static $singular_name = 'Discount';
 
-    private static $plural_name = "Discounts";
+    private static $plural_name = 'Discounts';
 
     private static $table_name = 'SilverShop_OrderDiscountModifier';
 
@@ -52,7 +52,7 @@ class OrderDiscountModifier extends OrderModifier
         }
 
         $order = $this->Order();
-        $order->extend("updateDiscountContext", $context);
+        $order->extend('updateDiscountContext', $context);
 
         $calculator = Calculator::create($order, $context);
         $amount = $calculator->calculate();
@@ -64,7 +64,7 @@ class OrderDiscountModifier extends OrderModifier
 
     public function getCode()
     {
-        $code = Controller::curr()->getRequest()->getSession()->get("cart.couponcode");
+        $code = Controller::curr()->getRequest()->getSession()->get('cart.couponcode');
 
         if (!$code && $this->Order()->exists()) {
             $discounts = $this->Order()->Discounts();

@@ -20,29 +20,29 @@ class ValueDiscountConstraintTest extends SapphireTest
         parent::setUp();
         ShopTest::setConfiguration();
 
-        $this->cart = $this->objFromFixture(Order::class, "cart");
-        $this->othercart = $this->objFromFixture(Order::class, "othercart");
-        $this->placedorder = $this->objFromFixture(Order::class, "unpaid");
+        $this->cart = $this->objFromFixture(Order::class, 'cart');
+        $this->othercart = $this->objFromFixture(Order::class, 'othercart');
+        $this->placedorder = $this->objFromFixture(Order::class, 'unpaid');
     }
 
     public function testMinOrderValue()
     {
         $coupon = OrderCoupon::create(
             [
-            "Title" => "Orders 200 and more",
-            "Code" => "200PLUS",
-            "Type" => "Amount",
-            "Amount" => 35,
-            "ForItems" => 0,
-            "ForCart" => 1,
-            "MinOrderValue" => 200
+            'Title' => 'Orders 200 and more',
+            'Code' => '200PLUS',
+            'Type' => 'Amount',
+            'Amount' => 35,
+            'ForItems' => 0,
+            'ForCart' => 1,
+            'MinOrderValue' => 200
             ]
         );
         $coupon->write();
-        $context = ["CouponCode" => $coupon->Code];
+        $context = ['CouponCode' => $coupon->Code];
         $this->assertFalse($coupon->validateOrder($this->cart, $context), "$8 order isn't enough");
-        $this->assertTrue($coupon->validateOrder($this->othercart, $context), "$200 is enough");
-        $this->assertTrue($coupon->validateOrder($this->placedorder, $context), "$500 order is enough");
+        $this->assertTrue($coupon->validateOrder($this->othercart, $context), '$200 is enough');
+        $this->assertTrue($coupon->validateOrder($this->placedorder, $context), '$500 order is enough');
 
         $calculator = new Calculator($this->cart, $context);
         $this->assertEquals(0, $calculator->calculate());

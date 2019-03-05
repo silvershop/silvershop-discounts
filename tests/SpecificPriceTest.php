@@ -24,7 +24,7 @@ class SpecificPriceTest extends SapphireTest
 
     public function testProductPrice()
     {
-        $product = $this->objFromFixture(Product::class, "raspberrypi");
+        $product = $this->objFromFixture(Product::class, 'raspberrypi');
         $this->assertEquals(45, $product->sellingPrice());
         $this->assertTrue($product->IsReduced());
         $this->assertEquals(5, $product->getTotalReduction());
@@ -32,7 +32,7 @@ class SpecificPriceTest extends SapphireTest
 
     public function testProductVariationPrice()
     {
-        $variation = $this->objFromFixture(Variation::class, "robot_30gb");
+        $variation = $this->objFromFixture(Variation::class, 'robot_30gb');
         $this->assertEquals(90, $variation->sellingPrice());
         $this->assertTrue($variation->IsReduced());
         $this->assertEquals(10, $variation->getTotalReduction());
@@ -40,11 +40,11 @@ class SpecificPriceTest extends SapphireTest
 
     public function testProductPricePercentage()
     {
-        $discount = $this->objFromFixture(SpecificPrice::class, "raspberrypi_dateconstrained");
+        $discount = $this->objFromFixture(SpecificPrice::class, 'raspberrypi_dateconstrained');
         $discount->DiscountPercent = 0.5;
         $discount->Price = 0;
         $discount->write();
-        $product = $this->objFromFixture(Product::class, "raspberrypi");
+        $product = $this->objFromFixture(Product::class, 'raspberrypi');
         $this->assertEquals(25, $product->sellingPrice());
         $this->assertTrue($product->IsReduced());
         $this->assertEquals(25, $product->getTotalReduction());
@@ -52,11 +52,11 @@ class SpecificPriceTest extends SapphireTest
 
     public function testProductVariationPricePercentage()
     {
-        $discount = $this->objFromFixture(SpecificPrice::class, "robot_30gb_specific");
+        $discount = $this->objFromFixture(SpecificPrice::class, 'robot_30gb_specific');
         $discount->DiscountPercent = 0.5;
         $discount->Price = 0;
         $discount->write();
-        $variation = $this->objFromFixture(Variation::class, "robot_30gb");
+        $variation = $this->objFromFixture(Variation::class, 'robot_30gb');
         $this->assertEquals(50, $variation->sellingPrice());
         $this->assertTrue($variation->IsReduced());
         $this->assertEquals(50, $variation->getTotalReduction());

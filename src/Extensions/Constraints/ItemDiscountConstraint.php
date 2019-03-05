@@ -19,6 +19,9 @@ abstract class ItemDiscountConstraint extends DiscountConstraint
      * Checks that an item can be discounted for configured constraints.
      *
      * If any constraint check fails, the entire function returns false;
+     * @param OrderItem $item
+     * @param Discount $discount
+     * @return bool
      */
     public static function match(OrderItem $item, Discount $discount)
     {

@@ -35,7 +35,7 @@
     "autoload": {
         "psr-4": {
             "SilverShop\\Discounts\\": "src/",
-            "SilverShop\\Discounts\\Tests\\": "tests/unit/"
+            "SilverShop\\Discounts\\Tests\\": "tests/"
         }
     }
 }

@@ -18,22 +18,19 @@ class GiftVoucherFormValidator extends RequiredFields
 
                 if ($controller->MinimumAmount > 0 && $giftvalue < $controller->MinimumAmount) {
                     $this->validationError(
-                        "UnitPrice",
+                        'UnitPrice',
                         _t(
                             'GiftVoucherProduct.MinimumAmountError',
                             'Gift value must be at least {MinimumAmount}',
                             ['MinimumAmount' => $controller->MinimumAmount]
                         )
                     );
-
                     return false;
                 }
                 if ($giftvalue <= 0) {
                     $this->validationError(
-                        "UnitPrice",
-                        "Gift value must be greater than 0"
-                    );
-
+                        'UnitPrice',
+                        'Gift value must be greater than 0');
                     return false;
                 }
             }

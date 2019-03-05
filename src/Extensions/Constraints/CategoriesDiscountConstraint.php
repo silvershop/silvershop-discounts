@@ -14,17 +14,17 @@ use SilverShop\Page\ProductCategory;
 class CategoriesDiscountConstraint extends ItemDiscountConstraint
 {
     private static $many_many = [
-        "Categories" => ProductCategory::class
+        'Categories' => ProductCategory::class
     ];
 
     public function updateCMSFields(FieldList $fields)
     {
         if ($this->owner->isInDB()) {
             $fields->addFieldToTab(
-                "Root.Constraints.ConstraintsTabs.Product",
+                'Root.Constraints.ConstraintsTabs.Product',
                 GridField::create(
-                    "Categories",
-                    _t(__CLASS__.'.PRODUCTCATEGORIES', "Product categories"),
+                    'Categories',
+                    _t(__CLASS__.'.PRODUCTCATEGORIES', 'Product categories'),
                     $this->owner->Categories(),
                     GridFieldConfig_RelationEditor::create()
                         ->removeComponentsByType(GridFieldAddNewButton::class)
@@ -45,7 +45,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         $incart = $this->itemsInCart($discount);
 
         if (!$incart) {
-            $this->error(_t(__CLASS__.'.CATEGORIESNOTINCART', "The required products (categories) are not in the cart."));
+            $this->error(_t(__CLASS__.'.CATEGORIESNOTINCART', 'The required products (categories) are not in the cart.'));
         }
 
         return $incart;
@@ -59,7 +59,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         }
         //get category ids from buyable
         $buyable = $item->Buyable();
-        if (!method_exists($buyable, "getCategoryIDs")) {
+        if (!method_exists($buyable, 'getCategoryIDs')) {
             return false;
         }
         $ids = array_intersect(

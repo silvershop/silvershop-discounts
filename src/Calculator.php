@@ -36,7 +36,6 @@ class Calculator
     /**
      * Work out the discount for a given order.
      *
-     * @param  Order $order
      * @return double - discount amount
      */
     public function calculate()
@@ -56,7 +55,7 @@ class Calculator
 
         foreach ($this->getItemDiscounts() as $discount) {
             // item discounts will update info items
-            $action = $discount->Type === "Percent" ?
+            $action = $discount->Type === 'Percent' ?
                 Injector::inst()->createWithArgs(ItemPercentDiscount::class, [$infoitems, $discount]) :
                 Injector::inst()->createWithArgs(ItemFixedDiscount::class, [$infoitems, $discount]);
 
@@ -87,7 +86,7 @@ class Calculator
                 ['DiscountAmount' => $amount]
             );
 
-            $this->logDiscountAmount("Item", $amount, $bestadjustment->getAdjuster());
+            $this->logDiscountAmount('Item', $amount, $bestadjustment->getAdjuster());
         }
 
         // work out all cart-level discounts, and load into cartpriceinfo
@@ -122,7 +121,7 @@ class Calculator
                 ['DiscountAmount' => $amount]
             );
 
-            $this->logDiscountAmount("Cart", $amount, $discount);
+            $this->logDiscountAmount('Cart', $amount, $discount);
         }
 
         if (class_exists('SilverShop\Shipping\ShippingFrameworkModifier') && $shipping = $this->order->getModifier('SilverShop\Shipping\ShippingFrameworkModifier')) {
@@ -148,7 +147,7 @@ class Calculator
                     ['DiscountAmount' => $amount]
                 );
 
-                $this->logDiscountAmount("Shipping", $amount, $discount);
+                $this->logDiscountAmount('Shipping', $amount, $discount);
             }
         }
 
@@ -168,7 +167,7 @@ class Calculator
 
         foreach ($this->order->Items() as $item) {
             if (ItemDiscountConstraint::match($item, $discount)) {
-                $amount += method_exists($item, "DiscountableAmount") ?
+                $amount += method_exists($item, 'DiscountableAmount') ?
                             $item->DiscountableAmount() :
                             $item->Total();
             }
@@ -180,12 +179,14 @@ class Calculator
     /**
      * Work out how much the given discount has already
      * been used.
+     * @param $discount Discount
+     * @return Discount[]
      */
     protected function discountSubtotal($discount)
     {
         return $this->modifier->Discounts()
-            ->filter("ID", $discount->ID)
-            ->sum("DiscountAmount");
+            ->filter('ID', $discount->ID)
+            ->sum('DiscountAmount');
     }
 
     /**
@@ -209,17 +210,17 @@ class Calculator
 
     protected function getItemDiscounts()
     {
-        return $this->discounts->filter("ForItems", true);
+        return $this->discounts->filter('ForItems', true);
     }
 
     protected function getCartDiscounts()
     {
-        return $this->discounts->filter("ForCart", true);
+        return $this->discounts->filter('ForCart', true);
     }
 
     protected function getShippingDiscounts()
     {
-        return $this->discounts->filter("ForShipping", true);
+        return $this->discounts->filter('ForShipping', true);
     }
 
     /**
@@ -232,9 +233,9 @@ class Calculator
     public function logDiscountAmount($level, $amount, Discount $discount)
     {
         $this->log[] = [
-            "Level" => $level,
-            "Amount" => $amount,
-            "Discount" => $discount->Title
+            'Level' => $level,
+            'Amount' => $amount,
+            'Discount' => $discount->Title
         ];
     }
 

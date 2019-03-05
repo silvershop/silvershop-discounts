@@ -2,9 +2,9 @@
 
 namespace SilverShop\Discounts\Tests;
 
+use SilverShop\Model\Order;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTest;
-use SilverShop\Model\Order;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
@@ -20,30 +20,31 @@ class GroupDiscountConstraintTest extends SapphireTest
     {
         parent::setUp();
         ShopTest::setConfiguration();
-        $this->cart = $this->objFromFixture(Order::class, "cart");
-        $this->othercart = $this->objFromFixture(Order::class, "othercart");
+        $this->cart = $this->objFromFixture(Order::class, 'cart');
+        $this->othercart = $this->objFromFixture(Order::class, 'othercart');
     }
 
     public function testMemberGroup()
     {
         $coupon = OrderCoupon::create(
             [
-            "Title" => "Special Members Coupon",
-            "Code" => "GROUPED",
-            "Type" => "Percent",
-            "Percent" => 0.9,
-            "Active" => 1,
-            "GroupID" => $this->objFromFixture(Group::class, "resellers")->ID
+            'Title' => 'Special Members Coupon',
+            'Code' => 'GROUPED',
+            'Type' => 'Percent',
+            'Percent' => 0.9,
+            'Active' => 1,
+            'GroupID' => $this->objFromFixture(Group::class, 'resellers')->ID
             ]
         );
         $coupon->write();
 
-        $context = ["CouponCode" => $coupon->Code];
-        $this->assertFalse($coupon->validateOrder($this->cart, $context), "Invalid for memberless order");
+        $context = ['CouponCode' => $coupon->Code];
+        $this->assertFalse($coupon->validateOrder($this->cart, $context), 'Invalid for memberless order');
         $context = [
-            "CouponCode" => $coupon->Code,
-            "Member" => $this->objFromFixture(Member::class, "bobjones")
+            'CouponCode' => $coupon->Code,
+            'Member' => $this->objFromFixture(Member::class, 'bobjones')
         ];
-        $this->assertTrue($coupon->validateOrder($this->othercart, $context), "Valid because member is in resellers group");
+        $this->assertTrue($coupon->validateOrder($this->othercart, $context),
+            'Valid because member is in resellers group');
     }
 }

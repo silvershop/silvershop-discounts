@@ -6,11 +6,11 @@ namespace SilverShop\Discounts\Model;
 class PartialUseDiscount extends Discount
 {
     private static $has_one = [
-        "Parent" => PartialUseDiscount::class
+        'Parent' => PartialUseDiscount::class
     ];
 
     private static $belongs_to = [
-        "Child" => PartialUseDiscount::class
+        'Child' => PartialUseDiscount::class
     ];
 
     private static $defaults = [
@@ -21,9 +21,9 @@ class PartialUseDiscount extends Discount
         'UseLimit' => 1
     ];
 
-    private static $singular_name = "Partial Use Discount";
+    private static $singular_name = 'Partial Use Discount';
 
-    private static $plural_name = "Partial Use Discounts";
+    private static $plural_name = 'Partial Use Discounts';
 
     private static $table_name = 'SilverShop_PartialUseDiscount';
 
@@ -34,15 +34,15 @@ class PartialUseDiscount extends Discount
         ]);
 
         $fields->removeByName([
-            "ForCart",
-            "ForItems",
-            "ForShipping",
-            "For"
+            'ForCart',
+            'ForItems',
+            'ForShipping',
+            'For'
         ]);
 
         $limitfield = $fields->dataFieldByName('UseLimit');
 
-        $fields->replaceField("UseLimit", $limitfield->performReadonlyTransformation());
+        $fields->replaceField('UseLimit', $limitfield->performReadonlyTransformation());
         return $fields;
     }
 
@@ -51,6 +51,7 @@ class PartialUseDiscount extends Discount
      *
      * @param  float $used the amount of this discount that was used up
      * @return PartialUseDiscount  new 'remainder' discount
+     * @throws \SilverStripe\ORM\ValidationException
      */
     public function createRemainder($used)
     {
@@ -78,7 +79,7 @@ class PartialUseDiscount extends Discount
             $remainder->Amount = $amount - $used;
             $remainder->ParentID = $this->ID;
             //unset old code
-            $remainder->Code = "";
+            $remainder->Code = '';
             $remainder->write();
         }
 

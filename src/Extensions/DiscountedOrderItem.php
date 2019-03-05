@@ -28,7 +28,7 @@ class DiscountedOrderItem extends DataExtension
      */
     public function getDiscountedProductID()
     {
-        $productKey = OrderItem::config()->buyable_relationship . "ID";
+        $productKey = OrderItem::config()->buyable_relationship . 'ID';
 
         return $this->owner->{$productKey};
     }

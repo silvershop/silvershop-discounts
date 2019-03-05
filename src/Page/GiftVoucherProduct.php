@@ -14,13 +14,13 @@ use SilverStripe\Control\Email\Email;
 class GiftVoucherProduct extends Product
 {
     private static $db = [
-        "VariableAmount" => "Boolean",
-        "MinimumAmount" => "Currency"
+        'VariableAmount' => 'Boolean',
+        'MinimumAmount' => 'Currency'
     ];
 
-    private static $singular_name = "Gift Voucher";
+    private static $singular_name = 'Gift Voucher';
 
-    private static $plural_name = "Gift Vouchers";
+    private static $plural_name = 'Gift Vouchers';
 
     private static $order_item = GiftVoucherProduct::class;
 
@@ -30,29 +30,29 @@ class GiftVoucherProduct extends Product
     {
         $fields = parent::getCMSFields();
         $fields->addFieldToTab(
-            "Root.Pricing",
+            'Root.Pricing',
             new OptionsetField(
-                "VariableAmount",
-                "Price",
+                'VariableAmount',
+                'Price',
                 [
-                0 => "Fixed",
-                1 => "Allow customer to choose"
+                0 => 'Fixed',
+                1 => 'Allow customer to choose'
                 ]
             ),
-            "BasePrice"
+            'BasePrice'
         );
 
         $fields->addFieldsToTab(
-            "Root.Pricing",
+            'Root.Pricing',
             [
             //text field, because of CMS js validation issue
-            $minimumamount = new TextField("MinimumAmount", "Minimum Amount")
+            $minimumamount = new TextField('MinimumAmount', 'Minimum Amount')
             ]
         );
 
-        $fields->removeByName("CostPrice");
-        $fields->removeByName("Variations");
-        $fields->removeByName("Model");
+        $fields->removeByName('CostPrice');
+        $fields->removeByName('Variations');
+        $fields->removeByName('Model');
         return $fields;
     }
 

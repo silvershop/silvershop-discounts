@@ -20,26 +20,26 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
     ];
 
     private static $many_many = [
-        "Products" => Product::class
+        'Products' => Product::class
     ];
 
     public function updateCMSFields(FieldList $fields)
     {
         if ($this->owner->isInDB()) {
             $fields->addFieldsToTab(
-                "Root.Constraints.ConstraintsTabs.Product",
+                'Root.Constraints.ConstraintsTabs.Product',
                 [
                     GridField::create(
-                        "Products",
-                        _t(__CLASS__.'SPECIFICPRODUCTS', "Specific products"),
+                        'Products',
+                        _t(__CLASS__.'SPECIFICPRODUCTS', 'Specific products'),
                         $this->owner->Products(),
                         GridFieldConfig_RelationEditor::create()
                             ->removeComponentsByType(GridFieldAddNewButton::class)
                             ->removeComponentsByType(GridFieldEditButton::class)
                     ),
                     CheckboxField::create(
-                        "ExactProducts",
-                        _t(__CLASS__.'.ALLPRODUCTSINCART', "All the selected products must be present in cart.")
+                        'ExactProducts',
+                        _t(__CLASS__.'.ALLPRODUCTSINCART', 'All the selected products must be present in cart.')
                     ),
                 ]
             );
@@ -86,7 +86,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
 
         if (!$incart) {
             $this->error(
-                _t('ProductsDiscountConstraint.MISSINGPRODUCT', "The required products are not in the cart.")
+                _t('ProductsDiscountConstraint.MISSINGPRODUCT', 'The required products are not in the cart.')
             );
         }
 
@@ -108,7 +108,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
             }
 
             $this->error(
-                _t('ProductsDiscountConstraint.MISSINGPRODUCT', "The required products are not in the cart.")
+                _t('ProductsDiscountConstraint.MISSINGPRODUCT', 'The required products are not in the cart.')
             );
 
             return false;

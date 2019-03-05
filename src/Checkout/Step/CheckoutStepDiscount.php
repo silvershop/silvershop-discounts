@@ -40,7 +40,7 @@ class CheckoutStepDiscount extends CheckoutStep
         $form = new CheckoutForm($this->owner, 'CouponForm', $this->checkoutconfig());
         $form->setActions(
             new FieldList(
-                FormAction::create("setcoupon", _t('SilverShop\Checkout\Step\CheckoutStep.Continue', 'Continue'))
+                FormAction::create('setcoupon', _t('SilverShop\Checkout\Step\CheckoutStep.Continue', 'Continue'))
             )
         );
         $this->owner->extend('updateCouponForm', $form);

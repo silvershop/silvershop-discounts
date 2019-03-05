@@ -19,10 +19,10 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         //multiselect subtypes of orderitem
         if ($this->owner->isInDB() && $this->owner->ForItems) {
             $fields->addFieldToTab(
-                "Root.Constraints.ConstraintsTabs.Product",
+                'Root.Constraints.ConstraintsTabs.Product',
                 ListBoxField::create(
-                    "ProductTypes",
-                    _t(__CLASS__.'.PRODUCTTYPES', "Product types"),
+                    'ProductTypes',
+                    _t(__CLASS__.'.PRODUCTTYPES', 'Product types'),
                     $this->getTypes(false, $this->owner)
                 )->setMultiple(true)
             );
@@ -38,7 +38,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         }
         $incart = $this->itemsInCart($discount);
         if (!$incart) {
-            $this->error(_t(__CLASS__.'.PRODUCTTYPESNOTINCART', "The required product type(s), are not in the cart."));
+            $this->error(_t(__CLASS__.'.PRODUCTTYPESNOTINCART', 'The required product type(s), are not in the cart.'));
         }
 
         return $incart;
@@ -46,6 +46,9 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 
     /**
      * This function is used by ItemDiscountAction, and the check function above.
+     * @param OrderItem $item
+     * @param Discount $discount
+     * @return bool
      */
     public function itemMatchesCriteria(OrderItem $item, Discount $discount)
     {
@@ -59,7 +62,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 
     protected function getTypes($selected, Discount $discount)
     {
-        $types = $selected ? array_filter(explode(",", $discount->ProductTypes)) : $this->BuyableClasses();
+        $types = $selected ? array_filter(explode(',', $discount->ProductTypes)) : $this->BuyableClasses();
         if ($types && !empty($types)) {
             $types = array_combine($types, $types);
             foreach ($types as $type => $name) {
@@ -71,7 +74,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 
     protected function BuyableClasses()
     {
-        $implementors = ClassInfo::implementorsOf("Buyable");
+        $implementors = ClassInfo::implementorsOf('Buyable');
         $classes = [];
         foreach ($implementors as $key => $class) {
             $classes = array_merge($classes, array_values(ClassInfo::subclassesFor($class)));

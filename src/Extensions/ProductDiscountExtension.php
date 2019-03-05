@@ -17,7 +17,7 @@ class ProductDiscountExtension extends DataExtension
      *
      * @return float
      */
-    public function getTotalReduction($original = "BasePrice")
+    public function getTotalReduction($original = 'BasePrice')
     {
         $reduction = $this->owner->{$original} - $this->owner->sellingPrice();
         //keep it above 0;
