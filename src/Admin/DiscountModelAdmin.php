@@ -73,23 +73,20 @@ class DiscountModelAdmin extends ModelAdmin
      */
     public function getList()
     {
-        $context = $this->getSearchContext();
         $params = $this->request->requestVar('q');
-        $list = $context->getResults($params);
+        $list = parent::getList();
 
         if (isset($params['HasBeenUsed'])) {
             $list = $list
-                ->leftJoin('SilverShop_OrderItem_Discounts',
-                    '"SilverShop_OrderItem_Discounts"."DiscountID" = "Discount"."ID"')
-                ->leftJoin('SilverShop_OrderDiscountModifier_Discounts',
-                    '"SilverShop_OrderDiscountModifier_Discounts"."DiscountID" = "Discount"."ID"')
+                ->leftJoin("SilverShop_OrderItem_Discounts", "\"SilverShop_OrderItem_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
+                ->leftJoin("SilverShop_OrderDiscountModifier_Discounts", "\"SilverShop_OrderDiscountModifier_Discounts\".\"DiscountID\" = \"Discount\".\"ID\"")
                 ->innerJoin(
-                    'OrderAttribute',
+                    "OrderAttribute",
                     implode(
-                        ' OR ',
+                        " OR ",
                         [
-                        '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."Product_OrderItemID"',
-                        '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID"'
+                        "\"SilverShop_OrderAttribute\".\"ID\" = \"SilverShop_OrderItem_Discounts\".\"Product_OrderItemID\"",
+                        "\"SilverShop_OrderAttribute\".\"ID\" = \"SilverShop_OrderDiscountModifier_Discounts\".\"SilverShop_OrderDiscountModifierID\""
                         ]
                     )
                 );
@@ -97,18 +94,16 @@ class DiscountModelAdmin extends ModelAdmin
 
         if (isset($params['Products'])) {
             $list = $list
-                ->innerJoin('Discount_Products', 'Discount_Products.DiscountID = Discount.ID')
-                ->filter('Discount_Products.ProductID', $params['Products']);
+                ->innerJoin("Discount_Products", "Discount_Products.DiscountID = Discount.ID")
+                ->filter("Discount_Products.ProductID", $params['Products']);
         }
 
         if (isset($params['Categories'])) {
             $list = $list
-                ->innerJoin('Discount_Categories', 'Discount_Categories.DiscountID = Discount.ID')
-                ->filter('Discount_Categories.ProductCategoryID', $params['Categories']);
+                ->innerJoin("Discount_Categories", "Discount_Categories.DiscountID = Discount.ID")
+                ->filter("Discount_Categories.ProductCategoryID", $params['Categories']);
         }
-
-        $this->extend('updateList', $list);
-
+        
         return $list;
     }
 
