@@ -58,7 +58,7 @@ abstract class DiscountConstraint extends DataExtension{
 		$constraints = Config::inst()->forClass("Discount")->constraints;
 
 		foreach($constraints as $constraint){
-			Object::add_extension("Discount", $constraint);
+			SS_Object::add_extension("Discount", $constraint);
 		}
 	}
 
