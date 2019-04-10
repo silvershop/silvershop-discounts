@@ -42,7 +42,7 @@ class OrderDiscountModifier extends OrderModifier {
         $calculator = new Shop\Discount\Calculator($order, $context);
         $amount = $calculator->calculate();
 
-        $this->setField('Amount', $amount);
+        $this->dbObject('Amount')->setValue($amount);
 
         return $amount;
     }
@@ -71,10 +71,6 @@ class OrderDiscountModifier extends OrderModifier {
                 ->filter("Code:not", "")
                 ->map('ID','Title')
         );
-    }
-
-    public function getAmount() {
-        return $this->getDiscount();
     }
 
     public function ShowInTable() {
