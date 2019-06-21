@@ -36,7 +36,8 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint {
             Versioned::reading_stage('Stage');
             $products = $discount->Products();
 
-            if(!$products->exists()) {
+            if (!$products->exists()) {
+                Versioned::reading_stage($curr);
                 return true;
             }
 
