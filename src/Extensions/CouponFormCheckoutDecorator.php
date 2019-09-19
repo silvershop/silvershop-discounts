@@ -1,6 +1,6 @@
 <?php
 
-namespace SilverShop\Discounts\Checkout\Extensions;
+namespace SilverShop\Discounts\Extensions;
 
 use SilverStripe\Core\Extension;
 use SilverShop\Cart\ShoppingCart;
