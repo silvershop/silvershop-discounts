@@ -87,14 +87,14 @@ class GiftVoucherOrderItem extends OrderItem
      */
     public function sendVoucher(OrderCoupon $coupon)
     {
-        $from = Email::getAdminEmail();
+        $from = Email::config()->admin_email;
         $to = $this->Order()->getLatestEmail();
         $subject = _t('Order.GIFTVOUCHERSUBJECT', 'Gift voucher');
         $email = Email::create();
         $email->setFrom($from);
         $email->setTo($to);
         $email->setSubject($subject);
-        $email->setTemplate('GiftVoucherEmail');
+        $email->setHTMLTemplate('GiftVoucherEmail');
         $email->setData(
             [
             'Coupon' => $coupon
