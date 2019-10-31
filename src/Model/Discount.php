@@ -296,13 +296,11 @@ class Discount extends DataObject implements PermissionProvider
         if (self::config()->filter_by_product) {
             $fields->push(
                 ListboxField::create('Products', 'Products', Product::get()->map()->toArray())
-                    ->setMultiple(true)
             );
         }
         if (self::config()->filter_by_category) {
             $fields->push(
                 ListboxField::create('Categories', 'Categories', ProductCategory::get()->map()->toArray())
-                    ->setMultiple(true)
             );
         }
         if ($field = $fields->fieldByName('Code')) {
