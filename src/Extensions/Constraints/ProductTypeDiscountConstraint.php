@@ -24,7 +24,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
                     'ProductTypes',
                     _t(__CLASS__.'.PRODUCTTYPES', 'Product types'),
                     $this->getTypes(false, $this->owner)
-                )->setMultiple(true)
+                )
             );
         }
     }
