@@ -63,7 +63,7 @@ class Discount extends DataObject implements PermissionProvider
     ];
 
     private static $field_labels = [
-        'DiscountNice' => Discount::class
+        'DiscountNice' => 'Discount'
     ];
 
     private static $summary_fields = [
