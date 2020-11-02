@@ -44,8 +44,8 @@ class DiscountReport extends ShopPeriodReport
         $query->addSelect('"SilverShop_Discount".*')
             ->selectField('"Title"', 'Name')
             ->selectField('COUNT(DISTINCT "SilverShop_Order"."ID")', 'Entered')
-            ->addLeftJoin('SilverShop_OrderItem_Discounts',
-                '"SilverShop_OrderItem_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"')
+            ->addLeftJoin('SilverShop_Product_OrderItem_Discounts',
+                '"SilverShop_Product_OrderItem_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"')
             ->addLeftJoin('SilverShop_OrderDiscountModifier_Discounts',
                 '"SilverShop_OrderDiscountModifier_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"')
             ->addInnerJoin(
@@ -53,7 +53,7 @@ class DiscountReport extends ShopPeriodReport
                 (implode(
                     ' OR ',
                     [
-                        '"SilverShop_OrderItem_Discounts"."SilverShop_OrderItemID" = "SilverShop_OrderAttribute"."ID"',
+                        '"SilverShop_Product_OrderItem_Discounts"."SilverShop_Product_OrderItemID" = "SilverShop_OrderAttribute"."ID"',
                         '"SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID" = "SilverShop_OrderAttribute"."ID"'
                     ]
                 ))
