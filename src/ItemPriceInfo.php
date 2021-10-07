@@ -18,7 +18,7 @@ class ItemPriceInfo extends PriceInfo
         $this->item = $item;
         $this->quantity = $item->Quantity;
 
-        $originalprice = method_exists($item, 'DiscountableAmount') ?
+        $originalprice = $item->hasMethod('DiscountableAmount') ?
                             $item->DiscountableAmount() :
                             $item->UnitPrice();
 
