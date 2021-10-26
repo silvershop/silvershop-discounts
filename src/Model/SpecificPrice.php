@@ -50,24 +50,31 @@ class SpecificPrice extends DataObject
 
     private static $table_name = 'SilverShop_SpecificPrice';
 
+    public function canView($member = null)
+    {
+        return
+            parent::canView($member) ||
+            Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+    }
+
     public function canEdit($member = null)
     {
         return
-            Permission::check('ADMIN') ||
+            parent::canEdit($member) ||
             Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
     public function canCreate($member = null, $context = [])
     {
         return
-            Permission::check('ADMIN') ||
+            parent::canCreate($member, $context) ||
             Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
     public function canDelete($member = null)
     {
         return
-            Permission::check('ADMIN') ||
+            parent::canDelete($member) ||
             Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
