@@ -52,20 +52,24 @@ class DatetimeDiscountConstraint extends DiscountConstraint
 
     public function check(Discount $discount)
     {
-        $startDate = strtotime($discount->StartDate);
-        $endDate = strtotime($discount->EndDate);
 
         // Adjust the time to the when the order was placed or the current time non completed orders
         $now = $this->order->Placed ? strtotime($this->order->Created) : time();
 
-        if ($endDate && $endDate < $now) {
-            $this->error(_t('OrderCoupon.EXPIRED', 'This coupon has already expired.'));
-            return false;
+        if ($discount->EndDate) {
+            $endDate = strtotime($discount->EndDate);
+            if ($endDate && $endDate < $now) {
+                $this->error(_t('OrderCoupon.EXPIRED', 'This coupon has already expired.'));
+                return false;
+            }
         }
 
-        if ($startDate && $startDate > $now) {
-            $this->error(_t('OrderCoupon.TOOEARLY', 'It is too early to use this coupon.'));
-            return false;
+        if ($discount->StartDate) {
+            $startDate = strtotime($discount->StartDate);
+            if ($startDate && $startDate > $now) {
+                $this->error(_t('OrderCoupon.TOOEARLY', 'It is too early to use this coupon.'));
+                return false;
+            }
         }
 
         return true;
