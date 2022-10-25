@@ -52,8 +52,18 @@ class DatetimeDiscountConstraint extends DiscountConstraint
 
     public function check(Discount $discount)
     {
-        $startDate = strtotime($discount->StartDate);
-        $endDate = strtotime($discount->EndDate);
+        $startDate = null;
+        $endDate = null;
+
+        if($discount->StartDate != null)
+        {
+            $startDate = strtotime($discount->StartDate);
+        }
+        
+        if($discount->EndDate != null)
+        {
+            $endDate = strtotime($discount->EndDate);
+        }
 
         // Adjust the time to the when the order was placed or the current time non completed orders
         $now = $this->order->Placed ? strtotime($this->order->Created) : time();
