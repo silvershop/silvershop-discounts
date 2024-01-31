@@ -168,7 +168,7 @@ class Discount extends DataObject implements PermissionProvider
                     TextField::create('Title'),
                     CheckboxField::create('Active', 'Active')
                         ->setDescription('Enable/disable all use of this discount.'),
-                    HeaderField::create('ActionTitle', 'Action', 3),
+                    $actionfield = HeaderField::create('ActionTitle', 'Action', 3),
                     $typefield = SelectionGroup::create(
                         'Type',
                         [
@@ -249,14 +249,14 @@ class Discount extends DataObject implements PermissionProvider
             $valuefield = $this->Type === 'Percent' ? $percentfield : $amountfield;
 
             $fields->makeFieldReadonly('Type');
-            $fields->insertAfter($valuefield, 'ActionTitle');
+            $fields->insertAfter($valuefield, $actionfield);
             $fields->replaceField(
                 $this->Type,
                 $valuefield->performReadonlyTransformation()
             );
 
             if ($this->Type === 'Percent') {
-                $fields->insertAfter($maxamountfield, 'Percent');
+                $fields->insertAfter($maxamountfield, $percentfield);
             }
         }
 
@@ -515,10 +515,14 @@ class Discount extends DataObject implements PermissionProvider
     {
         $orders =  Order::get()
             ->innerJoin('SilverShop_OrderAttribute', '"SilverShop_OrderAttribute"."OrderID" = "SilverShop_Order"."ID"')
-            ->leftJoin('SilverShop_OrderItem_Discounts',
-                '"SilverShop_OrderItem_Discounts"."SilverShop_OrderItemID" = "SilverShop_OrderAttribute"."ID"')
-            ->leftJoin('SilverShop_OrderDiscountModifier_Discounts',
-                '"SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID" = "SilverShop_OrderAttribute"."ID"')
+            ->leftJoin(
+                'SilverShop_OrderItem_Discounts',
+                '"SilverShop_OrderItem_Discounts"."SilverShop_OrderItemID" = "SilverShop_OrderAttribute"."ID"'
+            )
+            ->leftJoin(
+                'SilverShop_OrderDiscountModifier_Discounts',
+                '"SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID" = "SilverShop_OrderAttribute"."ID"'
+            )
             ->where(
                 "SilverShop_OrderItem_Discounts.SilverShop_DiscountID = $this->ID OR SilverShop_OrderDiscountModifier_Discounts.SilverShop_DiscountID = $this->ID
             "
@@ -550,13 +554,17 @@ class Discount extends DataObject implements PermissionProvider
     public function getSavingsTotal()
     {
         $itemsavings = $this->OrderItems()
-            ->innerJoin('SilverShop_Order',
-                            '"SilverShop_OrderAttribute"."OrderID" = "SilverShop_Order"."ID"')
+            ->innerJoin(
+                'SilverShop_Order',
+                '"SilverShop_OrderAttribute"."OrderID" = "SilverShop_Order"."ID"'
+            )
             ->where('"SilverShop_Order"."Paid" IS NOT NULL')
             ->sum('DiscountAmount');
         $modifiersavings = $this->DiscountModifiers()
-            ->innerJoin('SilverShop_Order',
-                            '"SilverShop_OrderAttribute"."OrderID" = "SilverShop_Order"."ID"')
+            ->innerJoin(
+                'SilverShop_Order',
+                '"SilverShop_OrderAttribute"."OrderID" = "SilverShop_Order"."ID"'
+            )
             ->where('"SilverShop_Order"."Paid" IS NOT NULL')
             ->sum('DiscountAmount');
 
@@ -572,15 +580,19 @@ class Discount extends DataObject implements PermissionProvider
     public function getSavingsForOrder(Order $order)
     {
         $itemsavings = OrderAttribute::get()
-            ->innerJoin('SilverShop_OrderItem_Discounts',
-                '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."SilverShop_OrderItemID"')
+            ->innerJoin(
+                'SilverShop_OrderItem_Discounts',
+                '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."SilverShop_OrderItemID"'
+            )
             ->filter('SilverShop_OrderItem_Discounts.DiscountID', $this->ID)
             ->filter('OrderAttribute.OrderID', $order->ID)
             ->sum('DiscountAmount');
 
         $modifiersavings = OrderAttribute::get()
-            ->innerJoin('SilverShop_OrderDiscountModifier_Discounts',
-                '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID"')
+            ->innerJoin(
+                'SilverShop_OrderDiscountModifier_Discounts',
+                '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID"'
+            )
             ->filter('SilverShop_OrderDiscountModifier_Discounts.DiscountID', $this->ID)
             ->filter('OrderAttribute.OrderID', $order->ID)
             ->sum('DiscountAmount');

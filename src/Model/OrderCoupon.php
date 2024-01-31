@@ -131,8 +131,10 @@ class OrderCoupon extends Discount
      */
     public function setCode($code)
     {
-        $code = trim(preg_replace('/[^0-9a-zA-Z]+/', '', $code));
-        $this->setField('Code', strtoupper($code));
+        if ($code) {
+            $code = trim(preg_replace('/[^0-9a-zA-Z]+/', '', $code));
+            $this->setField('Code', strtoupper($code));
+        }
 
         return $this;
     }
