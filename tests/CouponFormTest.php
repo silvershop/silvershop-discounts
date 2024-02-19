@@ -19,7 +19,7 @@ class CouponFormTest extends FunctionalTest
         'Page.yml'
     ];
 
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

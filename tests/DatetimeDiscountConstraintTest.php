@@ -13,7 +13,7 @@ class DatetimeDiscountConstraintTest extends SapphireTest
         'shop.yml'
     ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

@@ -18,7 +18,7 @@ class CategoriesDiscountConstraintTest extends SapphireTest
         'vendor/silvershop/core/tests/php/Fixtures/Carts.yml'
     ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();

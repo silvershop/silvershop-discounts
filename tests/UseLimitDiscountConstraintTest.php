@@ -15,7 +15,7 @@ class UseLimitDiscountConstraintTest extends SapphireTest
         'Discounts.yml'
     ];
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();
