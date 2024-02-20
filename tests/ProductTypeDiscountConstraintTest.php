@@ -40,7 +40,7 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
         $this->mp3player->publishRecursive();
 
         $this->voucher = $this->objFromFixture(GiftVoucherProduct::class, '10fixed');
-        $this->voucher->publish('Stage', 'Live');
+        $this->voucher->copyVersionToStage('Stage', 'Live');
     }
 
     public function testProducts()

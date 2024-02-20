@@ -17,10 +17,10 @@ class GiftVoucherTest extends SapphireTest
         parent::setUp();
 
         $this->variable = $this->objFromFixture(GiftVoucherProduct::class, 'variable');
-        $this->variable->publish('Stage', 'Live');
+        $this->variable->copyVersionToStage('Stage', 'Live');
 
         $this->fixed10 = $this->objFromFixture(GiftVoucherProduct::class, '10fixed');
-        $this->fixed10->publish('Stage', 'Live');
+        $this->fixed10->copyVersionToStage('Stage', 'Live');
     }
 
     public function testCusomisableVoucher()

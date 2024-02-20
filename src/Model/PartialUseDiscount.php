@@ -92,7 +92,7 @@ class PartialUseDiscount extends Discount
         //prevent vital things from changing
         foreach (self::$defaults as $field => $value) {
             if ($this->isChanged($field)) {
-                $result->error("$field should not be changed for partial use discounts.");
+                $result->addError("$field should not be changed for partial use discounts.");
             }
         }
 
