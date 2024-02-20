@@ -22,7 +22,7 @@ class OrderCouponTest extends SapphireTest
         parent::setUp();
         ShopTest::setConfiguration();
 
-        Config::inst()->update(OrderCoupon::class, 'minimum_code_length', null);
+        Config::inst()->merge(OrderCoupon::class, 'minimum_code_length', null);
 
         $this->socks = $this->objFromFixture(Product::class, 'socks');
         $this->socks->publishRecursive();
