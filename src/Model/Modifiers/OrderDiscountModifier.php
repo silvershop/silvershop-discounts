@@ -103,6 +103,6 @@ class OrderDiscountModifier extends OrderModifier
 
     public function ShowInTable()
     {
-        return $this->Amount() > 0;
+        return $this->Amount > 0;
     }
 }
