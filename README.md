@@ -2,7 +2,7 @@
 
 [![Latest Stable Version](https://poser.pugx.org/silvershop/discounts/v/stable.png)](https://packagist.org/packages/silvershop/discounts)
 [![Latest Unstable Version](https://poser.pugx.org/silvershop/discounts/v/unstable.png)](https://packagist.org/packages/silvershop/discounts)
-[![Build Status](https://secure.travis-ci.org/silvershop/silvershop-discounts.png)](http://travis-ci.org/silvershop/silvershop-discounts)
+[![CI](https://github.com/silvershop/silvershop-discounts/actions/workflows/ci.yml/badge.svg)](https://github.com/silvershop/silvershop-discounts/actions/workflows/ci.yml)
 [![Code Coverage](https://scrutinizer-ci.com/g/silvershop/silvershop-discounts/badges/coverage.png?s=cae0140f6d9a99c35b20c23b8bbe88711d526246)](https://scrutinizer-ci.com/g/silvershop/silvershop-discounts/)
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/silvershop/silvershop-discounts/badges/quality-score.png?s=802731e23565b5a7051b5622a56fccb7b764662a)](https://scrutinizer-ci.com/g/silvershop/silvershop-discounts/)
 [![Total Downloads](https://poser.pugx.org/silvershop/discounts/downloads.png)](https://packagist.org/packages/silvershop/discounts)
@@ -33,7 +33,7 @@ Discounts can be globally enabled/disabled.
 	composer require silvershop/discounts dev-master
 ```
 
-If you are using the stepped checkout, add the `CheckoutStep_Discount` checkout 
+If you are using the stepped checkout, add the `CheckoutStep_Discount` checkout
 step:
 
 ```yaml
@@ -43,7 +43,7 @@ SilverShop\Page\CheckoutPage:
 ```
 
 If you would like to display the coupon form seperately to the checkout form,
-apply the following extension. This will make `CouponForm` available in the 
+apply the following extension. This will make `CouponForm` available in the
 checkout template:
 
 ```yaml
@@ -62,8 +62,8 @@ SilverShop\Model\Order:
 
 ## Specific Pricing
 
-Extend `Product` and/or `ProductVariation` with the `SpecificPricingExtension` 
-to introduce a pricing table for each product. This allows admins to set prices 
+Extend `Product` and/or `ProductVariation` with the `SpecificPricingExtension`
+to introduce a pricing table for each product. This allows admins to set prices
 according to things like, date, and membership group.
 
 ```yaml
