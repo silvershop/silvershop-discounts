@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts\Model;
 
+use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverShop\Model\Order;
 use SilverStripe\ORM\ArrayList;
@@ -36,10 +37,12 @@ use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverStripe\Core\Injector\Injector;
 use SilverShop\Discounts\Extensions\Constraints\DiscountConstraint;
 use SilverStripe\ORM\FieldType\DBCurrency;
+use SilverStripe\ORM\Search\SearchContext;
+use SilverStripe\Security\Member;
 
 class Discount extends DataObject implements PermissionProvider
 {
-    private static $db = [
+    private static array $db = [
         'Title' => 'Varchar(255)', //store the promotion name, or whatever you like
         'Type' => "Enum('Percent,Amount','Percent')",
         'Amount' => 'Currency',
@@ -51,56 +54,54 @@ class Discount extends DataObject implements PermissionProvider
         'MaxAmount' => 'Currency'
     ];
 
-    private static $belongs_many_many = [
+    private static array $belongs_many_many = [
         'OrderItems' => OrderItem::class,
         'DiscountModifiers' => OrderDiscountModifier::class
     ];
 
-    private static $defaults = [
+    private static array $defaults = [
         'Type' => 'Percent',
         'Active' => true,
         'ForItems' => 1
     ];
 
-    private static $field_labels = [
+    private static array $field_labels = [
         'DiscountNice' => 'Discount'
     ];
 
-    private static $summary_fields = [
+    private static array $summary_fields = [
         'Title',
         'DiscountNice' => 'Discount',
         'StartDate',
         'EndDate'
     ];
 
-    private static $searchable_fields = [
+    private static array $searchable_fields = [
         'Title'
     ];
 
-    private static $singular_name = 'Discount';
+    private static string $singular_name = 'Discount';
 
-    private static $plural_name = 'Discounts';
+    private static string $plural_name = 'Discounts';
 
-    private static $default_sort = 'EndDate DESC, StartDate DESC';
+    private static string $default_sort = 'EndDate DESC, StartDate DESC';
 
-    private static $table_name = 'SilverShop_Discount';
+    private static string $table_name = 'SilverShop_Discount';
 
-    protected $message;
+    protected string $message = '';
 
-    protected $messagetype;
+    protected string $messagetype = '';
 
     /**
      * Number of minutes ago to include for carts with paymetn start
      * in the {@link getAppliedOrders()} function
-     *
-     * @var integer
      */
-    private static $unpaid_use_timeout = 10;
+    private static int $unpaid_use_timeout = 10;
 
     /**
      * @return array
      */
-    public function getConstraints()
+    public function getConstraints(): array
     {
         $extensions = $this->getExtensionInstances();
         $output = [];
@@ -117,12 +118,8 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get the smallest possible list of discounts that can apply
      * to a given order.
-     *
-     * @param  Order $order order to check against
-     * @param array $context
-     * @return ArrayList matching discounts
      */
-    public static function get_matching(Order $order, $context = [])
+    public static function get_matching(Order $order, $context = []): ArrayList
     {
         $discounts = self::get()
             ->filter('Active', true)
@@ -266,7 +263,7 @@ class Discount extends DataObject implements PermissionProvider
         return $fields;
     }
 
-    public function getDefaultSearchContext()
+    public function getDefaultSearchContext(): SearchContext
     {
         $context = parent::getDefaultSearchContext();
 
@@ -324,12 +321,9 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Check if this coupon can be used with a given order
-     *
-     * @param  Order $order
-     * @param  array $context addional data to be checked in constraints.
-     * @return boolean
+     * $context provides addional data to be checked in constraints.
      */
-    public function validateOrder($order, $context = [])
+    public function validateOrder(Order $order, array $context = []): bool
     {
         if (empty($order)) {
             $this->error(_t('Discount.NOORDER', 'Order has not been started.'));
@@ -382,9 +376,6 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Works out the discount on a given value.
-     *
-     * @param $value
-     * @return calculated discount
      */
     public function getDiscountValue($value)
     {
@@ -406,7 +397,7 @@ class Discount extends DataObject implements PermissionProvider
         return $discount;
     }
 
-    public function getDiscountNice()
+    public function getDiscountNice(): float|string
     {
         if ($this->Type === 'Percent') {
             return $this->dbObject('Percent')->Nice();
@@ -431,10 +422,8 @@ class Discount extends DataObject implements PermissionProvider
      * Get the number of times a discount has been used.
      *
      * @param int $orderID - ignore this order when counting uses
-     *
-     * @return int count
      */
-    public function getUseCount($orderID = null)
+    public function getUseCount(?int $orderID = null): int
     {
         $used = $this->getAppliedOrders(true);
 
@@ -447,17 +436,13 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Returns whether this coupon is used.
-     *
-     * @param int $orderID
-     *
-     * @return boolean
      */
-    public function isUsed($orderID = null)
+    public function isUsed(?int $orderID = null): bool
     {
         return $this->getUseCount($orderID) > 0;
     }
 
-    public function setPercent($value)
+    public function setPercent($value): void
     {
         $value = $value > 100 ? 100 : $value;
 
@@ -469,7 +454,7 @@ class Discount extends DataObject implements PermissionProvider
      *
      * @param string $val
      */
-    public function setFor($val)
+    public function setFor($val): void
     {
         if (!$val) {
             return;
@@ -491,7 +476,7 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * @return string
      */
-    public function getFor()
+    public function getFor(): ?string
     {
         if ($this->ForShipping && $this->ForCart) {
             return 'Order';
@@ -508,17 +493,15 @@ class Discount extends DataObject implements PermissionProvider
         if ($this->ForCart) {
             return 'Cart';
         }
+        return null;
     }
 
     /**
      * Get the orders that this discount has been used on.
-     *
-     * @param bool $includeunpaid include orders where the payment process has started
-     * less than 'unpaid_use_timeout' minutes ago.
-     *
-     * @return \SilverStripe\ORM\DataList list of orders
+     * $includeunpaid include orders where the payment process has
+     * started less than 'unpaid_use_timeout' minutes ago.
      */
-    public function getAppliedOrders($includeunpaid = false)
+    public function getAppliedOrders(bool $includeunpaid = false):DataList
     {
         $orders =  Order::get()
             ->innerJoin('SilverShop_OrderAttribute', '"SilverShop_OrderAttribute"."OrderID" = "SilverShop_Order"."ID"')
@@ -555,10 +538,8 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get the total amount saved through the use of this discount,
      * accross all paid orders.
-     *
-     * @return float amount saved
      */
-    public function getSavingsTotal()
+    public function getSavingsTotal(): float|int|array
     {
         $itemsavings = $this->OrderItems()
             ->innerJoin(
@@ -580,11 +561,8 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Get the amount saved on the given order with this discount.
-     *
-     * @param  Order $order order to match against
-     * @return double  savings amount
      */
-    public function getSavingsForOrder(Order $order)
+    public function getSavingsForOrder(Order $order): float|int|array
     {
         $itemsavings = OrderAttribute::get()
             ->innerJoin(
@@ -608,48 +586,48 @@ class Discount extends DataObject implements PermissionProvider
     }
 
 
-    public function canView($member = null)
+    public function canView($member = null): bool
     {
         return true;
     }
 
-    public function canCreate($member = null, $context = [])
+    public function canCreate($member = null, $context = []): bool
     {
         return Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null): bool
     {
         return !$this->isUsed();
     }
 
-    public function canEdit($member = null)
+    public function canEdit($member = null): bool
     {
         return Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
-    protected function message($message, $type = 'good')
+    protected function message(string $message, string $type = 'good'): void
     {
         $this->message = $message;
         $this->messagetype = $type;
     }
 
-    protected function error($message)
+    protected function error(string $message): void
     {
         $this->message($message, 'bad');
     }
 
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
-    public function getMessageType()
+    public function getMessageType(): string
     {
         return $this->messagetype;
     }
 
-    public function providePermissions()
+    public function providePermissions(): array
     {
         return [
             'MANAGE_DISCOUNTS' => 'Manage discounts',
@@ -658,11 +636,11 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * @deprecated
-     * @param $order
-     * @param array $context
-     * @return bool
+     * @param      $order
+     * @param      array $context
+     * @return     bool
      */
-    public function valid($order, $context = [])
+    public function valid(Order $order, $context = []): bool
     {
         Deprecation::notice('1.2', 'use validateOrder instead');
         return $this->validateOrder($order, $context);

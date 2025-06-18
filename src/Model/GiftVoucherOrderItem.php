@@ -2,24 +2,33 @@
 
 namespace SilverShop\Discounts\Model;
 
+use Psr\Log\LoggerInterface;
+use SilverStripe\ORM\ValidationException;
 use SilverShop\Model\Product\OrderItem;
 use SilverStripe\Control\Email\Email;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class GiftVoucherOrderItem extends OrderItem
 {
-    private static $db = [
+    private static array $db = [
         'GiftedTo' => 'Varchar'
     ];
 
-    private static $has_many = [
+    private static array $has_many = [
         'Coupons' => OrderCoupon::class
     ];
 
-    private static $required_fields = [
+    private static array $required_fields = [
         'UnitPrice'
     ];
 
-    private static $table_name = 'SilverShop_GiftVoucherOrderItem';
+    private static array $dependencies = [
+        'Logger' => '%$' . LoggerInterface::class,
+    ];
+
+    protected LoggerInterface $logger;
+
+    private static string $table_name = 'SilverShop_GiftVoucherOrderItem';
 
     /**
      * Don't get unit price from product
@@ -36,7 +45,7 @@ class GiftVoucherOrderItem extends OrderItem
     /**
      * Create vouchers on order payment success event
      */
-    public function onPayment()
+    public function onPayment(): void
     {
         parent::onPayment();
 
@@ -54,10 +63,9 @@ class GiftVoucherOrderItem extends OrderItem
     /**
      * Create a new coupon
      *
-     * @return OrderCoupon
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws ValidationException
      */
-    public function createCoupon()
+    public function createCoupon(): OrderCoupon|bool
     {
         if (!$this->Product()) {
             return false;
@@ -85,7 +93,7 @@ class GiftVoucherOrderItem extends OrderItem
     /*
      * Send the voucher to the appropriate email
      */
-    public function sendVoucher(OrderCoupon $coupon)
+    public function sendVoucher(OrderCoupon $coupon): bool
     {
         $from = Email::config()->admin_email;
         $to = $this->Order()->getLatestEmail();
@@ -97,12 +105,19 @@ class GiftVoucherOrderItem extends OrderItem
         $email->setHTMLTemplate('GiftVoucherEmail');
         $email->setData(
             [
-            'Coupon' => $coupon
+                'Coupon' => $coupon
             ]
         );
 
         $this->extend('updateVoucherMail', $email, $coupon);
 
-        return $email->send();
+        try {
+            $email->send();
+        } catch (TransportExceptionInterface $e) {
+            $this->logger->error('GiftVoucherOrderItem.sendVoucher: error sending email in ' . __FILE__ . ' line ' . __LINE__ . ": {$e->getMessage()}");
+            return false;
+        }
+
+        return true;
     }
 }

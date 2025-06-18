@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts;
 
+use SilverStripe\ORM\ArrayList;
 use SilverShop\Discounts\Actions\SubtotalDiscountAction;
 use SilverShop\Discounts\Extensions\Constraints\ItemDiscountConstraint;
 use SilverShop\Discounts\Model\Discount;
@@ -17,13 +18,13 @@ class Calculator
 {
     use Injectable;
 
-    protected $order;
+    protected Order $order;
 
-    protected $discounts;
+    protected ArrayList $discounts;
 
     protected $modifier;
 
-    protected $log = [];
+    protected array $log = [];
 
     public function __construct(Order $order, $context = [])
     {
@@ -38,7 +39,7 @@ class Calculator
      *
      * @return double - discount amount
      */
-    public function calculate()
+    public function calculate(): int|float
     {
         $this->modifier = $this->order->getModifier(
             OrderDiscountModifier::class,
@@ -156,12 +157,8 @@ class Calculator
 
     /**
      * Work out the total discountable amount for a given discount
-     *
-     * @param Discount
-     *
-     * @return float
      */
-    protected function getDiscountableAmount($discount)
+    protected function getDiscountableAmount(Discount $discount): int|float
     {
         $amount = 0;
 
@@ -178,23 +175,18 @@ class Calculator
 
     /**
      * Work out how much the given discount has already
-     * been used.
-     * @param $discount Discount
+     * been used
+     *
      * @return Discount[]
      */
-    protected function discountSubtotal($discount)
+    protected function discountSubtotal(Discount $discount)
     {
         return $this->modifier->Discounts()
             ->filter('ID', $discount->ID)
             ->sum('DiscountAmount');
     }
 
-    /**
-     * @param DataList $list
-     *
-     * @return array
-     */
-    protected function createPriceInfoList(DataList $list)
+    protected function createPriceInfoList(DataList $list): array
     {
         $output = [];
 
@@ -225,12 +217,8 @@ class Calculator
 
     /**
      * Store details about discounts for loggging / debubgging
-     *
-     * @param string   $level
-     * @param double   $amount
-     * @param Discount $discount
      */
-    public function logDiscountAmount($level, $amount, Discount $discount)
+    public function logDiscountAmount(string $level, int|float $amount, Discount $discount): void
     {
         $this->log[] = [
             'Level' => $level,
@@ -239,7 +227,7 @@ class Calculator
         ];
     }
 
-    public function getLog()
+    public function getLog(): array
     {
         return $this->log;
     }

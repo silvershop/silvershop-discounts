@@ -2,6 +2,8 @@
 
 namespace SilverShop\Discounts\Form;
 
+use SilverStripe\Control\RequestHandler;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Forms\Form;
 use SilverShop\Model\Order;
 use SilverShop\Checkout\CheckoutComponentConfig;
@@ -17,9 +19,9 @@ use SilverShop\Forms\CheckoutComponentValidator;
  */
 class CouponForm extends Form
 {
-    protected $config;
+    protected CheckoutComponentConfig $config;
 
-    public function __construct($controller, $name, Order $order)
+    public function __construct(RequestHandler $controller, $name, Order $order)
     {
         $this->config = new CheckoutComponentConfig($order, false);
         $this->config->addComponent($couponcompoent = new CouponCheckoutComponent());
@@ -49,7 +51,7 @@ class CouponForm extends Form
         $controller->extend('updateCouponForm', $this, $order);
     }
 
-    public function applyCoupon($data, $form)
+    public function applyCoupon($data, $form): HTTPResponse
     {
         // form validation has passed by this point, so we can save data
         $this->config->setData($form->getData());
@@ -57,7 +59,7 @@ class CouponForm extends Form
         return $this->controller->redirectBack();
     }
 
-    public function removeCoupon($data, $form)
+    public function removeCoupon($data, $form): HTTPResponse
     {
         Controller::curr()->getRequest()->getSession()->clear('cart.couponcode');
 

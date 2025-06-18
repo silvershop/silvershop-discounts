@@ -8,15 +8,15 @@ use SilverStripe\Forms\NumericField;
 
 class UseLimitDiscountConstraint extends DiscountConstraint
 {
-    private static $db = [
+    private static array $db = [
         'UseLimit' => 'Int'
     ];
 
-    private static $field_labels = [
+    private static array $field_labels = [
         'UseLimit' => 'Maximum number of uses'
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         $fields->addFieldToTab(
             'Root.Constraints.ConstraintsTabs.General',
@@ -29,7 +29,7 @@ class UseLimitDiscountConstraint extends DiscountConstraint
         );
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         if ($discount->UseLimit && $discount->getUseCount($this->order->ID) >= $discount->UseLimit) {
             $this->error(_t('DiscountConstraint.USELIMITREACHED',

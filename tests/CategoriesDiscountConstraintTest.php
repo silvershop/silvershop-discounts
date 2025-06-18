@@ -18,6 +18,15 @@ class CategoriesDiscountConstraintTest extends SapphireTest
         'vendor/silvershop/core/tests/php/Fixtures/Carts.yml'
     ];
 
+    protected Order $cart;
+    protected Order $emptycart;
+    protected Order $megacart;
+    protected Order $modifiedcart;
+    protected Order $othercart;
+    protected Product $socks;
+    protected Product $tshirt;
+    protected Product $mp3player;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -35,7 +44,7 @@ class CategoriesDiscountConstraintTest extends SapphireTest
         $this->kitecart = $this->objFromFixture(Order::class, 'kitecart');
     }
 
-    public function testCategoryDiscount()
+    public function testCategoryDiscount(): void
     {
         $discount = OrderDiscount::create(
             [
@@ -49,8 +58,10 @@ class CategoriesDiscountConstraintTest extends SapphireTest
             $this->objFromFixture(ProductCategory::class, "clothing")
         );
 
-        $this->assertTrue($discount->validateOrder($this->cart),
-            'Order contains a t-shirt. ' . $discount->getMessage());
+        $this->assertTrue(
+            $discount->validateOrder($this->cart),
+            'Order contains a t-shirt. ' . $discount->getMessage()
+        );
         $calculator = new Calculator($this->cart);
         $this->assertEquals($calculator->calculate(), 0.4, '5% discount for socks in cart');
 
@@ -64,8 +75,10 @@ class CategoriesDiscountConstraintTest extends SapphireTest
             $this->objFromFixture(ProductCategory::class, "kites")
         );
 
-        $this->assertTrue($discount->validateOrder($this->kitecart),
-            "Order contains a kite. " . $discount->getMessage());
+        $this->assertTrue(
+            $discount->validateOrder($this->kitecart),
+            "Order contains a kite. " . $discount->getMessage()
+        );
         $calculator = new Calculator($this->kitecart);
         $this->assertEquals($calculator->calculate(), 1.75, '5% discount for kite in cart');
     }

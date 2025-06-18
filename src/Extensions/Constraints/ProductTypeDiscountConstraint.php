@@ -10,11 +10,11 @@ use SilverStripe\Core\ClassInfo;
 
 class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 {
-    private static $db = [
+    private static array $db = [
         'ProductTypes' => 'Text'
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         //multiselect subtypes of orderitem
         if ($this->owner->isInDB() && $this->owner->ForItems) {
@@ -29,7 +29,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         }
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         $types = $this->getTypes(true, $discount);
         //valid if no categories defined
@@ -46,11 +46,8 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 
     /**
      * This function is used by ItemDiscountAction, and the check function above.
-     * @param OrderItem $item
-     * @param Discount $discount
-     * @return bool
      */
-    public function itemMatchesCriteria(OrderItem $item, Discount $discount)
+    public function itemMatchesCriteria(OrderItem $item, Discount $discount): bool
     {
         $types = $this->getTypes(true, $discount);
         if (!$types) {
@@ -60,7 +57,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         return isset($types[$buyable->class]);
     }
 
-    protected function getTypes($selected, Discount $discount)
+    protected function getTypes($selected, Discount $discount): ?array
     {
         $types = $selected ? array_filter(explode(',', $discount->ProductTypes)) : $this->BuyableClasses();
         if ($types && !empty($types)) {
@@ -70,9 +67,10 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
             }
             return $types;
         }
+        return null;
     }
 
-    protected function BuyableClasses()
+    protected function BuyableClasses(): array
     {
         $implementors = ClassInfo::implementorsOf('Buyable');
         $classes = [];

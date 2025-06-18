@@ -10,12 +10,12 @@ use SilverStripe\ORM\DataList;
 
 class DatetimeDiscountConstraint extends DiscountConstraint
 {
-    private static $db = [
+    private static array $db = [
         'StartDate' => 'Datetime',
         'EndDate' => 'Datetime'
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         $fields->addFieldToTab(
             'Root.Constraints.ConstraintsTabs.General',
@@ -30,13 +30,15 @@ class DatetimeDiscountConstraint extends DiscountConstraint
                     _t(__CLASS__.'.RANGEEND', 'End date/time')
                 )
             )->setDescription(
-                _t(__CLASS__.'.ENDTIMEDAYNOTE',
-                    'You should set the end time to 23:59:59, if you want to include the entire end day.')
+                _t(
+                    __CLASS__.'.ENDTIMEDAYNOTE',
+                    'You should set the end time to 23:59:59, if you want to include the entire end day.'
+                )
             )
         );
     }
 
-    public function filter(DataList $list)
+    public function filter(DataList $list): DataList
     {
         // Check whether we are looking at a historic order or a current one
         $datetime = $this->order->Placed ? $this->order->Created : date('Y-m-d H:i:s');
@@ -50,18 +52,16 @@ class DatetimeDiscountConstraint extends DiscountConstraint
             );
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         $startDate = null;
         $endDate = null;
 
-        if($discount->StartDate != null)
-        {
+        if($discount->StartDate != null) {
             $startDate = strtotime($discount->StartDate);
         }
-        
-        if($discount->EndDate != null)
-        {
+
+        if($discount->EndDate != null) {
             $endDate = strtotime($discount->EndDate);
         }
 

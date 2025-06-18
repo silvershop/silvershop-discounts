@@ -19,11 +19,19 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
         'GiftVouchers.yml'
     ];
 
+    protected GiftVoucherProduct $voucher;
+    protected Order $cart;
+    protected Order $giftcart;
+    protected Product $mp3player;
+    protected Product $socks;
+    protected Product $tshirt;
+
     public function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();
-        Config::inst()->merge(Discount::class, 'constraints',
+        Config::inst()->merge(
+            Discount::class, 'constraints',
             [
             'ProductTypeDiscountConstraint'
             ]
@@ -43,7 +51,7 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
         $this->voucher->copyVersionToStage('Stage', 'Live');
     }
 
-    public function testProducts()
+    public function testProducts(): void
     {
         $discount = OrderDiscount::create(
             [

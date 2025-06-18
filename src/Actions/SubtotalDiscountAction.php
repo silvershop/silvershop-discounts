@@ -23,7 +23,7 @@ class SubtotalDiscountAction extends DiscountAction
         }
     }
 
-    public function perform()
+    public function perform(): float
     {
         $amount =  $this->discount->getDiscountValue($this->subtotal);
 
@@ -36,7 +36,7 @@ class SubtotalDiscountAction extends DiscountAction
         return $amount;
     }
 
-    public function isForItems()
+    public function isForItems(): bool
     {
         return false;
     }

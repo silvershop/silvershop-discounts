@@ -13,7 +13,7 @@ class PartialUseDiscountTest extends SapphireTest
         'PartialUseDiscount.yml'
     ];
 
-    public function testCreateRemainder()
+    public function testCreateRemainder(): void
     {
         //basic remainder
         $discount = $this->objFromFixture(PartialUseDiscount::class, 'partial');
@@ -46,7 +46,7 @@ class PartialUseDiscountTest extends SapphireTest
         );
     }
 
-    public function testCheckoutProcessing()
+    public function testCheckoutProcessing(): void
     {
         $this->markTestIncomplete('This should be tested');
     }

@@ -17,6 +17,15 @@ class ProductsDiscountConstraintTest extends SapphireTest
         'shop.yml'
     ];
 
+    protected Order $cart;
+    protected Order $megacart;
+    protected Order $modifiedcart;
+    protected Order $othercart;
+    protected Order $placedorder;
+    protected Product $mp3player;
+    protected Product $socks;
+    protected Product $tshirt;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -36,7 +45,7 @@ class ProductsDiscountConstraintTest extends SapphireTest
         $this->mp3player->publishRecursive();
     }
 
-    public function testProducts()
+    public function testProducts(): void
     {
         $discount = OrderDiscount::create(
             [
@@ -56,7 +65,7 @@ class ProductsDiscountConstraintTest extends SapphireTest
         $this->assertListEquals([], OrderDiscount::get_matching($this->cart));
     }
 
-    public function testProductsCoupon()
+    public function testProductsCoupon(): void
     {
         $coupon = OrderCoupon::create(
             [
@@ -81,7 +90,7 @@ class ProductsDiscountConstraintTest extends SapphireTest
         $this->assertEquals($calculator->calculate(), 100);
     }
 
-    public function testProductDiscount()
+    public function testProductDiscount(): void
     {
         $discount = OrderDiscount::create(
             [
@@ -129,7 +138,7 @@ class ProductsDiscountConstraintTest extends SapphireTest
     }
 
 
-    public function testProductDiscountWithUnpublishedProduct()
+    public function testProductDiscountWithUnpublishedProduct(): void
     {
         $unpublishedSocks = $this->socks->duplicate();
         $unpublishedSocks->writeToStage('Stage');

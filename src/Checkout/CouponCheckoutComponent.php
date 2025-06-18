@@ -14,9 +14,9 @@ use SilverShop\Model\Order;
 
 class CouponCheckoutComponent extends CheckoutComponent
 {
-    protected $validwhenblank = false;
+    protected bool $validwhenblank = false;
 
-    public function getFormFields(Order $order)
+    public function getFormFields(Order $order): FieldList
     {
         $fields = FieldList::create(
             TextField::create(
@@ -31,18 +31,18 @@ class CouponCheckoutComponent extends CheckoutComponent
         return $fields;
     }
 
-    public function setValidWhenBlank($valid)
+    public function setValidWhenBlank(bool $valid): void
     {
         $this->validwhenblank = $valid;
     }
 
-    public function validateData(Order $order, array $data)
+    public function validateData(Order $order, array $data): bool
     {
         $result = new ValidationResult();
         $code = $data['Code'];
 
         if ($this->validwhenblank && !$code) {
-            return $result;
+            return $result->isValid();
         }
 
         // check the coupon exists, and can be used
@@ -61,23 +61,23 @@ class CouponCheckoutComponent extends CheckoutComponent
             throw new ValidationException($result);
         }
 
-
-        return $result;
+        return $result->isValid();
     }
 
-    public function getData(Order $order)
+    public function getData(Order $order): array
     {
         return [
             'Code' => Controller::curr()->getRequest()->getSession()->get('cart.couponcode')
         ];
     }
 
-    public function setData(Order $order, array $data)
+    public function setData(Order $order, array $data): Order
     {
         if ($data['Code']) {
             Controller::curr()->getRequest()->getSession()->set('cart.couponcode', strtoupper($data['Code']));
         }
 
         $order->getModifier(OrderDiscountModifier::class, true);
+        return $order;
     }
 }

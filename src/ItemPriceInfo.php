@@ -9,9 +9,9 @@ use SilverShop\Model\OrderItem;
  */
 class ItemPriceInfo extends PriceInfo
 {
-    protected $item;
+    protected OrderItem $item;
 
-    protected $quantity;
+    protected int|float $quantity = 0;
 
     public function __construct(OrderItem $item)
     {
@@ -25,22 +25,22 @@ class ItemPriceInfo extends PriceInfo
         parent::__construct($originalprice);
     }
 
-    public function getItem()
+    public function getItem(): OrderItem
     {
         return $this->item;
     }
 
-    public function getQuantity()
+    public function getQuantity(): int|float
     {
         return $this->quantity;
     }
 
-    public function getOriginalTotal()
+    public function getOriginalTotal(): int|float
     {
         return $this->originalprice * $this->quantity;
     }
 
-    public function debug()
+    public function debug(): string
     {
         $discount = $this->getBestDiscount();
         $total = $discount * $this->getQuantity();

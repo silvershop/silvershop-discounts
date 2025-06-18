@@ -13,11 +13,11 @@ use SilverShop\Page\ProductCategory;
 
 class CategoriesDiscountConstraint extends ItemDiscountConstraint
 {
-    private static $many_many = [
+    private static array $many_many = [
         'Categories' => ProductCategory::class
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         if ($this->owner->isInDB()) {
             $fields->addFieldToTab(
@@ -34,7 +34,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         }
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         $categories = $discount->Categories();
 
@@ -51,7 +51,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         return $incart;
     }
 
-    public function itemMatchesCriteria(OrderItem $item, Discount $discount)
+    public function itemMatchesCriteria(OrderItem $item, Discount $discount): bool
     {
         $discountcategoryids = $discount->Categories()->getIDList();
         if (empty($discountcategoryids)) {

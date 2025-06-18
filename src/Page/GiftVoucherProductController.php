@@ -5,14 +5,15 @@ namespace SilverShop\Discounts\Page;
 use SilverShop\Discounts\Form\GiftVoucherFormValidator;
 use SilverShop\Page\ProductController;
 use SilverStripe\Forms\CurrencyField;
+use SilverStripe\Forms\Form;
 
 class GiftVoucherProductController extends ProductController
 {
-    private static $allowed_actions = [
+    private static array $allowed_actions = [
         'Form'
     ];
 
-    public function Form()
+    public function Form(): Form
     {
         $form = parent::Form();
 
@@ -31,7 +32,7 @@ class GiftVoucherProductController extends ProductController
             $validator = new GiftVoucherFormValidator(
                 [
                 'Quantity',
-            'UnitPrice'
+                'UnitPrice'
                 ]
             )
         );

@@ -12,20 +12,20 @@ use SilverStripe\Security\RandomGenerator;
  */
 class OrderCoupon extends Discount
 {
-    private static $db = [
+    private static array $db = [
         'Code' => 'Varchar(255)'
     ];
 
-    private static $has_one = [
+    private static array $has_one = [
         'GiftVoucher' => GiftVoucherOrderItem::class
     ];
 
-    private static $searchable_fields = [
+    private static array $searchable_fields = [
         'Title',
         'Code'
     ];
 
-    private static $summary_fields = [
+    private static array $summary_fields = [
         'Title',
         'Code',
         'DiscountNice' => 'Discount',
@@ -33,15 +33,15 @@ class OrderCoupon extends Discount
         'EndDate'
     ];
 
-    private static $singular_name = 'Coupon';
+    private static string $singular_name = 'Coupon';
 
-    private static $plural_name = 'Coupons';
+    private static string $plural_name = 'Coupons';
 
     private static $minimum_code_length = null;
 
-    private static $generated_code_length = 10;
+    private static int $generated_code_length = 10;
 
-    private static $table_name = 'SilverShop_OrderCoupon';
+    private static string $table_name = 'SilverShop_OrderCoupon';
 
     public static function get_by_code($code)
     {
@@ -53,13 +53,10 @@ class OrderCoupon extends Discount
     /**
      * Generates a unique code.
      *
-     * @todo   depending on the length, it may be possible that all the possible
+     * @todo depending on the length, it may be possible that all the possible
      *       codes have been generated.
-     * @param null $length
-     * @param string $prefix
-     * @return string the new code
      */
-    public static function generate_code($length = null, $prefix = '')
+    public static function generate_code(?int $length = null, string $prefix = ''): string
     {
         $length = $length ?: self::config()->generated_code_length;
         $code = null;
@@ -92,7 +89,7 @@ class OrderCoupon extends Discount
         return $fields;
     }
 
-    public function validate()
+    public function validate(): ValidationResult
     {
         $result = parent::validate();
         $minLength = self::config()->minimum_code_length;
@@ -113,7 +110,7 @@ class OrderCoupon extends Discount
         return $result;
     }
 
-    protected function onBeforeWrite()
+    protected function onBeforeWrite(): void
     {
         if (empty($this->Code)) {
             $this->Code = self::generate_code();
@@ -129,7 +126,7 @@ class OrderCoupon extends Discount
      *
      * @return $this
      */
-    public function setCode($code)
+    public function setCode($code): static
     {
         if ($code) {
             $code = trim(preg_replace('/[^0-9a-zA-Z]+/', '', $code));
@@ -139,17 +136,17 @@ class OrderCoupon extends Discount
         return $this;
     }
 
-    public function canView($member = null)
+    public function canView($member = null): bool
     {
         return true;
     }
 
-    public function canCreate($member = null, $context = [])
+    public function canCreate($member = null, $context = []): bool
     {
         return true;
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null): bool
     {
         if ($this->getUseCount()) {
             return false;
@@ -158,7 +155,7 @@ class OrderCoupon extends Discount
         return true;
     }
 
-    public function canEdit($member = null)
+    public function canEdit($member = null): bool
     {
         if ($this->getUseCount() && !$this->Active) {
             return false;

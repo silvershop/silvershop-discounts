@@ -14,7 +14,7 @@ use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 
 class DiscountedOrderExtension extends DataExtension
 {
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         $fields->addFieldsToTab(
             'Root.Discounts',
@@ -31,10 +31,8 @@ class DiscountedOrderExtension extends DataExtension
 
     /**
      * Get all discounts that have been applied to an order.
-     *
-     * @return ArrayList
      */
-    public function Discounts()
+    public function Discounts(): ArrayList
     {
         $finalDiscounts = new ArrayList();
 
@@ -60,7 +58,7 @@ class DiscountedOrderExtension extends DataExtension
     /**
      * Remove any partial discounts
      */
-    public function onPlaceOrder()
+    public function onPlaceOrder(): void
     {
         $partials = $this->owner->Discounts()->filter('ClassName', PartialUseDiscount::class);
 
@@ -78,7 +76,7 @@ class DiscountedOrderExtension extends DataExtension
     /**
      * Remove discounts
      */
-    public function removeDiscounts()
+    public function removeDiscounts(): void
     {
         foreach ($this->owner->Items() as $item) {
             $item->Discounts()->removeAll();

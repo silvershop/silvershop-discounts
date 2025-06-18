@@ -4,6 +4,8 @@ namespace SilverShop\Discounts\Admin;
 
 use SilverShop\Reports\ShopPeriodReport;
 use SilverShop\Discounts\Model\Discount;
+use SilverShop\Reports\ShopReportQuery;
+use SilverStripe\ORM\Queries\SQLSelect;
 
 class DiscountReport extends ShopPeriodReport
 {
@@ -16,7 +18,7 @@ class DiscountReport extends ShopPeriodReport
     protected $description = "See the total savings for discounts. Note that the 'Entered' field may not be
 										accurate if old/expired carts have been deleted from the database.";
 
-    public function columns()
+    public function columns(): array
     {
         return [
             'Name' => 'Title',
@@ -38,16 +40,20 @@ class DiscountReport extends ShopPeriodReport
         return $cols;
     }
 
-    public function query($params)
+    public function query($params): ShopReportQuery|SQLSelect
     {
         $query = parent::query($params);
         $query->addSelect('"SilverShop_Discount".*')
             ->selectField('"Title"', 'Name')
             ->selectField('COUNT(DISTINCT "SilverShop_Order"."ID")', 'Entered')
-            ->addLeftJoin('SilverShop_OrderItem_Discounts',
-                '"SilverShop_OrderItem_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"')
-            ->addLeftJoin('SilverShop_OrderDiscountModifier_Discounts',
-                '"SilverShop_OrderDiscountModifier_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"')
+            ->addLeftJoin(
+                'SilverShop_OrderItem_Discounts',
+                '"SilverShop_OrderItem_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
+            )
+            ->addLeftJoin(
+                'SilverShop_OrderDiscountModifier_Discounts',
+                '"SilverShop_OrderDiscountModifier_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
+            )
             ->addInnerJoin(
                 'SilverShop_OrderAttribute',
                 (implode(

@@ -13,11 +13,11 @@ use SilverStripe\Forms\GridField\GridFieldEditButton;
 
 class MembershipDiscountConstraint extends DiscountConstraint
 {
-    private static $many_many = [
+    private static array $many_many = [
         'Members' => Member::class
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         if ($this->owner->isInDB()) {
             $fields->addFieldToTab(
@@ -34,7 +34,7 @@ class MembershipDiscountConstraint extends DiscountConstraint
         }
     }
 
-    public function filter(DataList $list)
+    public function filter(DataList $list): DataList
     {
         $memberid = 0;
         if ($member = $this->getMember()) {
@@ -48,7 +48,7 @@ class MembershipDiscountConstraint extends DiscountConstraint
         return $list;
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         $members = $discount->Members();
         $member = $this->getMember();
@@ -65,7 +65,7 @@ class MembershipDiscountConstraint extends DiscountConstraint
         return true;
     }
 
-    public function getMember()
+    public function getMember(): Member
     {
         return isset($this->context['Member']) && is_object($this->context['Member']) ? $this->context['Member'] : $this->order->Member();
     }

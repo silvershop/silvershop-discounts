@@ -9,15 +9,15 @@ use SilverStripe\ORM\DataList;
 
 class ValueDiscountConstraint extends DiscountConstraint
 {
-    private static $db = [
+    private static array $db = [
         'MinOrderValue' => 'Currency'
     ];
 
-    private static $field_labels = [
+    private static array $field_labels = [
         'MinOrderValue' => 'Minimum subtotal of order'
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         $fields->addFieldToTab(
             'Root.Constraints.ConstraintsTabs.General',
@@ -28,17 +28,17 @@ class ValueDiscountConstraint extends DiscountConstraint
         );
     }
 
-    public function filter(DataList $list)
+    public function filter(DataList $list): DataList
     {
         return $list->filterAny(
             [
-            'MinOrderValue' => 0,
-            'MinOrderValue:LessThanOrEqual' => $this->order->SubTotal()
+                'MinOrderValue' => 0,
+                'MinOrderValue:LessThanOrEqual' => $this->order->SubTotal()
             ]
         );
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         if ($discount->MinOrderValue > 0 && $this->order->SubTotal() < $discount->MinOrderValue) {
             $this->error(

@@ -6,11 +6,11 @@ use SilverStripe\Forms\GridField\GridField_HTMLProvider;
 
 class GridField_LinkComponent implements GridField_HTMLProvider
 {
-    protected $title;
-    protected $url;
-    protected $extraclasses;
+    protected string $title = '';
+    protected string $url = '';
+    protected string $extraclasses = '';
 
-    public function __construct($title, $url)
+    public function __construct(string $title, string $url)
     {
         $this->title = $title;
         $this->url = $url;
@@ -23,7 +23,7 @@ class GridField_LinkComponent implements GridField_HTMLProvider
         ];
     }
 
-    public function addExtraClass($classes)
+    public function addExtraClass(string $classes): void
     {
         $this->extraclasses = $classes;
     }

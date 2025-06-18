@@ -17,6 +17,13 @@ class OrderCouponTest extends SapphireTest
         'shop.yml'
     ];
 
+    protected Order $cart;
+    protected Order $unpaid;
+    protected Order $othercart;
+    protected Product $socks;
+    protected Product $tshirt;
+    protected Product $mp3player;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -36,7 +43,7 @@ class OrderCouponTest extends SapphireTest
         $this->othercart = $this->objFromFixture(Order::class, 'othercart');
     }
 
-    public function testMinimumLengthCode()
+    public function testMinimumLengthCode(): void
     {
         Config::inst()->set(OrderCoupon::class, 'minimum_code_length', 8);
         $coupon = new OrderCoupon();
@@ -59,7 +66,7 @@ class OrderCouponTest extends SapphireTest
         self::assertNotContains('INVALIDMINLENGTH', $result->getMessages());
     }
 
-    public function testPercent()
+    public function testPercent(): void
     {
         $coupon = OrderCoupon::create(
             [
@@ -78,7 +85,7 @@ class OrderCouponTest extends SapphireTest
         $this->assertEquals(200, $this->calc($this->unpaid, $coupon), '40% off order');
     }
 
-    public function testAmount()
+    public function testAmount(): void
     {
         $coupon = OrderCoupon::create(
             [
@@ -99,7 +106,7 @@ class OrderCouponTest extends SapphireTest
         //TODO: test amount that is greater than item value
     }
 
-    public function testInactiveCoupon()
+    public function testInactiveCoupon(): void
     {
         $inactivecoupon = OrderCoupon::create(
             [
@@ -115,12 +122,12 @@ class OrderCouponTest extends SapphireTest
         $this->assertFalse($inactivecoupon->validateOrder($this->cart, $context), 'Coupon is not set to active');
     }
 
-    protected function getCalculator($order, $coupon)
+    protected function getCalculator($order, $coupon): Calculator
     {
         return new Calculator($order, ['CouponCode' => $coupon->Code]);
     }
 
-    protected function calc($order, $coupon)
+    protected function calc($order, $coupon): int|float
     {
         return $this->getCalculator($order, $coupon)->calculate();
     }

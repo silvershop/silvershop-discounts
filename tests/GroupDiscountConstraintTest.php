@@ -16,6 +16,9 @@ class GroupDiscountConstraintTest extends SapphireTest
         'shop.yml'
     ];
 
+    protected Order $cart;
+    protected Order $othercart;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -24,7 +27,7 @@ class GroupDiscountConstraintTest extends SapphireTest
         $this->othercart = $this->objFromFixture(Order::class, 'othercart');
     }
 
-    public function testMemberGroup()
+    public function testMemberGroup(): void
     {
         $coupon = OrderCoupon::create(
             [
@@ -44,7 +47,9 @@ class GroupDiscountConstraintTest extends SapphireTest
             'CouponCode' => $coupon->Code,
             'Member' => $this->objFromFixture(Member::class, 'bobjones')
         ];
-        $this->assertTrue($coupon->validateOrder($this->othercart, $context),
-            'Valid because member is in resellers group');
+        $this->assertTrue(
+            $coupon->validateOrder($this->othercart, $context),
+            'Valid because member is in resellers group'
+        );
     }
 }

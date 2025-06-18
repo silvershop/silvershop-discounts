@@ -7,55 +7,55 @@ namespace SilverShop\Discounts;
  */
 class PriceInfo
 {
-    protected $originalprice;
+    protected int|float $originalprice;
 
-    protected $currentprice; //for compounding discounts
+    protected int|float $currentprice; //for compounding discounts
 
-    protected $adjustments = [];
+    protected array $adjustments = [];
 
-    protected $bestadjustment;
+    protected ?Adjustment $bestadjustment;
 
-    public function __construct($price)
+    public function __construct(int|float $price)
     {
         $this->currentprice = $this->originalprice = $price;
     }
 
-    public function getOriginalPrice()
+    public function getOriginalPrice(): int|float
     {
         return $this->originalprice;
     }
 
-    public function getPrice()
+    public function getPrice(): int|float
     {
         return $this->currentprice;
     }
 
-    public function adjustPrice(Adjustment $a)
+    public function adjustPrice(Adjustment $a): void
     {
         $this->currentprice -= $a->getValue();
         $this->setBestAdjustment($a);
         $this->adjustments[] = $a;
     }
 
-    public function getCompoundedDiscount()
+    public function getCompoundedDiscount(): int|float
     {
         return $this->originalprice - $this->currentprice;
     }
 
-    public function getBestDiscount()
+    public function getBestDiscount(): int|float
     {
-        if ($this->bestadjustment) {
+        if ($this->bestadjustment instanceof Adjustment) {
             return $this->bestadjustment->getValue();
         }
         return 0;
     }
 
-    public function getBestAdjustment()
+    public function getBestAdjustment(): ?Adjustment
     {
         return $this->bestadjustment;
     }
 
-    public function getAdjustments()
+    public function getAdjustments(): array
     {
         return $this->adjustments;
     }
@@ -66,7 +66,7 @@ class PriceInfo
      *
      * @param Adjustment $candidate for better adjustment
      */
-    protected function setBestAdjustment(Adjustment $candidate)
+    protected function setBestAdjustment(Adjustment $candidate): void
     {
         $this->bestadjustment = $this->bestadjustment ?
             Adjustment::better_of($this->bestadjustment, $candidate) : $candidate;

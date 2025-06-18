@@ -16,6 +16,8 @@ class OrderDiscountTest extends SapphireTest
         'shop.yml'
     ];
 
+    protected Order $cart;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -26,7 +28,7 @@ class OrderDiscountTest extends SapphireTest
     /**
      * Check that available discounts are matched to the current order.
      */
-    public function testManyMatches()
+    public function testManyMatches(): void
     {
         OrderDiscount::create(
             [
@@ -52,7 +54,7 @@ class OrderDiscountTest extends SapphireTest
         );
     }
 
-    public function testPercent()
+    public function testPercent(): void
     {
         OrderDiscount::create(
             [
@@ -69,7 +71,7 @@ class OrderDiscountTest extends SapphireTest
         );
     }
 
-    public function testAmount()
+    public function testAmount(): void
     {
         OrderDiscount::create(
             [
@@ -86,7 +88,7 @@ class OrderDiscountTest extends SapphireTest
         );
     }
 
-    public function testUseCount()
+    public function testUseCount(): void
     {
         //check that order with payment started counts as a use
         $discount = $this->objFromFixture(OrderDiscount::class, 'paymentused');

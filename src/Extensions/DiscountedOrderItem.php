@@ -9,34 +9,28 @@ use SilverShop\Discounts\ItemPriceInfo;
 
 class DiscountedOrderItem extends DataExtension
 {
-    private static $db = [
+    private static array $db = [
         'Discount' => 'Currency'
     ];
 
-    private static $many_many = [
+    private static array $many_many = [
         'Discounts' => Discount::class
     ];
 
-    private static $many_many_extraFields = [
+    private static array $many_many_extraFields = [
         'Discounts' => [
             'DiscountAmount' => 'Currency'
         ]
     ];
 
-    /**
-     * @return int
-     */
-    public function getDiscountedProductID()
+    public function getDiscountedProductID(): int
     {
         $productKey = OrderItem::config()->buyable_relationship . 'ID';
 
         return $this->owner->{$productKey};
     }
 
-    /**
-     * @return string
-     */
-    public function getPriceInfoClass()
+    public function getPriceInfoClass(): string
     {
         $class = ItemPriceInfo::class;
         $this->owner->extend('updatePriceInfoClass', $class);

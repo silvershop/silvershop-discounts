@@ -5,6 +5,7 @@ namespace SilverShop\Discounts\Model;
 use SilverStripe\ORM\DataObject;
 use SilverShop\Page\Product;
 use SilverShop\Model\Variation\Variation;
+use SilverStripe\Forms\FieldList;
 use SilverStripe\Security\Group;
 use SilverStripe\Security\Permission;
 use SilverStripe\ORM\DataList;
@@ -26,59 +27,59 @@ use SilverStripe\ORM\DataList;
  */
 class SpecificPrice extends DataObject
 {
-    private static $db = [
+    private static array $db = [
         'Price' => 'Currency',
         'DiscountPercent' => 'Percentage',
         'StartDate' => 'Date',
         'EndDate' => 'Date'
     ];
 
-    private static $has_one = [
+    private static array $has_one = [
         'Product' => Product::class,
         'ProductVariation' => Variation::class,
         'Group' => Group::class
     ];
 
-    private static $summary_fields = [
+    private static array $summary_fields = [
         'Price' => 'Price',
         'StartDate' => 'Start',
         'EndDate' => 'End',
         'Group.Code' => 'Group'
     ];
 
-    private static $default_sort = '"Price" ASC';
+    private static string $default_sort = '"Price" ASC';
 
-    private static $table_name = 'SilverShop_SpecificPrice';
+    private static string $table_name = 'SilverShop_SpecificPrice';
 
-    public function canView($member = null)
+    public function canView($member = null): bool
     {
         return
             parent::canView($member) ||
             Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
-    public function canEdit($member = null)
+    public function canEdit($member = null): bool
     {
         return
             parent::canEdit($member) ||
             Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
-    public function canCreate($member = null, $context = [])
+    public function canCreate($member = null, $context = []): bool
     {
         return
             parent::canCreate($member, $context) ||
             Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null): bool
     {
         return
             parent::canDelete($member) ||
             Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
-    public static function filter(DataList $list, $member = null)
+    public static function filter(DataList $list, $member = null): DataList
     {
         $now = date('Y-m-d H:i:s');
         $nowminusone = date('Y-m-d H:i:s', strtotime('-1 day'));
@@ -99,7 +100,7 @@ class SpecificPrice extends DataObject
         return $list;
     }
 
-    public function getCMSFields()
+    public function getCMSFields(): FieldList
     {
         $fields = parent::getCMSFields();
         $fields->removeByName('ProductID');

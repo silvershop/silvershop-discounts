@@ -13,6 +13,8 @@ class DatetimeDiscountConstraintTest extends SapphireTest
         'shop.yml'
     ];
 
+    protected Order $cart;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -22,7 +24,7 @@ class DatetimeDiscountConstraintTest extends SapphireTest
         $this->cart = $this->objFromFixture(Order::class, 'cart');
     }
 
-    public function testDates()
+    public function testDates(): void
     {
         $unreleasedcoupon = OrderCoupon::create(
             [
@@ -36,8 +38,10 @@ class DatetimeDiscountConstraintTest extends SapphireTest
 
         $unreleasedcoupon->write();
         $context = ['CouponCode' => $unreleasedcoupon->Code];
-        $this->assertFalse($unreleasedcoupon->validateOrder($this->cart, $context),
-            'Coupon is un released (start date has not arrived)');
+        $this->assertFalse(
+            $unreleasedcoupon->validateOrder($this->cart, $context),
+            'Coupon is un released (start date has not arrived)'
+        );
 
         $expiredcoupon = OrderCoupon::create(
             [
@@ -53,7 +57,9 @@ class DatetimeDiscountConstraintTest extends SapphireTest
 
         $expiredcoupon->write();
         $context = ['CouponCode' => $expiredcoupon->Code];
-        $this->assertFalse($expiredcoupon->validateOrder($this->cart, $context),
-            'Coupon has expired (end date has passed)');
+        $this->assertFalse(
+            $expiredcoupon->validateOrder($this->cart, $context),
+            'Coupon has expired (end date has passed)'
+        );
     }
 }

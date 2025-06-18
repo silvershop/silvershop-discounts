@@ -8,7 +8,7 @@ use SilverShop\Discounts\Extensions\Constraints\ItemDiscountConstraint;
 
 abstract class ItemDiscountAction extends DiscountAction
 {
-    protected $infoitems;
+    protected array $infoitems;
 
     public function __construct(array $infoitems, Discount $discount)
     {
@@ -17,18 +17,15 @@ abstract class ItemDiscountAction extends DiscountAction
         $this->infoitems = $infoitems;
     }
 
-    public function isForItems()
+    public function isForItems(): bool
     {
         return true;
     }
 
     /**
      * Checks if the given item qualifies for a discount.
-     *
-     * @param  ItemPriceInfo $info
-     * @return boolean
      */
-    protected function itemQualifies(ItemPriceInfo $info)
+    protected function itemQualifies(ItemPriceInfo $info): bool
     {
         return ItemDiscountConstraint::match($info->getItem(), $this->discount);
     }

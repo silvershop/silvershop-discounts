@@ -7,11 +7,11 @@ use SilverStripe\ORM\DataList;
 
 class CodeDiscountConstraint extends DiscountConstraint
 {
-    private static $db = [
+    private static array $db = [
         'Code' => 'Varchar(25)'
     ];
 
-    public function filter(DataList $list)
+    public function filter(DataList $list): DataList
     {
         if ($code = $this->findCouponCode()) {
             $list = $list
@@ -23,7 +23,7 @@ class CodeDiscountConstraint extends DiscountConstraint
         return $list;
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         $code = strtolower($this->findCouponCode() ?? '');
 
@@ -35,7 +35,7 @@ class CodeDiscountConstraint extends DiscountConstraint
         return true;
     }
 
-    protected function findCouponCode()
+    protected function findCouponCode(): ?string
     {
         return isset($this->context['CouponCode']) ? $this->context['CouponCode'] : null;
     }

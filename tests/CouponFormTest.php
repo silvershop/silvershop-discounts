@@ -26,7 +26,7 @@ class CouponFormTest extends FunctionalTest
         $this->objFromFixture(Product::class, 'socks')->publishRecursive();
     }
 
-    public function testCouponForm()
+    public function testCouponForm(): void
     {
         OrderCoupon::create(
             [

@@ -15,6 +15,10 @@ class ValueDiscountConstraintTest extends SapphireTest
         'shop.yml'
     ];
 
+    protected Order $cart;
+    protected Order $othercart;
+    protected Order $placeorder;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -25,7 +29,7 @@ class ValueDiscountConstraintTest extends SapphireTest
         $this->placedorder = $this->objFromFixture(Order::class, 'unpaid');
     }
 
-    public function testMinOrderValue()
+    public function testMinOrderValue(): void
     {
         $coupon = OrderCoupon::create(
             [

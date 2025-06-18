@@ -22,7 +22,7 @@ class SpecificPriceTest extends SapphireTest
         Variation::add_extension(SpecificPricingExtension::class);
     }
 
-    public function testProductPrice()
+    public function testProductPrice(): void
     {
         $product = $this->objFromFixture(Product::class, 'raspberrypi');
         $this->assertEquals(45, $product->sellingPrice());
@@ -30,7 +30,7 @@ class SpecificPriceTest extends SapphireTest
         $this->assertEquals(5, $product->getTotalReduction());
     }
 
-    public function testProductVariationPrice()
+    public function testProductVariationPrice(): void
     {
         $variation = $this->objFromFixture(Variation::class, 'robot_30gb');
         $this->assertEquals(90, $variation->sellingPrice());
@@ -38,7 +38,7 @@ class SpecificPriceTest extends SapphireTest
         $this->assertEquals(10, $variation->getTotalReduction());
     }
 
-    public function testProductPricePercentage()
+    public function testProductPricePercentage(): void
     {
         $discount = $this->objFromFixture(SpecificPrice::class, 'raspberrypi_dateconstrained');
         $discount->DiscountPercent = 0.5;
@@ -50,7 +50,7 @@ class SpecificPriceTest extends SapphireTest
         $this->assertEquals(25, $product->getTotalReduction());
     }
 
-    public function testProductVariationPricePercentage()
+    public function testProductVariationPricePercentage(): void
     {
         $discount = $this->objFromFixture(SpecificPrice::class, 'robot_30gb_specific');
         $discount->DiscountPercent = 0.5;

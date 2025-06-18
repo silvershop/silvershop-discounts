@@ -17,13 +17,9 @@ abstract class ItemDiscountConstraint extends DiscountConstraint
 
     /**
      * Checks that an item can be discounted for configured constraints.
-     *
      * If any constraint check fails, the entire function returns false;
-     * @param OrderItem $item
-     * @param Discount $discount
-     * @return bool
      */
-    public static function match(OrderItem $item, Discount $discount)
+    public static function match(OrderItem $item, Discount $discount): bool
     {
         $singletons = [];
         $itemconstraints = ClassInfo::subclassesFor(self::class);
@@ -46,23 +42,14 @@ abstract class ItemDiscountConstraint extends DiscountConstraint
 
     /**
      * Returns true if the given item sits within this constraint.
-     *
      * If there is no constraint set, then it should return true.
-     *
-     * @param  OrderItem $item
-     * @param  Discount  $discount
-     * @return boolean
      */
-    abstract public function itemMatchesCriteria(OrderItem $item, Discount $discount);
+    abstract public function itemMatchesCriteria(OrderItem $item, Discount $discount): bool;
 
     /**
      * Check if at least one item in cart matches this criteria.
-     *
-     * @param Discount $discount
-     *
-     * @return boolean
      */
-    public function itemsInCart(Discount $discount)
+    public function itemsInCart(Discount $discount): bool
     {
         $items = $this->order->Items();
 

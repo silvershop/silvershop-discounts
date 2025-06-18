@@ -7,14 +7,15 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Security\Group;
 use SilverStripe\ORM\DataList;
+use SilverStripe\Security\Member;
 
 class GroupDiscountConstraint extends DiscountConstraint
 {
-    private static $has_one = [
+    private static array $has_one = [
         'Group' => Group::class
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         $fields->addFieldToTab(
             'Root.Constraints.ConstraintsTabs.Membership',
@@ -27,7 +28,7 @@ class GroupDiscountConstraint extends DiscountConstraint
         );
     }
 
-    public function filter(DataList $list)
+    public function filter(DataList $list): DataList
     {
         $groupids = [0];
         if ($member = $this->getMember()) {
@@ -39,7 +40,7 @@ class GroupDiscountConstraint extends DiscountConstraint
         return $list->filter('GroupID', $groupids);
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         $group = $discount->Group();
         $member = $this->getMember();
@@ -56,7 +57,7 @@ class GroupDiscountConstraint extends DiscountConstraint
         return true;
     }
 
-    public function getMember()
+    public function getMember(): Member
     {
         return isset($this->context['Member']) ? $this->context['Member'] : $this->order->Member();
     }

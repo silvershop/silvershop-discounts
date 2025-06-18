@@ -6,7 +6,7 @@ use SilverShop\Discounts\Adjustment;
 
 class ItemPercentDiscount extends ItemDiscountAction
 {
-    public function perform()
+    public function perform(): void
     {
         foreach ($this->infoitems as $info) {
             if (!$this->itemQualifies($info)) {

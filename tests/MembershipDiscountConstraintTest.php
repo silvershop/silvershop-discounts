@@ -9,11 +9,14 @@ use SilverShop\Model\Order;
 use SilverShop\Discounts\Model\OrderDiscount;
 
 
-class MembershipDiscountConstraintTest extends SapphireTest{
+class MembershipDiscountConstraintTest extends SapphireTest
+{
 
     protected static $fixture_file = [
         'shop.yml'
     ];
+
+    protected Order $cart;
 
     public function setUp(): void
     {
@@ -22,7 +25,7 @@ class MembershipDiscountConstraintTest extends SapphireTest{
         $this->cart = $this->objFromFixture(Order::class, 'cart');
     }
 
-    public function testMembership()
+    public function testMembership(): void
     {
         $discount = OrderDiscount::create(
             [

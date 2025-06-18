@@ -11,11 +11,11 @@ use SilverStripe\Security\Security;
 
 class SpecificPricingExtension extends DataExtension
 {
-    private static $has_many = [
+    private static array $has_many = [
         'SpecificPrices' => SpecificPrice::class
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         if ($tab = $fields->fieldByName('Root.Pricing')) {
             $fields = $tab->Fields();
@@ -33,7 +33,7 @@ class SpecificPricingExtension extends DataExtension
         }
     }
 
-    public function updateSellingPrice(&$price)
+    public function updateSellingPrice(&$price): void
     {
         $list = $this->owner->SpecificPrices()->filter( array('Price:LessThan' => $price ));
 

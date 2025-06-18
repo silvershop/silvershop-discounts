@@ -9,41 +9,41 @@ use SilverShop\Discounts\Calculator;
 
 class OrderDiscountModifier extends OrderModifier
 {
-    private static $subtitle_separator = ', ';
+    private static string $subtitle_separator = ', ';
 
-    private static $defaults = [
+    private static array $defaults = [
         'Type' => 'Deductable'
     ];
 
-    private static $many_many = [
+    private static array $many_many = [
         'Discounts' => Discount::class
     ];
 
-    private static $many_many_extraFields = [
+    private static array $many_many_extraFields = [
         'Discounts' => [
             'DiscountAmount' => 'Currency'
         ]
     ];
 
-    private static $singular_name = 'Discount';
+    private static string $singular_name = 'Discount';
 
-    private static $plural_name = 'Discounts';
+    private static string $plural_name = 'Discounts';
 
-    private static $table_name = 'SilverShop_OrderDiscountModifier';
+    private static string $table_name = 'SilverShop_OrderDiscountModifier';
 
-    private static $casting = [
+    private static array $casting = [
         'SubTitle' => 'HTMLFragment',
         'UsedCodes' => 'HTMLFragment'
     ];
 
-    public function value($incoming)
+    public function value($incoming): int|float
     {
         $this->Amount = $this->getDiscount();
 
         return $this->Amount;
     }
 
-    public function getDiscount()
+    public function getDiscount(): int|float
     {
         $context = [];
 
@@ -79,7 +79,7 @@ class OrderDiscountModifier extends OrderModifier
         return $code;
     }
 
-    public function getSubTitle()
+    public function getSubTitle(): string
     {
         return $this->getUsedCodes();
     }
@@ -87,7 +87,7 @@ class OrderDiscountModifier extends OrderModifier
     /**
      * @return string
      */
-    public function getUsedCodes()
+    public function getUsedCodes(): string
     {
         $discounts = $this->Order()->Discounts()->filter("Code:not", "");
 
@@ -101,7 +101,7 @@ class OrderDiscountModifier extends OrderModifier
         );
     }
 
-    public function ShowInTable()
+    public function ShowInTable(): bool
     {
         return $this->Amount > 0;
     }

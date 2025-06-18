@@ -15,15 +15,15 @@ use SilverShop\Page\Product;
 
 class ProductsDiscountConstraint extends ItemDiscountConstraint
 {
-    private static $db = [
+    private static array $db = [
         'ExactProducts' => 'Boolean'
     ];
 
-    private static $many_many = [
+    private static array $many_many = [
         'Products' => Product::class
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fields): void
     {
         if ($this->owner->isInDB()) {
             $fields->addFieldsToTab(
@@ -46,14 +46,14 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
         }
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         $products = $discount->Products();
         $productIds = [];
 
         if (!$products->exists()) {
             Versioned::withVersionedMode(
-                function () use ($discount, &$productIds) {
+                function () use ($discount, &$productIds): void {
                     Versioned::set_stage(Versioned::DRAFT);
 
                     $products = $discount->Products();
@@ -93,7 +93,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
         return $incart;
     }
 
-    public function itemMatchesCriteria(OrderItem $item, Discount $discount)
+    public function itemMatchesCriteria(OrderItem $item, Discount $discount): bool
     {
         $products = $discount->Products();
         $itemproduct = $item->Product(true); // true forces the current version of product to be retrieved.

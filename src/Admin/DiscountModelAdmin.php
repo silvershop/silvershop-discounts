@@ -3,12 +3,10 @@
 namespace SilverShop\Discounts\Admin;
 
 use SilverStripe\Admin\ModelAdmin;
-
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\DropdownField;
-
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\RequiredFields;
@@ -17,35 +15,36 @@ use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Discounts\Model\PartialUseDiscount;
 use SilverShop\Discounts\Form\GridField_LinkComponent;
+use SilverStripe\ORM\DataList;
 
 class DiscountModelAdmin extends ModelAdmin
 {
-    private static $url_segment = 'discounts';
+    private static string $url_segment = 'discounts';
 
-    private static $menu_title = 'Discounts';
+    private static string $menu_title = 'Discounts';
 
-    private static $menu_icon = 'silvershop/discounts:images/icon-coupons.png';
+    private static string $menu_icon = 'silvershop/discounts:images/icon-coupons.png';
 
-    private static $menu_priority = 2;
+    private static int $menu_priority = 2;
 
-    private static $managed_models = [
+    private static array $managed_models = [
         OrderDiscount::class,
         OrderCoupon::class,
         PartialUseDiscount::class
     ];
 
-    private static $allowed_actions = [
+    private static array $allowed_actions = [
         'generatecoupons',
         'GenerateCouponsForm'
     ];
 
-    private static $model_descriptions = [
+    private static array $model_descriptions = [
         'OrderDiscount' => 'Discounts are applied at the checkout, based on defined constraints. If not constraints are given, then the discount will always be applied.',
         'OrderCoupon' => 'Coupons are like discounts, but have an associated code.',
         'PartialUseDiscount' => "Partial use discounts are 'amount only' discounts that allow remainder amounts to be used."
     ];
 
-    public function getEditForm($id = null, $fields = null)
+    public function getEditForm($id = null, $fields = null): Form
     {
         $form = parent::getEditForm($id, $fields);
 
@@ -58,7 +57,7 @@ class DiscountModelAdmin extends ModelAdmin
             $link->addExtraClass('ss-ui-action-constructive');
         }
 
-        $descriptions = self::config()->model_descriptions;
+        $descriptions = self::config()->get('model_descriptions');
 
         if (isset($descriptions[$this->modelClass])) {
             $form->Fields()->fieldByName($this->modelClass)
@@ -71,7 +70,7 @@ class DiscountModelAdmin extends ModelAdmin
     /**
      * Update results list, to include custom search filters
      */
-    public function getList()
+    public function getList(): DataList
     {
         $params = $this->request->requestVar('q');
         $list = parent::getList();
@@ -103,11 +102,11 @@ class DiscountModelAdmin extends ModelAdmin
                 ->innerJoin("Discount_Categories", "Discount_Categories.DiscountID = Discount.ID")
                 ->filter("Discount_Categories.ProductCategoryID", $params['Categories']);
         }
-        
+
         return $list;
     }
 
-    public function GenerateCouponsForm()
+    public function GenerateCouponsForm(): Form
     {
         $fields = OrderCoupon::create()->getCMSFields();
         $fields->removeByName('Code');
@@ -158,7 +157,7 @@ class DiscountModelAdmin extends ModelAdmin
         return $form;
     }
 
-    public function generate($data, $form)
+    public function generate($data, $form): void
     {
         $count = 1;
 
@@ -183,7 +182,7 @@ class DiscountModelAdmin extends ModelAdmin
         $this->redirect($this->Link());
     }
 
-    public function generatecoupons()
+    public function generatecoupons(): array
     {
         return [
             'Title' => 'Generate Coupons',

@@ -2,18 +2,20 @@
 
 namespace SilverShop\Discounts\Model;
 
+use SilverStripe\ORM\ValidationException;
+use SilverStripe\ORM\ValidationResult;
 
 class PartialUseDiscount extends Discount
 {
-    private static $has_one = [
+    private static array $has_one = [
         'Parent' => PartialUseDiscount::class
     ];
 
-    private static $belongs_to = [
+    private static array $belongs_to = [
         'Child' => PartialUseDiscount::class
     ];
 
-    private static $defaults = [
+    private static array $defaults = [
         'Type' => 'Amount',
         'ForCart' => 1,
         'ForItems' => 0,
@@ -21,24 +23,28 @@ class PartialUseDiscount extends Discount
         'UseLimit' => 1
     ];
 
-    private static $singular_name = 'Partial Use Discount';
+    private static string $singular_name = 'Partial Use Discount';
 
-    private static $plural_name = 'Partial Use Discounts';
+    private static string $plural_name = 'Partial Use Discounts';
 
-    private static $table_name = 'SilverShop_PartialUseDiscount';
+    private static string $table_name = 'SilverShop_PartialUseDiscount';
 
     public function getCMSFields($params = null)
     {
-        $fields = parent::getCMSFields([
+        $fields = parent::getCMSFields(
+            [
             'forcetype' => 'Amount'
-        ]);
+            ]
+        );
 
-        $fields->removeByName([
+        $fields->removeByName(
+            [
             'ForCart',
             'ForItems',
             'ForShipping',
             'For'
-        ]);
+            ]
+        );
 
         $limitfield = $fields->dataFieldByName('UseLimit');
 
@@ -47,13 +53,12 @@ class PartialUseDiscount extends Discount
     }
 
     /**
-     * Create remainder discount object.
+     * Create remainder discount object.  Return new 'remainder' discount.
+     * $used the amount of this discount that was used up
      *
-     * @param  float $used the amount of this discount that was used up
-     * @return PartialUseDiscount  new 'remainder' discount
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws ValidationException
      */
-    public function createRemainder($used)
+    public function createRemainder(float $used): ?static
     {
         //don't recreate or do stuff with inactive discount
         if (!$this->Active || $this->Child()->exists()) {
@@ -86,7 +91,7 @@ class PartialUseDiscount extends Discount
         return $remainder;
     }
 
-    public function validate()
+    public function validate(): ValidationResult
     {
         $result = parent::validate();
         //prevent vital things from changing
@@ -102,7 +107,7 @@ class PartialUseDiscount extends Discount
     /**
      * Delete complex relations
      */
-    protected function deleteRelationships()
+    protected function deleteRelationships(): void
     {
         if ($this->manyMany()) {
             foreach ($this->manyMany() as $name => $type) {

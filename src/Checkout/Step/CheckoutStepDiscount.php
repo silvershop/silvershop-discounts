@@ -13,13 +13,13 @@ use SilverShop\Discounts\Form\CouponForm;
 
 class CheckoutStepDiscount extends CheckoutStep
 {
-    private static $allowed_actions = [
+    private static array $allowed_actions = [
         'discount',
         'CouponForm',
         'setcoupon'
     ];
 
-    protected function checkoutconfig()
+    protected function checkoutconfig(): CheckoutComponentConfig
     {
         $config = new CheckoutComponentConfig(ShoppingCart::curr(), true);
         $config->addComponent($comp = new CouponCheckoutComponent());
@@ -28,14 +28,14 @@ class CheckoutStepDiscount extends CheckoutStep
         return $config;
     }
 
-    public function discount()
+    public function discount(): array
     {
         return [
             'OrderForm' => $this->CouponForm()
         ];
     }
 
-    public function CouponForm()
+    public function CouponForm(): CheckoutForm
     {
         $form = new CheckoutForm($this->owner, 'CouponForm', $this->checkoutconfig());
         $form->setActions(
