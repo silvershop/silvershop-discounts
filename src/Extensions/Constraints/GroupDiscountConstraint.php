@@ -21,10 +21,10 @@ class GroupDiscountConstraint extends DiscountConstraint
             'Root.Constraints.ConstraintsTabs.Membership',
             DropdownField::create(
                 'GroupID',
-                _t(__CLASS__.'.MEMBERISINGROUP', 'Member is in group'),
+                _t(__CLASS__ . '.MEMBERISINGROUP', 'Member is in group'),
                 Group::get()->map('ID', 'Title')
             )->setHasEmptyDefault(true)
-            ->setEmptyString(_t(__CLASS__.'.ANYORNOGROUP', 'Any or no group'))
+            ->setEmptyString(_t(__CLASS__ . '.ANYORNOGROUP', 'Any or no group'))
         );
     }
 

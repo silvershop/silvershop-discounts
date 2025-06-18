@@ -31,7 +31,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
                 [
                     GridField::create(
                         'Products',
-                        _t(__CLASS__.'SPECIFICPRODUCTS', 'Specific products'),
+                        _t(__CLASS__ . 'SPECIFICPRODUCTS', 'Specific products'),
                         $this->owner->Products(),
                         GridFieldConfig_RelationEditor::create()
                             ->removeComponentsByType(GridFieldAddNewButton::class)
@@ -39,7 +39,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
                     ),
                     CheckboxField::create(
                         'ExactProducts',
-                        _t(__CLASS__.'.ALLPRODUCTSINCART', 'All the selected products must be present in cart.')
+                        _t(__CLASS__ . '.ALLPRODUCTSINCART', 'All the selected products must be present in cart.')
                     ),
                 ]
             );

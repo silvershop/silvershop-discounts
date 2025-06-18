@@ -8,7 +8,6 @@ use SilverStripe\Security\Member;
 use SilverShop\Model\Order;
 use SilverShop\Discounts\Model\OrderDiscount;
 
-
 class MembershipDiscountConstraintTest extends SapphireTest
 {
 
@@ -45,6 +44,6 @@ class MembershipDiscountConstraintTest extends SapphireTest
         ];
         $this->assertFalse($discount->validateOrder($this->cart, $context), 'Invalid because wrong member present');
         $context = ['Member' => $member];
-        $this->assertTrue($discount->validateOrder($this->cart, $context), 'Valid because correct member present' .$discount->getMessage());
+        $this->assertTrue($discount->validateOrder($this->cart, $context), 'Valid because correct member present' . $discount->getMessage());
     }
 }

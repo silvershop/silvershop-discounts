@@ -62,7 +62,7 @@ class OrderCoupon extends Discount
         $code = null;
         $generator = Injector::inst()->create(RandomGenerator::class);
         do {
-            $code = $prefix.strtoupper(substr($generator->randomToken(), 0, $length));
+            $code = $prefix . strtoupper(substr($generator->randomToken(), 0, $length));
         } while (self::get()->filter('Code:nocase', $code)->exists()
         );
 

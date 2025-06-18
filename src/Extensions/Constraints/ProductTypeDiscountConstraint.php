@@ -22,7 +22,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
                 'Root.Constraints.ConstraintsTabs.Product',
                 ListBoxField::create(
                     'ProductTypes',
-                    _t(__CLASS__.'.PRODUCTTYPES', 'Product types'),
+                    _t(__CLASS__ . '.PRODUCTTYPES', 'Product types'),
                     $this->getTypes(false, $this->owner)
                 )
             );
@@ -38,7 +38,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         }
         $incart = $this->itemsInCart($discount);
         if (!$incart) {
-            $this->error(_t(__CLASS__.'.PRODUCTTYPESNOTINCART', 'The required product type(s), are not in the cart.'));
+            $this->error(_t(__CLASS__ . '.PRODUCTTYPESNOTINCART', 'The required product type(s), are not in the cart.'));
         }
 
         return $incart;

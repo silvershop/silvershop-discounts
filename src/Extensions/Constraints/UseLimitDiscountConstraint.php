@@ -22,7 +22,7 @@ class UseLimitDiscountConstraint extends DiscountConstraint
             'Root.Constraints.ConstraintsTabs.General',
             NumericField::create(
                 'UseLimit',
-                _t(__CLASS__.'.USELIMIT', $this->owner->fieldLabel('UseLimit')),
+                _t(__CLASS__ . '.USELIMIT', $this->owner->fieldLabel('UseLimit')),
                 0
             )
             ->setDescription('Note: 0 = unlimited')
@@ -32,8 +32,10 @@ class UseLimitDiscountConstraint extends DiscountConstraint
     public function check(Discount $discount): bool
     {
         if ($discount->UseLimit && $discount->getUseCount($this->order->ID) >= $discount->UseLimit) {
-            $this->error(_t('DiscountConstraint.USELIMITREACHED',
-                'This discount has reached its maximum number of uses.'));
+            $this->error(_t(
+                'DiscountConstraint.USELIMITREACHED',
+                'This discount has reached its maximum number of uses.'
+            ));
 
             return false;
         }

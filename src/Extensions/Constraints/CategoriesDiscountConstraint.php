@@ -24,7 +24,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
                 'Root.Constraints.ConstraintsTabs.Product',
                 GridField::create(
                     'Categories',
-                    _t(__CLASS__.'.PRODUCTCATEGORIES', 'Product categories'),
+                    _t(__CLASS__ . '.PRODUCTCATEGORIES', 'Product categories'),
                     $this->owner->Categories(),
                     GridFieldConfig_RelationEditor::create()
                         ->removeComponentsByType(GridFieldAddNewButton::class)
@@ -45,7 +45,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         $incart = $this->itemsInCart($discount);
 
         if (!$incart) {
-            $this->error(_t(__CLASS__.'.CATEGORIESNOTINCART', 'The required products (categories) are not in the cart.'));
+            $this->error(_t(__CLASS__ . '.CATEGORIESNOTINCART', 'The required products (categories) are not in the cart.'));
         }
 
         return $incart;

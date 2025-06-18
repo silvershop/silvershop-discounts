@@ -31,7 +31,8 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
         parent::setUp();
         ShopTest::setConfiguration();
         Config::inst()->merge(
-            Discount::class, 'constraints',
+            Discount::class,
+            'constraints',
             [
             'ProductTypeDiscountConstraint'
             ]

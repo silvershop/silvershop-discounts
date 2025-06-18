@@ -23,7 +23,7 @@ class ValueDiscountConstraint extends DiscountConstraint
             'Root.Constraints.ConstraintsTabs.General',
             CurrencyField::create(
                 'MinOrderValue',
-                _t(__CLASS__.'.MINORDERVALUE', $this->owner->fieldLabel('MinOrderValue'))
+                _t(__CLASS__ . '.MINORDERVALUE', $this->owner->fieldLabel('MinOrderValue'))
             )
         );
     }

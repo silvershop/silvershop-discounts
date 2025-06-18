@@ -44,12 +44,12 @@ class ItemPriceInfo extends PriceInfo
     {
         $discount = $this->getBestDiscount();
         $total = $discount * $this->getQuantity();
-        $val = 'item: ' .$this->getItem()->TableTitle();
+        $val = 'item: ' . $this->getItem()->TableTitle();
         $price = $this->getOriginalPrice();
         $val .= " price:$price discount:$discount total:$total.\n";
 
         if ($best = $this->getBestAdjustment()) {
-            $val .= $this->getBestAdjustment(). ' ';
+            $val .= $this->getBestAdjustment() . ' ';
             $val .= $this->getBestAdjustment()->getAdjuster()->Title;
         } else {
             $val .= 'No adjustments';

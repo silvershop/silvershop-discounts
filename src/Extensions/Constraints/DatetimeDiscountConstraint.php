@@ -20,18 +20,18 @@ class DatetimeDiscountConstraint extends DiscountConstraint
         $fields->addFieldToTab(
             'Root.Constraints.ConstraintsTabs.General',
             FieldGroup::create(
-                _t(__CLASS__.'.VALIDDATERANGE', 'Valid date range:'),
+                _t(__CLASS__ . '.VALIDDATERANGE', 'Valid date range:'),
                 DatetimeField::create(
                     'StartDate',
-                    _t(__CLASS__.'.RANGESTART', 'Start date/time')
+                    _t(__CLASS__ . '.RANGESTART', 'Start date/time')
                 ),
                 DatetimeField::create(
                     'EndDate',
-                    _t(__CLASS__.'.RANGEEND', 'End date/time')
+                    _t(__CLASS__ . '.RANGEEND', 'End date/time')
                 )
             )->setDescription(
                 _t(
-                    __CLASS__.'.ENDTIMEDAYNOTE',
+                    __CLASS__ . '.ENDTIMEDAYNOTE',
                     'You should set the end time to 23:59:59, if you want to include the entire end day.'
                 )
             )
@@ -57,11 +57,11 @@ class DatetimeDiscountConstraint extends DiscountConstraint
         $startDate = null;
         $endDate = null;
 
-        if($discount->StartDate != null) {
+        if ($discount->StartDate != null) {
             $startDate = strtotime($discount->StartDate);
         }
 
-        if($discount->EndDate != null) {
+        if ($discount->EndDate != null) {
             $endDate = strtotime($discount->EndDate);
         }
 

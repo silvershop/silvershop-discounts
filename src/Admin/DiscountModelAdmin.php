@@ -51,7 +51,7 @@ class DiscountModelAdmin extends ModelAdmin
         if ($grid = $form->Fields()->fieldByName(OrderCoupon::class)) {
             $grid->getConfig()
                 ->addComponent(
-                    $link = new GridField_LinkComponent('Generate Multiple Coupons', $this->Link(). '/generatecoupons'),
+                    $link = new GridField_LinkComponent('Generate Multiple Coupons', $this->Link() . '/generatecoupons'),
                     'GridFieldExportButton'
                 );
             $link->addExtraClass('ss-ui-action-constructive');
