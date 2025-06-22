@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
+use SilverStripe\ORM\ManyManyList;
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
@@ -11,6 +12,9 @@ use SilverStripe\Forms\GridField\GridFieldEditButton;
 use SilverShop\Model\OrderItem;
 use SilverShop\Page\ProductCategory;
 
+/**
+ * @method ManyManyList<ProductCategory> Categories()
+ */
 class CategoriesDiscountConstraint extends ItemDiscountConstraint
 {
     private static array $many_many = [

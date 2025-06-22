@@ -2,8 +2,8 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
+use SilverStripe\Core\Extension;
 use SilverShop\Discounts\Model\Discount;
-use SilverStripe\ORM\DataExtension;
 use SilverShop\Model\Order;
 use SilverStripe\ORM\DataList;
 
@@ -15,8 +15,9 @@ use SilverStripe\ORM\DataList;
  *
  * Constraints are also instantiated on their own. See
  * ItemDiscountConstraint::match and Discount->valid
+ * @extends Extension<static>
  */
-abstract class DiscountConstraint extends DataExtension
+abstract class DiscountConstraint extends Extension
 {
     protected Order $order;
 

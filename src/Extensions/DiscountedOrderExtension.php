@@ -2,7 +2,8 @@
 
 namespace SilverShop\Discounts\Extensions;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
+use SilverShop\Model\Order;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
@@ -12,18 +13,16 @@ use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\PartialUseDiscount;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 
-class DiscountedOrderExtension extends DataExtension
+/**
+ * @extends Extension<Order&static>
+ */
+class DiscountedOrderExtension extends Extension
 {
     public function updateCMSFields(FieldList $fields): void
     {
-        $fields->addFieldsToTab(
+        $fields->addFieldToTab(
             'Root.Discounts',
-            $grid = new GridField(
-                'Discounts',
-                Config::inst()->get(Discount::class, 'plural_name'),
-                $this->Discounts(),
-                new GridFieldConfig_RecordViewer()
-            )
+            $grid = GridField::create('Discounts', Config::inst()->get(Discount::class, 'plural_name'), $this->Discounts(), new GridFieldConfig_RecordViewer())
         );
 
         $grid->setModelClass(Discount::class);
@@ -34,7 +33,7 @@ class DiscountedOrderExtension extends DataExtension
      */
     public function Discounts(): ArrayList
     {
-        $finalDiscounts = new ArrayList();
+        $finalDiscounts = ArrayList::create();
 
         foreach ($this->owner->Modifiers() as $modifier) {
             if ($modifier instanceof OrderDiscountModifier) {

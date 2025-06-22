@@ -6,6 +6,9 @@ use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\NumericField;
 
+/**
+ * @property int $UseLimit
+ */
 class UseLimitDiscountConstraint extends DiscountConstraint
 {
     private static array $db = [

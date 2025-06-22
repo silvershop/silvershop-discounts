@@ -7,6 +7,9 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\CurrencyField;
 use SilverStripe\ORM\DataList;
 
+/**
+ * @property float $MinOrderValue
+ */
 class ValueDiscountConstraint extends DiscountConstraint
 {
     private static array $db = [

@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
+use SilverStripe\ORM\ManyManyList;
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
@@ -11,6 +12,9 @@ use SilverStripe\Security\Member;
 use SilverStripe\Forms\GridField\GridFieldAddNewButton;
 use SilverStripe\Forms\GridField\GridFieldEditButton;
 
+/**
+ * @method ManyManyList<Member> Members()
+ */
 class MembershipDiscountConstraint extends DiscountConstraint
 {
     private static array $many_many = [

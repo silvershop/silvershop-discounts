@@ -9,6 +9,10 @@ use SilverStripe\Security\Group;
 use SilverStripe\ORM\DataList;
 use SilverStripe\Security\Member;
 
+/**
+ * @property int $GroupID
+ * @method Group Group()
+ */
 class GroupDiscountConstraint extends DiscountConstraint
 {
     private static array $has_one = [

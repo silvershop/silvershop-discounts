@@ -28,7 +28,7 @@ class GiftVoucherTest extends SapphireTest
 
     public function testCusomisableVoucher(): void
     {
-        $controller =  new GiftVoucherProductController($this->variable);
+        $controller =  GiftVoucherProductController::create($this->variable);
         $form = $controller->Form();
 
         $form->loadDataFrom(
@@ -58,7 +58,7 @@ class GiftVoucherTest extends SapphireTest
 
     public function testFixedVoucher(): void
     {
-        $controller =  new GiftVoucherProductController($this->fixed10);
+        $controller =  GiftVoucherProductController::create($this->fixed10);
         $form = $controller->Form();
         $form->loadDataFrom(
             [

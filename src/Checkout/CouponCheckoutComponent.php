@@ -50,7 +50,7 @@ class CouponCheckoutComponent extends CheckoutComponent
             if (!$coupon->validateOrder($order, ['CouponCode' => $code])) {
                 $result->addError($coupon->getMessage(), 'Code');
 
-                throw new ValidationException($result);
+                throw ValidationException::create($result);
             }
         } else {
             $result->addError(
@@ -58,7 +58,7 @@ class CouponCheckoutComponent extends CheckoutComponent
                 'Code'
             );
 
-            throw new ValidationException($result);
+            throw ValidationException::create($result);
         }
 
         return $result->isValid();

@@ -9,6 +9,9 @@ use SilverStripe\Security\RandomGenerator;
 
 /**
  * Applies a discount to current order, if applicable, when entered at checkout.
+ * @property ?string $Code
+ * @property int $GiftVoucherID
+ * @method GiftVoucherOrderItem GiftVoucher()
  */
 class OrderCoupon extends Discount
 {

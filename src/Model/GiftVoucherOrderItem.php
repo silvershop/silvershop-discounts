@@ -2,12 +2,17 @@
 
 namespace SilverShop\Discounts\Model;
 
+use SilverStripe\ORM\HasManyList;
 use Psr\Log\LoggerInterface;
 use SilverStripe\ORM\ValidationException;
 use SilverShop\Model\Product\OrderItem;
 use SilverStripe\Control\Email\Email;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
+/**
+ * @property ?string $GiftedTo
+ * @method   HasManyList<OrderCoupon> Coupons()
+ */
 class GiftVoucherOrderItem extends OrderItem
 {
     private static array $db = [
@@ -26,9 +31,9 @@ class GiftVoucherOrderItem extends OrderItem
         'Logger' => '%$' . LoggerInterface::class,
     ];
 
-    protected LoggerInterface $logger;
-
     private static string $table_name = 'SilverShop_GiftVoucherOrderItem';
+
+    protected LoggerInterface $logger;
 
     /**
      * Don't get unit price from product
@@ -71,7 +76,7 @@ class GiftVoucherOrderItem extends OrderItem
             return false;
         }
 
-        $coupon = new OrderCoupon(
+        $coupon = OrderCoupon::create(
             [
             'Title' => $this->Product()->Title,
             'Type' => 'Amount',

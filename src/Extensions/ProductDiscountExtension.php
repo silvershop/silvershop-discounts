@@ -2,9 +2,12 @@
 
 namespace SilverShop\Discounts\Extensions;
 
-use SilverStripe\ORM\DataExtension;
-
-class ProductDiscountExtension extends DataExtension
+use SilverStripe\Core\Extension;
+use SilverShop\Page\Product;
+/**
+ * @extends Extension<Product&static>
+ */
+class ProductDiscountExtension extends Extension
 {
     private static array $casting = [
         'TotalReduction' => 'Currency'

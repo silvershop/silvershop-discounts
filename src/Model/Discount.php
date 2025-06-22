@@ -2,6 +2,15 @@
 
 namespace SilverShop\Discounts\Model;
 
+use SilverStripe\ORM\ManyManyList;
+use SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverShop\Model\Order;
@@ -38,8 +47,28 @@ use SilverStripe\Core\Injector\Injector;
 use SilverShop\Discounts\Extensions\Constraints\DiscountConstraint;
 use SilverStripe\ORM\FieldType\DBCurrency;
 use SilverStripe\ORM\Search\SearchContext;
-use SilverStripe\Security\Member;
 
+/**
+ * @property string $Title
+ * @property ?string $Type
+ * @property mixed $Amount
+ * @property float $Percent
+ * @property bool $Active
+ * @property bool $ForItems
+ * @property bool $ForCart
+ * @property bool $ForShipping
+ * @property float $MaxAmount
+ * @method ManyManyList<OrderItem> OrderItems()
+ * @method ManyManyList<OrderDiscountModifier> DiscountModifiers()
+ * @mixin CategoriesDiscountConstraint
+ * @mixin ProductsDiscountConstraint
+ * @mixin GroupDiscountConstraint
+ * @mixin MembershipDiscountConstraint
+ * @mixin DatetimeDiscountConstraint
+ * @mixin ValueDiscountConstraint
+ * @mixin UseLimitDiscountConstraint
+ * @mixin CodeDiscountConstraint
+ */
 class Discount extends DataObject implements PermissionProvider
 {
     private static array $db = [
@@ -140,7 +169,7 @@ class Discount extends DataObject implements PermissionProvider
         }
 
         // cull remaining invalid discounts problematically
-        $validdiscounts = new ArrayList();
+        $validdiscounts = ArrayList::create();
 
         foreach ($discounts as $discount) {
             if ($discount->validateOrder($order, $context)) {
@@ -154,59 +183,35 @@ class Discount extends DataObject implements PermissionProvider
     public function getCMSFields($params = null)
     {
         //fields that shouldn't be changed once coupon is used
-        $fields = new FieldList(
-            [
-                new TabSet(
-                    'Root',
-                    new Tab(
-                        'Main',
-                        TextField::create('Title'),
-                        CheckboxField::create('Active', 'Active')
-                            ->setDescription('Enable/disable all use of this discount.'),
-                        HeaderField::create('ActionTitle', 'Action', 3),
-                        $typefield = SelectionGroup::create(
-                            'Type',
-                            [
-                                new SelectionGroup_Item(
-                                    'Percent',
-                                    $percentgroup = FieldGroup::create(
-                                        $percentfield = NumericField::create('Percent', 'Percentage', '0.00')
-                                            ->setScale(null)
-                                            ->setDescription('e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%'),
-                                        $maxamountfield = CurrencyField::create(
-                                            'MaxAmount',
-                                            _t('MaxAmount', 'Maximum Amount')
-                                        )->setDescription(
-                                            'The total allowable discount. 0 means unlimited.'
-                                        )
-                                    ),
-                                    'Discount by percentage'
-                                ),
-                                new SelectionGroup_Item(
-                                    'Amount',
-                                    $amountfield = CurrencyField::create('Amount', 'Amount', '$0.00'),
-                                    'Discount by fixed amount'
-                                )
-                            ]
-                        )->setTitle('Type'),
-                        OptionSetField::create(
-                            'For',
-                            'Applies to',
-                            [
-                                'Order' => 'Entire order',
-                                'Cart' => 'Cart subtotal',
-                                'Shipping' => 'Shipping subtotal',
-                                'Items' => 'Each individual item'
-                            ]
+        $fields = FieldList::create([
+            TabSet::create('Root', Tab::create('Main', TextField::create('Title'), CheckboxField::create('Active', 'Active')
+                ->setDescription('Enable/disable all use of this discount.'), HeaderField::create('ActionTitle', 'Action', 3), $typefield = SelectionGroup::create(
+                'Type',
+                [
+                    SelectionGroup_Item::create('Percent', $percentgroup = FieldGroup::create(
+                        $percentfield = NumericField::create('Percent', 'Percentage', '0.00')
+                            ->setScale(null)
+                            ->setDescription('e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%'),
+                        $maxamountfield = CurrencyField::create(
+                            'MaxAmount',
+                            _t('MaxAmount', 'Maximum Amount')
+                        )->setDescription(
+                            'The total allowable discount. 0 means unlimited.'
                         )
-                    ),
-                    new Tab(
-                        'Constraints',
-                        TabSet::create('ConstraintsTabs', $general = new Tab('General', 'General'))
-                    )
-                )
-            ]
-        );
+                    ), 'Discount by percentage'),
+                    SelectionGroup_Item::create('Amount', $amountfield = CurrencyField::create('Amount', 'Amount', '$0.00'), 'Discount by fixed amount')
+                ]
+            )->setTitle('Type'), OptionSetField::create(
+                'For',
+                'Applies to',
+                [
+                    'Order' => 'Entire order',
+                    'Cart' => 'Cart subtotal',
+                    'Shipping' => 'Shipping subtotal',
+                    'Items' => 'Each individual item'
+                ]
+            )), Tab::create('Constraints', TabSet::create('ConstraintsTabs', $general = Tab::create('General', 'General'))))
+        ]);
 
         if (!$this->isInDB()) {
             $general->push(

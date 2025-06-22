@@ -8,6 +8,10 @@ use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\DatetimeField;
 use SilverStripe\ORM\DataList;
 
+/**
+ * @property ?string $StartDate
+ * @property ?string $EndDate
+ */
 class DatetimeDiscountConstraint extends DiscountConstraint
 {
     private static array $db = [

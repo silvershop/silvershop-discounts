@@ -5,6 +5,9 @@ namespace SilverShop\Discounts\Extensions\Constraints;
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\ORM\DataList;
 
+/**
+ * @property ?string $Code
+ */
 class CodeDiscountConstraint extends DiscountConstraint
 {
     private static array $db = [

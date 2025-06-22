@@ -8,6 +8,9 @@ use SilverStripe\Forms\ListboxField;
 use SilverShop\Model\OrderItem;
 use SilverStripe\Core\ClassInfo;
 
+/**
+ * @property ?string $ProductTypes
+ */
 class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 {
     private static array $db = [

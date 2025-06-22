@@ -24,6 +24,13 @@ use SilverStripe\ORM\DataList;
  * @method   Product Product()
  * @method   Variation ProductVariation()
  * @method   Group Group()
+ * @property float $Price
+ * @property float $DiscountPercent
+ * @property ?string $StartDate
+ * @property ?string $EndDate
+ * @property int $ProductID
+ * @property int $ProductVariationID
+ * @property int $GroupID
  */
 class SpecificPrice extends DataObject
 {

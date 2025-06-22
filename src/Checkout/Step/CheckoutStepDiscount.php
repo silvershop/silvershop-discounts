@@ -9,7 +9,6 @@ use SilverShop\Discounts\Checkout\CouponCheckoutComponent;
 use SilverShop\Forms\CheckoutForm;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
-use SilverShop\Discounts\Form\CouponForm;
 
 class CheckoutStepDiscount extends CheckoutStep
 {
@@ -37,11 +36,9 @@ class CheckoutStepDiscount extends CheckoutStep
 
     public function CouponForm(): CheckoutForm
     {
-        $form = new CheckoutForm($this->owner, 'CouponForm', $this->checkoutconfig());
+        $form = CheckoutForm::create($this->owner, 'CouponForm', $this->checkoutconfig());
         $form->setActions(
-            new FieldList(
-                FormAction::create('setcoupon', _t('SilverShop\Checkout\Step\CheckoutStep.Continue', 'Continue'))
-            )
+            FieldList::create(FormAction::create('setcoupon', _t('SilverShop\Checkout\Step\CheckoutStep.Continue', 'Continue')))
         );
         $this->owner->extend('updateCouponForm', $form);
 

@@ -11,9 +11,9 @@ use Exception;
 class Adjustment
 {
     protected int|float $value;
-    protected int|float|null $adjuster;
+    protected $adjuster;
 
-    public function __construct(int|float $val, int|float|null $adjuster = null)
+    public function __construct(int|float $val, $adjuster = null)
     {
         $this->value = $val;
         $this->adjuster = $adjuster;
@@ -35,7 +35,7 @@ class Adjustment
         return $this->value;
     }
 
-    public function getAdjuster(): int|float|null
+    public function getAdjuster()
     {
         return $this->adjuster;
     }

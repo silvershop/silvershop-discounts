@@ -46,22 +46,22 @@ class OrderCouponTest extends SapphireTest
     public function testMinimumLengthCode(): void
     {
         Config::inst()->set(OrderCoupon::class, 'minimum_code_length', 8);
-        $coupon = new OrderCoupon();
+        $coupon = OrderCoupon::create();
         $coupon->Code = '1234567';
         $result = $coupon->validate();
-        self::assertContains('INVALIDMINLENGTH', $result->getMessages());
+        $this->assertSame('INVALIDMINLENGTH', key($result->getMessages()));
 
-        $coupon = new OrderCoupon();
+        $coupon = OrderCoupon::create();
         $result = $coupon->validate();
         self::assertNotContains('INVALIDMINLENGTH', $result->getMessages(), 'Leaving the Code field generates a code');
 
-        $coupon = new OrderCoupon(['Code' => '12345678']);
+        $coupon = OrderCoupon::create(['Code' => '12345678']);
         $result = $coupon->validate();
         self::assertNotContains('INVALIDMINLENGTH', $result->getMessages());
 
         Config::inst()->set(OrderCoupon::class, 'minimum_code_length', null);
 
-        $coupon = new OrderCoupon(['Code' => '1']);
+        $coupon = OrderCoupon::create(['Code' => '1']);
         $result = $coupon->validate();
         self::assertNotContains('INVALIDMINLENGTH', $result->getMessages());
     }
@@ -122,13 +122,13 @@ class OrderCouponTest extends SapphireTest
         $this->assertFalse($inactivecoupon->validateOrder($this->cart, $context), 'Coupon is not set to active');
     }
 
-    protected function getCalculator($order, $coupon): Calculator
+    protected function getCalculator(Order $order, OrderCoupon $coupon): Calculator
     {
         return new Calculator($order, ['CouponCode' => $coupon->Code]);
     }
 
-    protected function calc($order, $coupon): int|float
+    protected function calc(Order $order, OrderCoupon $order_coupon): int|float
     {
-        return $this->getCalculator($order, $coupon)->calculate();
+        return $this->getCalculator($order, $order_coupon)->calculate();
     }
 }

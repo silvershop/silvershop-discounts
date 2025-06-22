@@ -2,14 +2,19 @@
 
 namespace SilverShop\Discounts\Extensions;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
+use SilverStripe\ORM\HasManyList;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverShop\Discounts\Model\SpecificPrice;
 use SilverStripe\Security\Security;
 
-class SpecificPricingExtension extends DataExtension
+/**
+ * @method HasManyList<SpecificPrice> SpecificPrices()
+ * @extends Extension<static>
+ */
+class SpecificPricingExtension extends Extension
 {
     private static array $has_many = [
         'SpecificPrices' => SpecificPrice::class

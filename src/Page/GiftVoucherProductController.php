@@ -7,6 +7,9 @@ use SilverShop\Page\ProductController;
 use SilverStripe\Forms\CurrencyField;
 use SilverStripe\Forms\Form;
 
+/**
+ * @extends ProductController<GiftVoucherProduct>
+ */
 class GiftVoucherProductController extends ProductController
 {
     private static array $allowed_actions = [

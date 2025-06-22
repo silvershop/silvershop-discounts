@@ -132,9 +132,7 @@ class DiscountModelAdmin extends ModelAdmin
             'Title'
         );
 
-        $actions = new FieldList(
-            new FormAction('generate', 'Generate')
-        );
+        $actions = FieldList::create(FormAction::create('generate', 'Generate'));
         $validator = new RequiredFields(
             [
             'Title',
@@ -142,7 +140,7 @@ class DiscountModelAdmin extends ModelAdmin
             'Type'
             ]
         );
-        $form = new Form($this, 'GenerateCouponsForm', $fields, $actions, $validator);
+        $form = Form::create($this, 'GenerateCouponsForm', $fields, $actions, $validator);
         $form->addExtraClass('cms-edit-form cms-panel-padded center ui-tabs-panel ui-widget-content ui-corner-bottom');
         $form->setAttribute('data-pjax-fragment', 'CurrentForm');
         $form->setHTMLID('Form_EditForm');
@@ -169,7 +167,7 @@ class DiscountModelAdmin extends ModelAdmin
         $length = isset($data['Length']) ? (int) $data['Length'] : OrderCoupon::config()->generated_code_length;
 
         for ($i = 0; $i < $count; $i++) {
-            $coupon = new OrderCoupon();
+            $coupon = OrderCoupon::create();
             $form->saveInto($coupon);
 
             $coupon->Code = OrderCoupon::generate_code(

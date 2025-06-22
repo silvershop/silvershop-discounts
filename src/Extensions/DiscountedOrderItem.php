@@ -2,12 +2,18 @@
 
 namespace SilverShop\Discounts\Extensions;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
+use SilverStripe\ORM\ManyManyList;
 use SilverShop\Model\OrderItem;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\ItemPriceInfo;
 
-class DiscountedOrderItem extends DataExtension
+/**
+ * @property float $Discount
+ * @method ManyManyList<Discount> Discounts()
+ * @extends Extension<OrderItem&static>
+ */
+class DiscountedOrderItem extends Extension
 {
     private static array $db = [
         'Discount' => 'Currency'

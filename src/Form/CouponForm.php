@@ -30,9 +30,7 @@ class CouponForm extends Form
 
         $fields = $this->config->getFormFields();
 
-        $actions = new FieldList(
-            FormAction::create('applyCoupon', _t('ApplyCoupon', 'Apply coupon'))
-        );
+        $actions = FieldList::create(FormAction::create('applyCoupon', _t('ApplyCoupon', 'Apply coupon')));
 
         parent::__construct($controller, $name, $fields, $actions, $validator);
 

@@ -5,6 +5,12 @@ namespace SilverShop\Discounts\Model;
 use SilverStripe\ORM\ValidationException;
 use SilverStripe\ORM\ValidationResult;
 
+/**
+ * @property int $ChildID
+ * @method \SilverShop\Discounts\Model\PartialUseDiscount Child()
+ * @property int $ParentID
+ * @method \SilverShop\Discounts\Model\PartialUseDiscount Parent()
+ */
 class PartialUseDiscount extends Discount
 {
     private static array $has_one = [
@@ -95,7 +101,7 @@ class PartialUseDiscount extends Discount
     {
         $result = parent::validate();
         //prevent vital things from changing
-        foreach (self::$defaults as $field => $value) {
+        foreach ($this->config()->get('defaults') as $field => $value) {
             if ($this->isChanged($field)) {
                 $result->addError("$field should not be changed for partial use discounts.");
             }

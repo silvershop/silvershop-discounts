@@ -13,7 +13,7 @@ class PriceInfo
 
     protected array $adjustments = [];
 
-    protected ?Adjustment $bestadjustment;
+    protected ?Adjustment $bestadjustment = null;
 
     public function __construct(int|float $price)
     {

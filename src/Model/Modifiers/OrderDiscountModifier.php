@@ -2,11 +2,15 @@
 
 namespace SilverShop\Discounts\Model\Modifiers;
 
+use SilverStripe\ORM\ManyManyList;
 use SilverShop\Model\Modifiers\OrderModifier;
 use SilverStripe\Control\Controller;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Calculator;
 
+/**
+ * @method ManyManyList<Discount> Discounts()
+ */
 class OrderDiscountModifier extends OrderModifier
 {
     private static string $subtitle_separator = ', ';
