@@ -17,11 +17,11 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         'ProductTypes' => 'Text'
     ];
 
-    public function updateCMSFields(FieldList $fields): void
+    public function updateCMSFields(FieldList $fieldList): void
     {
         //multiselect subtypes of orderitem
         if ($this->owner->isInDB() && $this->owner->ForItems) {
-            $fields->addFieldToTab(
+            $fieldList->addFieldToTab(
                 'Root.Constraints.ConstraintsTabs.Product',
                 ListBoxField::create(
                     'ProductTypes',
@@ -51,14 +51,14 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
     /**
      * This function is used by ItemDiscountAction, and the check function above.
      */
-    public function itemMatchesCriteria(OrderItem $item, Discount $discount): bool
+    public function itemMatchesCriteria(OrderItem $orderItem, Discount $discount): bool
     {
         $types = $this->getTypes(true, $discount);
         if ($types === null || $types === []) {
             return true;
         }
 
-        $buyable = $item->Buyable();
+        $buyable = $orderItem->Buyable();
         return isset($types[$buyable->class]);
     }
 
@@ -81,8 +81,8 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
     {
         $implementors = ClassInfo::implementorsOf('Buyable');
         $classes = [];
-        foreach ($implementors as $class) {
-            $classes = array_merge($classes, array_values(ClassInfo::subclassesFor($class)));
+        foreach ($implementors as $implementor) {
+            $classes = array_merge($classes, array_values(ClassInfo::subclassesFor($implementor)));
         }
 
         $classes = array_combine($classes, $classes);

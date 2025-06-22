@@ -21,10 +21,10 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         'Categories' => ProductCategory::class
     ];
 
-    public function updateCMSFields(FieldList $fields): void
+    public function updateCMSFields(FieldList $fieldList): void
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldToTab(
+            $fieldList->addFieldToTab(
                 'Root.Constraints.ConstraintsTabs.Product',
                 GridField::create(
                     'Categories',
@@ -40,9 +40,9 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
 
     public function check(Discount $discount): bool
     {
-        $categories = $discount->Categories();
+        $manyManyList = $discount->Categories();
 
-        if (!$categories->exists()) {
+        if (!$manyManyList->exists()) {
             return true;
         }
 
@@ -55,7 +55,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         return $incart;
     }
 
-    public function itemMatchesCriteria(OrderItem $item, Discount $discount): bool
+    public function itemMatchesCriteria(OrderItem $orderItem, Discount $discount): bool
     {
         $discountcategoryids = $discount->Categories()->getIDList();
         if (empty($discountcategoryids)) {
@@ -63,7 +63,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         }
 
         //get category ids from buyable
-        $buyable = $item->Buyable();
+        $buyable = $orderItem->Buyable();
         if (!method_exists($buyable, 'getCategoryIDs')) {
             return false;
         }

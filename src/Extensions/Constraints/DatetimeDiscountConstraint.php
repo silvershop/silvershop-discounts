@@ -19,9 +19,9 @@ class DatetimeDiscountConstraint extends DiscountConstraint
         'EndDate' => 'Datetime'
     ];
 
-    public function updateCMSFields(FieldList $fields): void
+    public function updateCMSFields(FieldList $fieldList): void
     {
-        $fields->addFieldToTab(
+        $fieldList->addFieldToTab(
             'Root.Constraints.ConstraintsTabs.General',
             FieldGroup::create(
                 _t(__CLASS__ . '.VALIDDATERANGE', 'Valid date range:'),
@@ -42,13 +42,13 @@ class DatetimeDiscountConstraint extends DiscountConstraint
         );
     }
 
-    public function filter(DataList $list): DataList
+    public function filter(DataList $dataList): DataList
     {
         // Check whether we are looking at a historic order or a current one
         $datetime = $this->order->Placed ? $this->order->Created : date('Y-m-d H:i:s');
 
         //to bad ORM filtering for NULL doesn't work...so we need to use where
-        return $list->where(
+        return $dataList->where(
             sprintf("(\"SilverShop_Discount\".\"StartDate\" IS NULL) OR (\"SilverShop_Discount\".\"StartDate\" < '%s')", $datetime)
         )
             ->where(

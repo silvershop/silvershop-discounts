@@ -19,9 +19,9 @@ class UseLimitDiscountConstraint extends DiscountConstraint
         'UseLimit' => 'Maximum number of uses'
     ];
 
-    public function updateCMSFields(FieldList $fields): void
+    public function updateCMSFields(FieldList $fieldList): void
     {
-        $fields->addFieldToTab(
+        $fieldList->addFieldToTab(
             'Root.Constraints.ConstraintsTabs.General',
             NumericField::create(
                 'UseLimit',

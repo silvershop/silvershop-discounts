@@ -63,6 +63,7 @@ class SpecificPrice extends DataObject
         if (parent::canView($member)) {
             return true;
         }
+
         return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
@@ -71,6 +72,7 @@ class SpecificPrice extends DataObject
         if (parent::canEdit($member)) {
             return true;
         }
+
         return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
@@ -79,6 +81,7 @@ class SpecificPrice extends DataObject
         if (parent::canCreate($member, $context)) {
             return true;
         }
+
         return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
@@ -87,10 +90,11 @@ class SpecificPrice extends DataObject
         if (parent::canDelete($member)) {
             return true;
         }
+
         return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
-    public static function filter(DataList $list, $member = null): DataList
+    public static function filter(DataList $dataList, $member = null): DataList
     {
         $now = date('Y-m-d H:i:s');
         $nowminusone = date('Y-m-d H:i:s', strtotime('-1 day'));
@@ -100,7 +104,7 @@ class SpecificPrice extends DataObject
             $groupids = array_merge($member->Groups()->map('ID', 'ID')->toArray(), $groupids);
         }
 
-        $list = $list->where(
+        $dataList = $dataList->where(
             sprintf("(\"SilverShop_SpecificPrice\".\"StartDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"StartDate\" < '%s')", $now)
         )
             ->where(
@@ -108,15 +112,15 @@ class SpecificPrice extends DataObject
             )
             ->filter('GroupID', $groupids);
 
-        return $list;
+        return $dataList;
     }
 
     public function getCMSFields(): FieldList
     {
-        $fields = parent::getCMSFields();
-        $fields->removeByName('ProductID');
-        $fields->removeByName('ProductVariationID');
+        $fieldList = parent::getCMSFields();
+        $fieldList->removeByName('ProductID');
+        $fieldList->removeByName('ProductVariationID');
 
-        return $fields;
+        return $fieldList;
     }
 }

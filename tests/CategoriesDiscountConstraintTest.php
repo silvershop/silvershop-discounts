@@ -56,38 +56,38 @@ class CategoriesDiscountConstraintTest extends SapphireTest
 
     public function testCategoryDiscount(): void
     {
-        $discount = OrderDiscount::create(
+        $orderDiscount = OrderDiscount::create(
             [
                 'Title' => '5% off clothing',
                 'Type' => 'Percent',
                 'Percent' => 0.05
             ]
         );
-        $discount->write();
-        $discount->Categories()->add(
+        $orderDiscount->write();
+        $orderDiscount->Categories()->add(
             $this->objFromFixture(ProductCategory::class, "clothing")
         );
 
         $this->assertTrue(
-            $discount->validateOrder($this->cart),
-            'Order contains a t-shirt. ' . $discount->getMessage()
+            $orderDiscount->validateOrder($this->cart),
+            'Order contains a t-shirt. ' . $orderDiscount->getMessage()
         );
         $calculator = new Calculator($this->cart);
         $this->assertEquals($calculator->calculate(), 0.4, '5% discount for socks in cart');
 
-        $this->assertFalse($discount->validateOrder($this->othercart), 'Order does not contain clothing');
+        $this->assertFalse($orderDiscount->validateOrder($this->othercart), 'Order does not contain clothing');
         $calculator = new Calculator($this->othercart);
         $this->assertEquals($calculator->calculate(), 0, 'No discount, because no product in category');
 
-        $discount->Categories()->removeAll();
+        $orderDiscount->Categories()->removeAll();
 
-        $discount->Categories()->add(
+        $orderDiscount->Categories()->add(
             $this->objFromFixture(ProductCategory::class, "kites")
         );
 
         $this->assertTrue(
-            $discount->validateOrder($this->kitecart),
-            "Order contains a kite. " . $discount->getMessage()
+            $orderDiscount->validateOrder($this->kitecart),
+            "Order contains a kite. " . $orderDiscount->getMessage()
         );
         $calculator = new Calculator($this->kitecart);
         $this->assertEquals($calculator->calculate(), 1.75, '5% discount for kite in cart');

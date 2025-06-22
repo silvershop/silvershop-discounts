@@ -31,8 +31,8 @@ class GiftVoucherProduct extends Product
 
     public function getCMSFields(): FieldList
     {
-        $fields = parent::getCMSFields();
-        $fields->addFieldToTab(
+        $fieldList = parent::getCMSFields();
+        $fieldList->addFieldToTab(
             'Root.Pricing',
             OptionsetField::create('VariableAmount', 'Price', [
                 0 => 'Fixed',
@@ -41,7 +41,7 @@ class GiftVoucherProduct extends Product
             'BasePrice'
         );
 
-        $fields->addFieldsToTab(
+        $fieldList->addFieldsToTab(
             'Root.Pricing',
             [
                 //text field, because of CMS js validation issue
@@ -49,10 +49,10 @@ class GiftVoucherProduct extends Product
             ]
         );
 
-        $fields->removeByName('CostPrice');
-        $fields->removeByName('Variations');
-        $fields->removeByName('Model');
-        return $fields;
+        $fieldList->removeByName('CostPrice');
+        $fieldList->removeByName('Variations');
+        $fieldList->removeByName('Model');
+        return $fieldList;
     }
 
     public function canPurchase($member = null, $quantity = 1): bool

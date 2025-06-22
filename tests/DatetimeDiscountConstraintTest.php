@@ -26,7 +26,7 @@ class DatetimeDiscountConstraintTest extends SapphireTest
 
     public function testDates(): void
     {
-        $unreleasedcoupon = OrderCoupon::create(
+        $orderCoupon = OrderCoupon::create(
             [
             'Title' => 'Unreleased $10 off',
             'Code' => '0444444440',
@@ -36,11 +36,11 @@ class DatetimeDiscountConstraintTest extends SapphireTest
             ]
         );
 
-        $unreleasedcoupon->write();
+        $orderCoupon->write();
 
-        $context = ['CouponCode' => $unreleasedcoupon->Code];
+        $context = ['CouponCode' => $orderCoupon->Code];
         $this->assertFalse(
-            $unreleasedcoupon->validateOrder($this->cart, $context),
+            $orderCoupon->validateOrder($this->cart, $context),
             'Coupon is un released (start date has not arrived)'
         );
 

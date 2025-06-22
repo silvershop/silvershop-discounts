@@ -37,13 +37,13 @@ class PartialUseDiscount extends Discount
 
     public function getCMSFields($params = null)
     {
-        $fields = parent::getCMSFields(
+        $fieldList = parent::getCMSFields(
             [
             'forcetype' => 'Amount'
             ]
         );
 
-        $fields->removeByName(
+        $fieldList->removeByName(
             [
             'ForCart',
             'ForItems',
@@ -52,10 +52,10 @@ class PartialUseDiscount extends Discount
             ]
         );
 
-        $limitfield = $fields->dataFieldByName('UseLimit');
+        $limitfield = $fieldList->dataFieldByName('UseLimit');
 
-        $fields->replaceField('UseLimit', $limitfield->performReadonlyTransformation());
-        return $fields;
+        $fieldList->replaceField('UseLimit', $limitfield->performReadonlyTransformation());
+        return $fieldList;
     }
 
     /**
@@ -100,15 +100,15 @@ class PartialUseDiscount extends Discount
 
     public function validate(): ValidationResult
     {
-        $result = parent::validate();
+        $validationResult = parent::validate();
         //prevent vital things from changing
         foreach ($this->config()->get('defaults') as $field => $value) {
             if ($this->isChanged($field)) {
-                $result->addError($field . ' should not be changed for partial use discounts.');
+                $validationResult->addError($field . ' should not be changed for partial use discounts.');
             }
         }
 
-        return $result;
+        return $validationResult;
     }
 
     /**

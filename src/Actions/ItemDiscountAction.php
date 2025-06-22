@@ -25,8 +25,8 @@ abstract class ItemDiscountAction extends DiscountAction
     /**
      * Checks if the given item qualifies for a discount.
      */
-    protected function itemQualifies(ItemPriceInfo $info): bool
+    protected function itemQualifies(ItemPriceInfo $itemPriceInfo): bool
     {
-        return ItemDiscountConstraint::match($info->getItem(), $this->discount);
+        return ItemDiscountConstraint::match($itemPriceInfo->getItem(), $this->discount);
     }
 }

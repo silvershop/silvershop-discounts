@@ -61,16 +61,16 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
 
     public function testProducts(): void
     {
-        $discount = OrderDiscount::create(
+        $orderDiscount = OrderDiscount::create(
             [
             'Title' => '20% off each products',
             'Percent' => 0.2,
             'ProductTypes' => Product::class
             ]
         );
-        $discount->write();
+        $orderDiscount->write();
 
-        $this->assertTrue($discount->validateOrder($this->cart));
-        $this->assertFalse($discount->validateOrder($this->giftcart));
+        $this->assertTrue($orderDiscount->validateOrder($this->cart));
+        $this->assertFalse($orderDiscount->validateOrder($this->giftcart));
     }
 }

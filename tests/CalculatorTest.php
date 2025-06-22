@@ -73,47 +73,47 @@ class CalculatorTest extends SapphireTest
 
     public function testPriceInfo(): void
     {
-        $i = new PriceInfo(20);
-        $this->assertEquals(20, $i->getPrice());
-        $this->assertEquals(20, $i->getOriginalPrice());
-        $this->assertEquals(0, $i->getCompoundedDiscount());
-        $this->assertEquals(0, $i->getBestDiscount());
-        $this->assertEquals([], $i->getAdjustments());
+        $priceInfo = new PriceInfo(20);
+        $this->assertEquals(20, $priceInfo->getPrice());
+        $this->assertEquals(20, $priceInfo->getOriginalPrice());
+        $this->assertEquals(0, $priceInfo->getCompoundedDiscount());
+        $this->assertEquals(0, $priceInfo->getBestDiscount());
+        $this->assertEquals([], $priceInfo->getAdjustments());
 
-        $i->adjustPrice($a1 = new Adjustment(1, 'a'));
-        $i->adjustPrice($a2 = new Adjustment(5, 'b'));
-        $i->adjustPrice($a3 = new Adjustment(2, 'c'));
+        $priceInfo->adjustPrice($a1 = new Adjustment(1, 'a'));
+        $priceInfo->adjustPrice($a2 = new Adjustment(5, 'b'));
+        $priceInfo->adjustPrice($a3 = new Adjustment(2, 'c'));
 
-        $this->assertEquals(12, $i->getPrice());
-        $this->assertEquals(20, $i->getOriginalPrice());
-        $this->assertEquals(8, $i->getCompoundedDiscount());
-        $this->assertEquals(5, $i->getBestDiscount());
-        $this->assertEquals([$a1,$a2,$a3], $i->getAdjustments());
+        $this->assertEquals(12, $priceInfo->getPrice());
+        $this->assertEquals(20, $priceInfo->getOriginalPrice());
+        $this->assertEquals(8, $priceInfo->getCompoundedDiscount());
+        $this->assertEquals(5, $priceInfo->getBestDiscount());
+        $this->assertEquals([$a1,$a2,$a3], $priceInfo->getAdjustments());
     }
 
     public function testBasicItemDiscount(): void
     {
         //activate discounts
-        $discount = OrderDiscount::create(
+        $orderDiscount = OrderDiscount::create(
             [
             'Title' => '10% off',
             'Type' => 'Percent',
             'Percent' => 0.1
             ]
         );
-        $discount->write();
+        $orderDiscount->write();
         //check that discount works as expected
-        $this->assertEquals(1, $discount->getDiscountValue(10), '10% of 10 is 1');
+        $this->assertEquals(1, $orderDiscount->getDiscountValue(10), '10% of 10 is 1');
         //check that discount matches order
-        $matching = Discount::get_matching($this->cart);
+        $arrayList = Discount::get_matching($this->cart);
         $this->assertListEquals(
             [
                 ['Title' => '10% off']
             ],
-            $matching
+            $arrayList
         );
         //check valid
-        $valid = $discount->validateOrder($this->cart);
+        $valid = $orderDiscount->validateOrder($this->cart);
         $this->assertTrue($valid, 'discount is valid');
         //check calculator
         $calculator = new Calculator($this->cart);
@@ -155,13 +155,13 @@ class CalculatorTest extends SapphireTest
         )->write();
 
         //check that discount matches order
-        $matching = Discount::get_matching($this->cart);
+        $arrayList = Discount::get_matching($this->cart);
         $this->assertListEquals(
             [
                 ['Title' => '10% off'],
                 ['Title' => '$5 off']
             ],
-            $matching
+            $arrayList
         );
 
         $calculator = new Calculator($this->emptycart);
@@ -257,7 +257,7 @@ class CalculatorTest extends SapphireTest
     public function testCartLevelAmount(): void
     {
         //entire cart
-        $discount = OrderDiscount::create(
+        $orderDiscount = OrderDiscount::create(
             [
             'Title' => '$25 off cart total',
             'Type' => 'Amount',
@@ -266,8 +266,8 @@ class CalculatorTest extends SapphireTest
             'ForCart' => true
             ]
         );
-        $discount->write();
-        $this->assertTrue($discount->validateOrder($this->cart));
+        $orderDiscount->write();
+        $this->assertTrue($orderDiscount->validateOrder($this->cart));
         $calculator = new Calculator($this->cart);
         $this->assertEquals(8, $calculator->calculate());
         $calculator = new Calculator($this->othercart);
@@ -278,7 +278,7 @@ class CalculatorTest extends SapphireTest
 
     public function testCartLevelPercent(): void
     {
-        $discount = OrderDiscount::create(
+        $orderDiscount = OrderDiscount::create(
             [
             'Title' => '50% off products subtotal',
             'Type' => 'Percent',
@@ -287,10 +287,10 @@ class CalculatorTest extends SapphireTest
             'ForCart' => true
             ]
         );
-        $discount->write();
+        $orderDiscount->write();
 
         //products subtotal
-        $discount->Products()->addMany(
+        $orderDiscount->Products()->addMany(
             [
             $this->socks,
             $this->tshirt
@@ -385,10 +385,10 @@ class CalculatorTest extends SapphireTest
             'ForCart' => true
             ]
         )->write();
-        $cart = $this->objFromFixture(Order::class, 'payablecart');
-        $this->assertEquals(16, $cart->calculate());
-        $processor = new OrderProcessor($cart);
-        $processor->placeOrder();
-        $this->assertEquals(16, Order::get()->byID($cart->ID)->GrandTotal());
+        $order = $this->objFromFixture(Order::class, 'payablecart');
+        $this->assertEquals(16, $order->calculate());
+        $orderProcessor = new OrderProcessor($order);
+        $orderProcessor->placeOrder();
+        $this->assertEquals(16, Order::get()->byID($order->ID)->GrandTotal());
     }
 }

@@ -26,9 +26,9 @@ class Adjustment
     }
 
     //biggest adjustment = best
-    public function compareTo(Adjustment $i): int|float
+    public function compareTo(Adjustment $adjustment): int|float
     {
-        return $this->getValue() - $i->getValue();
+        return $this->getValue() - $adjustment->getValue();
     }
 
     public function getValue(): int|float

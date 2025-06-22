@@ -29,8 +29,8 @@ class GiftVoucherTest extends SapphireTest
 
     public function testCusomisableVoucher(): void
     {
-        $controller =  GiftVoucherProductController::create($this->variable);
-        $form = $controller->Form();
+        $giftVoucherProductController =  GiftVoucherProductController::create($this->variable);
+        $form = $giftVoucherProductController->Form();
 
         $form->loadDataFrom(
             $data = [
@@ -59,8 +59,8 @@ class GiftVoucherTest extends SapphireTest
 
     public function testFixedVoucher(): void
     {
-        $controller =  GiftVoucherProductController::create($this->fixed10);
-        $form = $controller->Form();
+        $giftVoucherProductController =  GiftVoucherProductController::create($this->fixed10);
+        $form = $giftVoucherProductController->Form();
         $form->loadDataFrom(
             [
             'Quantity' => 2
@@ -72,14 +72,14 @@ class GiftVoucherTest extends SapphireTest
 
     public function testCreateCoupon(): void
     {
-        $item = $this->variable->createItem(
+        $orderItem = $this->variable->createItem(
             1,
             [
             'UnitPrice' => 15.00
             ]
         );
 
-        $coupon = $item->createCoupon();
+        $coupon = $orderItem->createCoupon();
 
         $this->assertEquals($coupon->Amount, 15, 'Coupon value is $15, as per order item');
         $this->assertEquals($coupon->Type, 'Amount', "Coupon type is 'Amount'");

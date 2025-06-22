@@ -163,11 +163,11 @@ class Calculator
     {
         $amount = 0;
 
-        foreach ($this->order->Items() as $item) {
-            if (ItemDiscountConstraint::match($item, $discount)) {
-                $amount += $item->hasMethod('DiscountableAmount') ?
-                            $item->DiscountableAmount() * $item->Quantity :
-                            $item->Total();
+        foreach ($this->order->Items() as $hasManyList) {
+            if (ItemDiscountConstraint::match($hasManyList, $discount)) {
+                $amount += $hasManyList->hasMethod('DiscountableAmount') ?
+                            $hasManyList->DiscountableAmount() * $hasManyList->Quantity :
+                            $hasManyList->Total();
             }
         }
 
@@ -187,11 +187,11 @@ class Calculator
             ->sum('DiscountAmount');
     }
 
-    protected function createPriceInfoList(DataList $list): array
+    protected function createPriceInfoList(DataList $dataList): array
     {
         $output = [];
 
-        foreach ($list as $item) {
+        foreach ($dataList as $item) {
             $priceInfoClass = $item->getPriceInfoClass();
             if (!$priceInfoClass) {
                 $priceInfoClass = ItemPriceInfo::class;

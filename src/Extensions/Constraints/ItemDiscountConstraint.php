@@ -19,7 +19,7 @@ abstract class ItemDiscountConstraint extends DiscountConstraint
      * Checks that an item can be discounted for configured constraints.
      * If any constraint check fails, the entire function returns false;
      */
-    public static function match(OrderItem $item, Discount $discount): bool
+    public static function match(OrderItem $orderItem, Discount $discount): bool
     {
         $itemconstraints = ClassInfo::subclassesFor(self::class);
 
@@ -30,8 +30,8 @@ abstract class ItemDiscountConstraint extends DiscountConstraint
         //get only the configured item constraints
         $classes = array_intersect($itemconstraints, $configuredconstraints);
 
-        foreach ($classes as $constraint) {
-            if (!singleton($constraint)->itemMatchesCriteria($item, $discount)) {
+        foreach ($classes as $class) {
+            if (!singleton($class)->itemMatchesCriteria($orderItem, $discount)) {
                 return false;
             }
         }
@@ -43,16 +43,16 @@ abstract class ItemDiscountConstraint extends DiscountConstraint
      * Returns true if the given item sits within this constraint.
      * If there is no constraint set, then it should return true.
      */
-    abstract public function itemMatchesCriteria(OrderItem $item, Discount $discount): bool;
+    abstract public function itemMatchesCriteria(OrderItem $orderItem, Discount $discount): bool;
 
     /**
      * Check if at least one item in cart matches this criteria.
      */
     public function itemsInCart(Discount $discount): bool
     {
-        $items = $this->order->Items();
+        $hasManyList = $this->order->Items();
 
-        foreach ($items as $item) {
+        foreach ($hasManyList as $item) {
             if ($this->itemMatchesCriteria($item, $discount)) {
                 return true;
             }

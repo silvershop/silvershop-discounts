@@ -21,22 +21,22 @@ class CouponForm extends Form
 {
     protected CheckoutComponentConfig $config;
 
-    public function __construct(RequestHandler $controller, $name, Order $order)
+    public function __construct(RequestHandler $requestHandler, $name, Order $order)
     {
         $this->config = new CheckoutComponentConfig($order, false);
-        $this->config->addComponent($couponcompoent = new CouponCheckoutComponent());
+        $this->config->addComponent($couponCheckoutComponent = new CouponCheckoutComponent());
 
-        $validator = Injector::inst()->create(CheckoutComponentValidator::class, $this->config);
+        $checkoutComponentValidator = Injector::inst()->create(CheckoutComponentValidator::class, $this->config);
 
-        $fields = $this->config->getFormFields();
+        $fieldList = $this->config->getFormFields();
 
         $actions = FieldList::create(FormAction::create('applyCoupon', _t('ApplyCoupon', 'Apply coupon')));
 
-        parent::__construct($controller, $name, $fields, $actions, $validator);
+        parent::__construct($requestHandler, $name, $fieldList, $actions, $checkoutComponentValidator);
 
         $this->loadDataFrom($this->config->getData(), Form::MERGE_IGNORE_FALSEISH);
 
-        $storeddata = $couponcompoent->getData($order);
+        $storeddata = $couponCheckoutComponent->getData($order);
 
         if (isset($storeddata['Code'])) {
             $actions->push(
@@ -46,7 +46,7 @@ class CouponForm extends Form
 
         $order = $this->config->getOrder();
 
-        $controller->extend('updateCouponForm', $this, $order);
+        $requestHandler->extend('updateCouponForm', $this, $order);
     }
 
     public function applyCoupon($data, $form): HTTPResponse

@@ -79,7 +79,7 @@ class GiftVoucherOrderItem extends OrderItem
             return false;
         }
 
-        $coupon = OrderCoupon::create(
+        $orderCoupon = OrderCoupon::create(
             [
             'Title' => $this->Product()->Title,
             'Type' => 'Amount',
@@ -89,19 +89,19 @@ class GiftVoucherOrderItem extends OrderItem
             ]
         );
 
-        $this->extend('updateCreateCupon', $coupon);
+        $this->extend('updateCreateCupon', $orderCoupon);
 
-        $coupon->write();
+        $orderCoupon->write();
 
-        $this->Coupons()->add($coupon);
+        $this->Coupons()->add($orderCoupon);
 
-        return $coupon;
+        return $orderCoupon;
     }
 
     /*
      * Send the voucher to the appropriate email
      */
-    public function sendVoucher(OrderCoupon $coupon): bool
+    public function sendVoucher(OrderCoupon $orderCoupon): bool
     {
         $from = Email::config()->admin_email;
         $to = $this->Order()->getLatestEmail();
@@ -113,11 +113,11 @@ class GiftVoucherOrderItem extends OrderItem
         $email->setHTMLTemplate('GiftVoucherEmail');
         $email->setData(
             [
-                'Coupon' => $coupon
+                'Coupon' => $orderCoupon
             ]
         );
 
-        $this->extend('updateVoucherMail', $email, $coupon);
+        $this->extend('updateVoucherMail', $email, $orderCoupon);
 
         try {
             $email->send();

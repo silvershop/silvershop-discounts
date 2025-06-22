@@ -35,7 +35,7 @@ class ValueDiscountConstraintTest extends SapphireTest
 
     public function testMinOrderValue(): void
     {
-        $coupon = OrderCoupon::create(
+        $orderCoupon = OrderCoupon::create(
             [
             'Title' => 'Orders 200 and more',
             'Code' => '200PLUS',
@@ -46,12 +46,12 @@ class ValueDiscountConstraintTest extends SapphireTest
             'MinOrderValue' => 200
             ]
         );
-        $coupon->write();
+        $orderCoupon->write();
 
-        $context = ['CouponCode' => $coupon->Code];
-        $this->assertFalse($coupon->validateOrder($this->cart, $context), "$8 order isn't enough");
-        $this->assertTrue($coupon->validateOrder($this->othercart, $context), '$200 is enough');
-        $this->assertTrue($coupon->validateOrder($this->placedorder, $context), '$500 order is enough');
+        $context = ['CouponCode' => $orderCoupon->Code];
+        $this->assertFalse($orderCoupon->validateOrder($this->cart, $context), "$8 order isn't enough");
+        $this->assertTrue($orderCoupon->validateOrder($this->othercart, $context), '$200 is enough');
+        $this->assertTrue($orderCoupon->validateOrder($this->placedorder, $context), '$500 order is enough');
 
         $calculator = new Calculator($this->cart, $context);
         $this->assertEquals(0, $calculator->calculate());

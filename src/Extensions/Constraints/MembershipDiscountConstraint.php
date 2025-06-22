@@ -21,10 +21,10 @@ class MembershipDiscountConstraint extends DiscountConstraint
         'Members' => Member::class
     ];
 
-    public function updateCMSFields(FieldList $fields): void
+    public function updateCMSFields(FieldList $fieldList): void
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldToTab(
+            $fieldList->addFieldToTab(
                 'Root.Constraints.ConstraintsTabs.Membership',
                 GridField::create(
                     'Members',
@@ -38,26 +38,26 @@ class MembershipDiscountConstraint extends DiscountConstraint
         }
     }
 
-    public function filter(DataList $list): DataList
+    public function filter(DataList $dataList): DataList
     {
         $memberid = 0;
         if ($member = $this->getMember()) {
             $memberid = $member->ID;
         }
 
-        $list = $list->leftJoin(
+        $dataList = $dataList->leftJoin(
             'SilverShop_Discount_Members',
             '"SilverShop_Discount_Members"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
         )->where('("SilverShop_Discount_Members"."MemberID" IS NULL) OR "SilverShop_Discount_Members"."MemberID" = ' . $memberid);
 
-        return $list;
+        return $dataList;
     }
 
     public function check(Discount $discount): bool
     {
-        $members = $discount->Members();
+        $manyManyList = $discount->Members();
         $member = $this->getMember();
-        if ($members->exists() && (!$member instanceof Member || !$members->byID($member->ID))) {
+        if ($manyManyList->exists() && (!$member instanceof Member || !$manyManyList->byID($member->ID))) {
             $this->error(
                 _t(
                     'Discount.MEMBERSHIP',

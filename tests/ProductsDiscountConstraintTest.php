@@ -56,46 +56,46 @@ class ProductsDiscountConstraintTest extends SapphireTest
 
     public function testProducts(): void
     {
-        $discount = OrderDiscount::create(
+        $orderDiscount = OrderDiscount::create(
             [
             'Title' => '20% off each selected products',
             'Percent' => 0.2
             ]
         );
-        $discount->write();
-        $discount->Products()->add($this->objFromFixture(Product::class, 'tshirt'));
-        $this->assertFalse($discount->validateOrder($this->cart));
+        $orderDiscount->write();
+        $orderDiscount->Products()->add($this->objFromFixture(Product::class, 'tshirt'));
+        $this->assertFalse($orderDiscount->validateOrder($this->cart));
         //no products match
         $this->assertListEquals([], OrderDiscount::get_matching($this->cart));
         //add product discount list
-        $discount->Products()->add($this->objFromFixture(Product::class, 'tshirt'));
-        $this->assertFalse($discount->validateOrder($this->cart));
+        $orderDiscount->Products()->add($this->objFromFixture(Product::class, 'tshirt'));
+        $this->assertFalse($orderDiscount->validateOrder($this->cart));
         //no products match
         $this->assertListEquals([], OrderDiscount::get_matching($this->cart));
     }
 
     public function testProductsCoupon(): void
     {
-        $coupon = OrderCoupon::create(
+        $orderCoupon = OrderCoupon::create(
             [
             'Title' => 'Selected products',
             'Code' => 'PRODUCTS',
             'Percent' => 0.2
             ]
         );
-        $coupon->write();
-        $coupon->Products()->add($this->objFromFixture(Product::class, 'tshirt'));
+        $orderCoupon->write();
+        $orderCoupon->Products()->add($this->objFromFixture(Product::class, 'tshirt'));
 
         $calculator = new Calculator(
             $this->placedorder,
             [
-            'CouponCode' => $coupon->Code
+            'CouponCode' => $orderCoupon->Code
             ]
         );
 
         $this->assertEquals($calculator->calculate(), 20);
         //add another product to coupon product list
-        $coupon->Products()->add($this->objFromFixture(Product::class, 'mp3player'));
+        $orderCoupon->Products()->add($this->objFromFixture(Product::class, 'mp3player'));
         $this->assertEquals($calculator->calculate(), 100);
     }
 
@@ -149,11 +149,11 @@ class ProductsDiscountConstraintTest extends SapphireTest
 
     public function testProductDiscountWithUnpublishedProduct(): void
     {
-        $unpublishedSocks = $this->socks->duplicate();
-        $unpublishedSocks->writeToStage('Stage');
-        $unpublishedSocks->doUnpublish();
+        $product = $this->socks->duplicate();
+        $product->writeToStage('Stage');
+        $product->doUnpublish();
 
-        $discount = OrderDiscount::create(
+        $orderDiscount = OrderDiscount::create(
             [
             'Title' => '20% off each selected products',
             'Percent' => 0.2,
@@ -162,8 +162,8 @@ class ProductsDiscountConstraintTest extends SapphireTest
             ]
         );
 
-        $discount->write();
-        $discount->Products()->add($unpublishedSocks);
+        $orderDiscount->write();
+        $orderDiscount->Products()->add($product);
 
         $order = $this->objFromFixture(Order::class, 'othercart');
         $calculator = new Calculator($order);

@@ -20,12 +20,12 @@ class CheckoutStepDiscount extends CheckoutStep
 
     protected function checkoutconfig(): CheckoutComponentConfig
     {
-        $config = new CheckoutComponentConfig(ShoppingCart::curr(), true);
-        $config->addComponent($comp = new CouponCheckoutComponent());
+        $checkoutComponentConfig = new CheckoutComponentConfig(ShoppingCart::curr(), true);
+        $checkoutComponentConfig->addComponent($couponCheckoutComponent = new CouponCheckoutComponent());
 
-        $comp->setValidWhenBlank(true);
+        $couponCheckoutComponent->setValidWhenBlank(true);
 
-        return $config;
+        return $checkoutComponentConfig;
     }
 
     public function discount(): array
@@ -37,13 +37,13 @@ class CheckoutStepDiscount extends CheckoutStep
 
     public function CouponForm(): CheckoutForm
     {
-        $form = CheckoutForm::create($this->owner, 'CouponForm', $this->checkoutconfig());
-        $form->setActions(
+        $checkoutForm = CheckoutForm::create($this->owner, 'CouponForm', $this->checkoutconfig());
+        $checkoutForm->setActions(
             FieldList::create(FormAction::create('setcoupon', _t('SilverShop\Checkout\Step\CheckoutStep.Continue', 'Continue')))
         );
-        $this->owner->extend('updateCouponForm', $form);
+        $this->owner->extend('updateCouponForm', $checkoutForm);
 
-        return $form;
+        return $checkoutForm;
     }
 
     public function setcoupon($data, $form)

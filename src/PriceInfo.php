@@ -31,11 +31,11 @@ class PriceInfo
         return $this->currentprice;
     }
 
-    public function adjustPrice(Adjustment $a): void
+    public function adjustPrice(Adjustment $adjustment): void
     {
-        $this->currentprice -= $a->getValue();
-        $this->setBestAdjustment($a);
-        $this->adjustments[] = $a;
+        $this->currentprice -= $adjustment->getValue();
+        $this->setBestAdjustment($adjustment);
+        $this->adjustments[] = $adjustment;
     }
 
     public function getCompoundedDiscount(): int|float
@@ -66,11 +66,11 @@ class PriceInfo
      * Sets the best adjustment, if the passed adjustment
      * is indeed better.
      *
-     * @param Adjustment $candidate for better adjustment
+     * @param Adjustment $adjustment for better adjustment
      */
-    protected function setBestAdjustment(Adjustment $candidate): void
+    protected function setBestAdjustment(Adjustment $adjustment): void
     {
         $this->bestadjustment = $this->bestadjustment instanceof Adjustment ?
-            Adjustment::better_of($this->bestadjustment, $candidate) : $candidate;
+            Adjustment::better_of($this->bestadjustment, $adjustment) : $adjustment;
     }
 }

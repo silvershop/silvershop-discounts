@@ -19,9 +19,9 @@ class GroupDiscountConstraint extends DiscountConstraint
         'Group' => Group::class
     ];
 
-    public function updateCMSFields(FieldList $fields): void
+    public function updateCMSFields(FieldList $fieldList): void
     {
-        $fields->addFieldToTab(
+        $fieldList->addFieldToTab(
             'Root.Constraints.ConstraintsTabs.Membership',
             DropdownField::create(
                 'GroupID',
@@ -32,7 +32,7 @@ class GroupDiscountConstraint extends DiscountConstraint
         );
     }
 
-    public function filter(DataList $list): DataList
+    public function filter(DataList $dataList): DataList
     {
         $groupids = [0];
         if ($member = $this->getMember()) {
@@ -41,7 +41,7 @@ class GroupDiscountConstraint extends DiscountConstraint
                 ->toArray();
         }
 
-        return $list->filter('GroupID', $groupids);
+        return $dataList->filter('GroupID', $groupids);
     }
 
     public function check(Discount $discount): bool

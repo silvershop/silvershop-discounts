@@ -75,7 +75,7 @@ class OrderCouponTest extends SapphireTest
 
     public function testPercent(): void
     {
-        $coupon = OrderCoupon::create(
+        $orderCoupon = OrderCoupon::create(
             [
             'Title' => '40% off each item',
             'Code' => '5B97AA9D75',
@@ -85,17 +85,17 @@ class OrderCouponTest extends SapphireTest
             'EndDate' => '2200-01-01 12:00:00'
             ]
         );
-        $coupon->write();
+        $orderCoupon->write();
 
-        $context = ['CouponCode' => $coupon->Code];
-        $this->assertTrue($coupon->validateOrder($this->cart, $context), (string)$coupon->getMessage());
-        $this->assertEquals(4, $coupon->getDiscountValue(10), '40% off value');
-        $this->assertEquals(200, $this->calc($this->unpaid, $coupon), '40% off order');
+        $context = ['CouponCode' => $orderCoupon->Code];
+        $this->assertTrue($orderCoupon->validateOrder($this->cart, $context), (string)$orderCoupon->getMessage());
+        $this->assertEquals(4, $orderCoupon->getDiscountValue(10), '40% off value');
+        $this->assertEquals(200, $this->calc($this->unpaid, $orderCoupon), '40% off order');
     }
 
     public function testAmount(): void
     {
-        $coupon = OrderCoupon::create(
+        $orderCoupon = OrderCoupon::create(
             [
             'Title' => '$10 off each item',
             'Code' => 'TENDOLLARSOFF',
@@ -104,19 +104,19 @@ class OrderCouponTest extends SapphireTest
             'Active' => 1
             ]
         );
-        $coupon->write();
+        $orderCoupon->write();
 
-        $context = ['CouponCode' => $coupon->Code];
-        $this->assertTrue($coupon->validateOrder($this->cart, $context), (string)$coupon->getMessage());
-        $this->assertEquals($coupon->getDiscountValue(1000), 10, '$10 off fixed value');
-        $this->assertTrue($coupon->validateOrder($this->unpaid, $context), (string)$coupon->getMessage());
-        $this->assertEquals(60, $this->calc($this->unpaid, $coupon), '$10 off each item: $60 total');
+        $context = ['CouponCode' => $orderCoupon->Code];
+        $this->assertTrue($orderCoupon->validateOrder($this->cart, $context), (string)$orderCoupon->getMessage());
+        $this->assertEquals($orderCoupon->getDiscountValue(1000), 10, '$10 off fixed value');
+        $this->assertTrue($orderCoupon->validateOrder($this->unpaid, $context), (string)$orderCoupon->getMessage());
+        $this->assertEquals(60, $this->calc($this->unpaid, $orderCoupon), '$10 off each item: $60 total');
         //TODO: test amount that is greater than item value
     }
 
     public function testInactiveCoupon(): void
     {
-        $inactivecoupon = OrderCoupon::create(
+        $orderCoupon = OrderCoupon::create(
             [
             'Title' => 'Not active',
             'Code' => 'EE891574D6',
@@ -125,19 +125,19 @@ class OrderCouponTest extends SapphireTest
             'Active' => 0
             ]
         );
-        $inactivecoupon->write();
+        $orderCoupon->write();
 
-        $context = ['CouponCode' => $inactivecoupon->Code];
-        $this->assertFalse($inactivecoupon->validateOrder($this->cart, $context), 'Coupon is not set to active');
+        $context = ['CouponCode' => $orderCoupon->Code];
+        $this->assertFalse($orderCoupon->validateOrder($this->cart, $context), 'Coupon is not set to active');
     }
 
-    protected function getCalculator(Order $order, OrderCoupon $coupon): Calculator
+    protected function getCalculator(Order $order, OrderCoupon $orderCoupon): Calculator
     {
-        return new Calculator($order, ['CouponCode' => $coupon->Code]);
+        return new Calculator($order, ['CouponCode' => $orderCoupon->Code]);
     }
 
-    protected function calc(Order $order, OrderCoupon $order_coupon): int|float
+    protected function calc(Order $order, OrderCoupon $orderCoupon): int|float
     {
-        return $this->getCalculator($order, $order_coupon)->calculate();
+        return $this->getCalculator($order, $orderCoupon)->calculate();
     }
 }

@@ -44,13 +44,13 @@ class OrderDiscountTest extends SapphireTest
             'Amount' => 5
             ]
         )->write();
-        $matches = OrderDiscount::get_matching($this->cart);
+        $arrayList = OrderDiscount::get_matching($this->cart);
         $this->assertListEquals(
             [
             ['Title' => '10% off'],
             ['Title' => '$5 off'],
             ],
-            $matches
+            $arrayList
         );
     }
 
@@ -91,7 +91,7 @@ class OrderDiscountTest extends SapphireTest
     public function testUseCount(): void
     {
         //check that order with payment started counts as a use
-        $discount = $this->objFromFixture(OrderDiscount::class, 'paymentused');
+        $orderDiscount = $this->objFromFixture(OrderDiscount::class, 'paymentused');
         $payment = $this->objFromFixture(Payment::class, 'paymentstarted_recent');
 
         // set timeout to 60 minutes
@@ -99,15 +99,15 @@ class OrderDiscountTest extends SapphireTest
         //set payment to be created 20 min ago
         $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->write();
-        $this->assertEquals(1, $discount->getUseCount());
+        $this->assertEquals(1, $orderDiscount->getUseCount());
         //set payment ot be created 2 days ago
         $payment->Created = date('Y-m-d H:i:s', strtotime('-2 days'));
         $payment->write();
-        $this->assertEquals(0, $discount->getUseCount());
+        $this->assertEquals(0, $orderDiscount->getUseCount());
         //failed payments should be ignored
         $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->Status = 'Void';
         $payment->write();
-        $this->assertEquals(0, $discount->getUseCount());
+        $this->assertEquals(0, $orderDiscount->getUseCount());
     }
 }

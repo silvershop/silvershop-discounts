@@ -8,16 +8,16 @@ class ItemFixedDiscount extends ItemDiscountAction
 {
     public function perform(): void
     {
-        foreach ($this->infoitems as $info) {
-            if (!$this->itemQualifies($info)) {
+        foreach ($this->infoitems as $infoitem) {
+            if (!$this->itemQualifies($infoitem)) {
                 continue;
             }
 
-            $amount = $this->discount->getDiscountValue($info->getOriginalPrice());
-            $amount *= $info->getQuantity();
+            $amount = $this->discount->getDiscountValue($infoitem->getOriginalPrice());
+            $amount *= $infoitem->getQuantity();
             $amount = $this->limit($amount);
 
-            $info->adjustPrice(new Adjustment($amount, $this->discount));
+            $infoitem->adjustPrice(new Adjustment($amount, $this->discount));
 
             //break the loop if there is no discountable amount left
             if (!$this->hasRemainingDiscount()) {

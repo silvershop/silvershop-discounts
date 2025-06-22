@@ -63,9 +63,9 @@ class OrderCoupon extends Discount
     {
         $length = $length !== null && $length !== 0 ? $length : self::config()->generated_code_length;
         $code = null;
-        $generator = Injector::inst()->create(RandomGenerator::class);
+        $randomGenerator = Injector::inst()->create(RandomGenerator::class);
         do {
-            $code = $prefix . strtoupper(substr($generator->randomToken(), 0, $length));
+            $code = $prefix . strtoupper(substr($randomGenerator->randomToken(), 0, $length));
         } while (self::get()->filter('Code:nocase', $code)->exists()
         );
 
@@ -74,8 +74,8 @@ class OrderCoupon extends Discount
 
     public function getCMSFields($params = null)
     {
-        $fields = parent::getCMSFields();
-        $fields->addFieldsToTab(
+        $fieldList = parent::getCMSFields();
+        $fieldList->addFieldsToTab(
             'Root.Main',
             [
                 $codefield = TextField::create('Code')->setMaxLength(25),
@@ -83,23 +83,23 @@ class OrderCoupon extends Discount
             'Active'
         );
         if ($this->owner->Code && $codefield) {
-            $fields->replaceField(
+            $fieldList->replaceField(
                 'Code',
                 $codefield->performReadonlyTransformation()
             );
         }
 
-        return $fields;
+        return $fieldList;
     }
 
     public function validate(): ValidationResult
     {
-        $result = parent::validate();
+        $validationResult = parent::validate();
         $minLength = self::config()->minimum_code_length;
         $code = $this->getField('Code');
 
         if ($minLength && $code && $this->isChanged('Code') && strlen($code) < $minLength) {
-            $result->addError(
+            $validationResult->addError(
                 _t(
                     'OrderCoupon.INVALIDMINLENGTH',
                     'Coupon code must be at least {length} characters in length',
@@ -110,7 +110,7 @@ class OrderCoupon extends Discount
             );
         }
 
-        return $result;
+        return $validationResult;
     }
 
     protected function onBeforeWrite(): void

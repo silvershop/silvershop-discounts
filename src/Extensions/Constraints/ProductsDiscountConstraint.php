@@ -28,10 +28,10 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
         'Products' => Product::class
     ];
 
-    public function updateCMSFields(FieldList $fields): void
+    public function updateCMSFields(FieldList $fieldList): void
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldsToTab(
+            $fieldList->addFieldsToTab(
                 'Root.Constraints.ConstraintsTabs.Product',
                 [
                     GridField::create(
@@ -61,10 +61,10 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
                 function () use ($discount, &$productIds): void {
                     Versioned::set_stage(Versioned::DRAFT);
 
-                    $products = $discount->Products();
+                    $manyManyList = $discount->Products();
 
-                    if ($products->exists()) {
-                        $productIds = $products->map('ID', 'ID')->toArray();
+                    if ($manyManyList->exists()) {
+                        $productIds = $manyManyList->map('ID', 'ID')->toArray();
                     }
                 }
             );
@@ -98,13 +98,13 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
         return $incart;
     }
 
-    public function itemMatchesCriteria(OrderItem $item, Discount $discount): bool
+    public function itemMatchesCriteria(OrderItem $orderItem, Discount $discount): bool
     {
-        $products = $discount->Products();
-        $itemproduct = $item->Product(true); // true forces the current version of product to be retrieved.
+        $manyManyList = $discount->Products();
+        $itemproduct = $orderItem->Product(true); // true forces the current version of product to be retrieved.
 
-        if ($products->exists()) {
-            foreach ($products as $product) {
+        if ($manyManyList->exists()) {
+            foreach ($manyManyList as $product) {
                 // uses 'DiscountedProductID' since some subclasses of buyable could be used as the item product (such as
                 // a bundle) rather than the product stored.
                 if ($product->ID == $itemproduct->DiscountedProductID) {

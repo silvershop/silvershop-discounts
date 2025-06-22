@@ -13,14 +13,14 @@ class ItemPriceInfo extends PriceInfo
 
     protected int|float $quantity = 0;
 
-    public function __construct(OrderItem $item)
+    public function __construct(OrderItem $orderItem)
     {
-        $this->item = $item;
-        $this->quantity = $item->Quantity;
+        $this->item = $orderItem;
+        $this->quantity = $orderItem->Quantity;
 
-        $originalprice = $item->hasMethod('DiscountableAmount') ?
-                            $item->DiscountableAmount() :
-                            $item->UnitPrice();
+        $originalprice = $orderItem->hasMethod('DiscountableAmount') ?
+                            $orderItem->DiscountableAmount() :
+                            $orderItem->UnitPrice();
 
         parent::__construct($originalprice);
     }

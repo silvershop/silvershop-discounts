@@ -14,14 +14,14 @@ class CodeDiscountConstraint extends DiscountConstraint
         'Code' => 'Varchar(25)'
     ];
 
-    public function filter(DataList $list): DataList
+    public function filter(DataList $dataList): DataList
     {
         if (($code = $this->findCouponCode()) !== null && ($code = $this->findCouponCode()) !== '' && ($code = $this->findCouponCode()) !== '0') {
-            return $list
+            return $dataList
                 ->where(sprintf("(\"Code\" IS NULL) OR (\"Code\" = '%s')", $code));
         }
 
-        return $list->where('"Code" IS NULL');
+        return $dataList->where('"Code" IS NULL');
     }
 
     public function check(Discount $discount): bool

@@ -51,10 +51,10 @@ class DiscountModelAdmin extends ModelAdmin
         if ($grid = $form->Fields()->fieldByName(OrderCoupon::class)) {
             $grid->getConfig()
                 ->addComponent(
-                    $link = new GridField_LinkComponent('Generate Multiple Coupons', $this->Link() . '/generatecoupons'),
+                    $gridFieldLinkComponent = new GridField_LinkComponent('Generate Multiple Coupons', $this->Link() . '/generatecoupons'),
                     'GridFieldExportButton'
                 );
-            $link->addExtraClass('ss-ui-action-constructive');
+            $gridFieldLinkComponent->addExtraClass('ss-ui-action-constructive');
         }
 
         $descriptions = self::config()->get('model_descriptions');
@@ -108,12 +108,12 @@ class DiscountModelAdmin extends ModelAdmin
 
     public function GenerateCouponsForm(): Form
     {
-        $fields = OrderCoupon::create()->getCMSFields();
-        $fields->removeByName('Code');
-        $fields->removeByName('GiftVoucherID');
-        $fields->removeByName('SaveNote');
+        $fieldList = OrderCoupon::create()->getCMSFields();
+        $fieldList->removeByName('Code');
+        $fieldList->removeByName('GiftVoucherID');
+        $fieldList->removeByName('SaveNote');
 
-        $fields->addFieldsToTab(
+        $fieldList->addFieldsToTab(
             'Root.Main',
             [
             NumericField::create('Number', 'Number of Coupons'),
@@ -133,14 +133,14 @@ class DiscountModelAdmin extends ModelAdmin
         );
 
         $actions = FieldList::create(FormAction::create('generate', 'Generate'));
-        $validator = new RequiredFields(
+        $requiredFields = new RequiredFields(
             [
             'Title',
             'Number',
             'Type'
             ]
         );
-        $form = Form::create($this, 'GenerateCouponsForm', $fields, $actions, $validator);
+        $form = Form::create($this, 'GenerateCouponsForm', $fieldList, $actions, $requiredFields);
         $form->addExtraClass('cms-edit-form cms-panel-padded center ui-tabs-panel ui-widget-content ui-corner-bottom');
         $form->setAttribute('data-pjax-fragment', 'CurrentForm');
         $form->setHTMLID('Form_EditForm');

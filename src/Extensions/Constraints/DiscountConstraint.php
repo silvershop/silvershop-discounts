@@ -47,9 +47,9 @@ abstract class DiscountConstraint extends Extension
      *
      * See predefined constraints for examples.
      */
-    public function filter(DataList $discounts): DataList
+    public function filter(DataList $dataList): DataList
     {
-        return $discounts;
+        return $dataList;
     }
 
     /**

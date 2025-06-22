@@ -166,21 +166,21 @@ class Discount extends DataObject implements PermissionProvider
         }
 
         // cull remaining invalid discounts problematically
-        $validdiscounts = ArrayList::create();
+        $arrayList = ArrayList::create();
 
         foreach ($discounts as $discount) {
             if ($discount->validateOrder($order, $context)) {
-                $validdiscounts->push($discount);
+                $arrayList->push($discount);
             }
         }
 
-        return $validdiscounts;
+        return $arrayList;
     }
 
     public function getCMSFields($params = null)
     {
         //fields that shouldn't be changed once coupon is used
-        $fields = FieldList::create([
+        $fieldList = FieldList::create([
             TabSet::create('Root', Tab::create('Main', TextField::create('Title'), CheckboxField::create('Active', 'Active')
                 ->setDescription('Enable/disable all use of this discount.'), HeaderField::create('ActionTitle', 'Action', 3), $typefield = SelectionGroup::create(
                 'Type',
@@ -225,7 +225,7 @@ class Discount extends DataObject implements PermissionProvider
         if (($count = $this->getUseCount()) !== 0) {
             $useHeader = _t('Discount.USEHEADER', 'Use Count: {count}', ['count' => $count]);
 
-            $fields->addFieldsToTab(
+            $fieldList->addFieldsToTab(
                 'Root.Usage',
                 [
                     HeaderField::create('UseCount', $useHeader),
@@ -242,37 +242,37 @@ class Discount extends DataObject implements PermissionProvider
 
         if ($params && isset($params['forcetype'])) {
             $valuefield = $params['forcetype'] === 'Percent' ? $percentfield : $amountfield;
-            $fields->insertAfter('Type', $valuefield);
-            $fields->makeFieldReadonly('Type');
+            $fieldList->insertAfter('Type', $valuefield);
+            $fieldList->makeFieldReadonly('Type');
         } elseif ($this->Type && (float)$this->{$this->Type}) {
             $valuefield = $this->Type === 'Percent' ? $percentfield : $amountfield;
 
-            $fields->makeFieldReadonly('Type');
-            $fields->insertAfter('ActionTitle', $valuefield);
+            $fieldList->makeFieldReadonly('Type');
+            $fieldList->insertAfter('ActionTitle', $valuefield);
 
-            $fields->replaceField(
+            $fieldList->replaceField(
                 $this->Type,
                 $valuefield->performReadonlyTransformation()
             );
 
             if ($this->Type === 'Percent') {
-                $fields->insertAfter('Percent', $maxamountfield);
+                $fieldList->insertAfter('Percent', $maxamountfield);
             }
         }
 
-        $this->extend('updateCMSFields', $fields, $params);
+        $this->extend('updateCMSFields', $fieldList, $params);
 
-        return $fields;
+        return $fieldList;
     }
 
     public function getDefaultSearchContext(): SearchContext
     {
-        $context = parent::getDefaultSearchContext();
+        $searchContext = parent::getDefaultSearchContext();
 
-        $fields = $context->getFields();
-        $fields->push(CheckboxField::create('HasBeenUsed'));
+        $fieldList = $searchContext->getFields();
+        $fieldList->push(CheckboxField::create('HasBeenUsed'));
 
-        $fields->push(
+        $fieldList->push(
             ToggleCompositeField::create(
                 'StartDate',
                 'Start Date',
@@ -282,7 +282,7 @@ class Discount extends DataObject implements PermissionProvider
                 ]
             )
         );
-        $fields->push(
+        $fieldList->push(
             ToggleCompositeField::create(
                 'EndDate',
                 'End Date',
@@ -296,29 +296,29 @@ class Discount extends DataObject implements PermissionProvider
         // must be enabled in config, because some sites may have many products = slow load time, or memory maxes out
         // future solution is using an ajaxified field
         if (self::config()->filter_by_product) {
-            $fields->push(
+            $fieldList->push(
                 ListboxField::create('Products', 'Products', Product::get()->map()->toArray())
             );
         }
 
         if (self::config()->filter_by_category) {
-            $fields->push(
+            $fieldList->push(
                 ListboxField::create('Categories', 'Categories', ProductCategory::get()->map()->toArray())
             );
         }
 
-        if ($field = $fields->fieldByName('Code')) {
+        if ($field = $fieldList->fieldByName('Code')) {
             $field->setDescription('This can be a partial match.');
         }
 
-        $filters = $context->getFilters();
+        $filters = $searchContext->getFilters();
         $filters['StartDateFrom'] = GreaterThanOrEqualFilter::create('StartDate');
         $filters['StartDateTo'] = LessThanOrEqualFilter::create('StartDate');
         $filters['EndDateFrom'] = GreaterThanOrEqualFilter::create('EndDate');
         $filters['EndDateTo'] = LessThanOrEqualFilter::create('EndDate');
-        $context->setFilters($filters);
+        $searchContext->setFilters($filters);
 
-        return $context;
+        return $searchContext;
     }
 
     /**

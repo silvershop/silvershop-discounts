@@ -20,14 +20,14 @@ class SpecificPricingExtension extends Extension
         'SpecificPrices' => SpecificPrice::class
     ];
 
-    public function updateCMSFields(FieldList $fields): void
+    public function updateCMSFields(FieldList $fieldList): void
     {
-        if ($tab = $fields->fieldByName('Root.Pricing')) {
-            $fields = $tab->Fields();
+        if ($tab = $fieldList->fieldByName('Root.Pricing')) {
+            $fieldList = $tab->Fields();
         }
 
-        if ($this->owner->isInDB() && ($fields->fieldByName('BasePrice') || $fields->fieldByName('Price'))) {
-            $fields->push(
+        if ($this->owner->isInDB() && ($fieldList->fieldByName('BasePrice') || $fieldList->fieldByName('Price'))) {
+            $fieldList->push(
                 GridField::create(
                     'SpecificPrices',
                     'Specific Prices',
@@ -40,10 +40,10 @@ class SpecificPricingExtension extends Extension
 
     public function updateSellingPrice(&$price): void
     {
-        $list = $this->owner->SpecificPrices()->filter(['Price:LessThan' => $price ]);
+        $hasManyList = $this->owner->SpecificPrices()->filter(['Price:LessThan' => $price ]);
 
-        if ($list->exists() && $specificprice = SpecificPrice::filter(
-            $list,
+        if ($hasManyList->exists() && $specificprice = SpecificPrice::filter(
+            $hasManyList,
             Security::getCurrentUser()
         )->first()
         ) {
