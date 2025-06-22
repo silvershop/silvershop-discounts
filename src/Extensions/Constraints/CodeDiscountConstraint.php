@@ -17,13 +17,11 @@ class CodeDiscountConstraint extends DiscountConstraint
     public function filter(DataList $list): DataList
     {
         if (($code = $this->findCouponCode()) !== null && ($code = $this->findCouponCode()) !== '' && ($code = $this->findCouponCode()) !== '0') {
-            $list = $list
+            return $list
                 ->where(sprintf("(\"Code\" IS NULL) OR (\"Code\" = '%s')", $code));
-        } else {
-            $list = $list->where('"Code" IS NULL');
         }
 
-        return $list;
+        return $list->where('"Code" IS NULL');
     }
 
     public function check(Discount $discount): bool

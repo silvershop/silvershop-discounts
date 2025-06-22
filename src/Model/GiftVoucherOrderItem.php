@@ -15,10 +15,6 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
  */
 class GiftVoucherOrderItem extends OrderItem
 {
-    /**
-     * @var LoggerInterface
-     */
-    public $Logger;
     private static array $db = [
         'GiftedTo' => 'Varchar'
     ];
@@ -37,7 +33,10 @@ class GiftVoucherOrderItem extends OrderItem
         'Logger' => '%$' . LoggerInterface::class,
     ];
 
-    protected LoggerInterface $logger;
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * Don't get unit price from product

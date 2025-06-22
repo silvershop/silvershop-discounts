@@ -98,7 +98,7 @@ class DiscountModelAdmin extends ModelAdmin
         }
 
         if (isset($params['Categories'])) {
-            $list = $list
+            return $list
                 ->innerJoin("Discount_Categories", "Discount_Categories.DiscountID = Discount.ID")
                 ->filter("Discount_Categories.ProductCategoryID", $params['Categories']);
         }

@@ -60,30 +60,34 @@ class SpecificPrice extends DataObject
 
     public function canView($member = null): bool
     {
-        return
-            parent::canView($member) ||
-            Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+        if (parent::canView($member)) {
+            return true;
+        }
+        return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
     public function canEdit($member = null): bool
     {
-        return
-            parent::canEdit($member) ||
-            Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+        if (parent::canEdit($member)) {
+            return true;
+        }
+        return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
     public function canCreate($member = null, $context = []): bool
     {
-        return
-            parent::canCreate($member, $context) ||
-            Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+        if (parent::canCreate($member, $context)) {
+            return true;
+        }
+        return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
     public function canDelete($member = null): bool
     {
-        return
-            parent::canDelete($member) ||
-            Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+        if (parent::canDelete($member)) {
+            return true;
+        }
+        return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
     public static function filter(DataList $list, $member = null): DataList
