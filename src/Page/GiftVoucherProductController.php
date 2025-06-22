@@ -31,6 +31,7 @@ class GiftVoucherProductController extends ProductController
             );
             $giftamount->setForm($form);
         }
+
         $form->setValidator(
             $validator = new GiftVoucherFormValidator(
                 [

@@ -44,10 +44,11 @@ class MembershipDiscountConstraint extends DiscountConstraint
         if ($member = $this->getMember()) {
             $memberid = $member->ID;
         }
+
         $list = $list->leftJoin(
             'SilverShop_Discount_Members',
             '"SilverShop_Discount_Members"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
-        )->where("(\"SilverShop_Discount_Members\".\"MemberID\" IS NULL) OR \"SilverShop_Discount_Members\".\"MemberID\" = $memberid");
+        )->where('("SilverShop_Discount_Members"."MemberID" IS NULL) OR "SilverShop_Discount_Members"."MemberID" = ' . $memberid);
 
         return $list;
     }

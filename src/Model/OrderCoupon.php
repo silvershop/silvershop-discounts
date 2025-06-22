@@ -40,7 +40,7 @@ class OrderCoupon extends Discount
 
     private static string $plural_name = 'Coupons';
 
-    private static $minimum_code_length = null;
+    private static $minimum_code_length;
 
     private static int $generated_code_length = 10;
 
@@ -151,19 +151,11 @@ class OrderCoupon extends Discount
 
     public function canDelete($member = null): bool
     {
-        if ($this->getUseCount() !== 0) {
-            return false;
-        }
-
-        return true;
+        return $this->getUseCount() === 0;
     }
 
     public function canEdit($member = null): bool
     {
-        if ($this->getUseCount() && !$this->Active) {
-            return false;
-        }
-
-        return true;
+        return !($this->getUseCount() && !$this->Active);
     }
 }

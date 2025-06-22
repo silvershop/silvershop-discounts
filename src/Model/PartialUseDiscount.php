@@ -70,6 +70,7 @@ class PartialUseDiscount extends Discount
         if (!$this->Active || $this->Child()->exists()) {
             return null;
         }
+
         $remainder = null;
         //only create remainder if used less than amount
         $amount = $this->getAmount();
@@ -103,7 +104,7 @@ class PartialUseDiscount extends Discount
         //prevent vital things from changing
         foreach ($this->config()->get('defaults') as $field => $value) {
             if ($this->isChanged($field)) {
-                $result->addError("$field should not be changed for partial use discounts.");
+                $result->addError($field . ' should not be changed for partial use discounts.');
             }
         }
 

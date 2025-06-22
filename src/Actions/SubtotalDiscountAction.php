@@ -31,9 +31,7 @@ class SubtotalDiscountAction extends DiscountAction
             $amount = $this->subtotal;
         }
 
-        $amount = $this->limit($amount);
-
-        return $amount;
+        return $this->limit($amount);
     }
 
     public function isForItems(): bool

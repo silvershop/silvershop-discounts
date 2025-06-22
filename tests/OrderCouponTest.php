@@ -18,13 +18,18 @@ class OrderCouponTest extends SapphireTest
     ];
 
     protected Order $cart;
+
     protected Order $unpaid;
+
     protected Order $othercart;
+
     protected Product $socks;
+
     protected Product $tshirt;
+
     protected Product $mp3player;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();
@@ -33,8 +38,10 @@ class OrderCouponTest extends SapphireTest
 
         $this->socks = $this->objFromFixture(Product::class, 'socks');
         $this->socks->publishRecursive();
+
         $this->tshirt = $this->objFromFixture(Product::class, 'tshirt');
         $this->tshirt->publishRecursive();
+
         $this->mp3player = $this->objFromFixture(Product::class, 'mp3player');
         $this->mp3player->publishRecursive();
 
@@ -79,6 +86,7 @@ class OrderCouponTest extends SapphireTest
             ]
         );
         $coupon->write();
+
         $context = ['CouponCode' => $coupon->Code];
         $this->assertTrue($coupon->validateOrder($this->cart, $context), (string)$coupon->getMessage());
         $this->assertEquals(4, $coupon->getDiscountValue(10), '40% off value');
@@ -118,6 +126,7 @@ class OrderCouponTest extends SapphireTest
             ]
         );
         $inactivecoupon->write();
+
         $context = ['CouponCode' => $inactivecoupon->Code];
         $this->assertFalse($inactivecoupon->validateOrder($this->cart, $context), 'Coupon is not set to active');
     }

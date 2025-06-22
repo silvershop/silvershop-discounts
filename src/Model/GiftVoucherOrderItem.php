@@ -31,11 +31,11 @@ class GiftVoucherOrderItem extends OrderItem
         'UnitPrice'
     ];
 
+    private static string $table_name = 'SilverShop_GiftVoucherOrderItem';
+
     private static array $dependencies = [
         'Logger' => '%$' . LoggerInterface::class,
     ];
-
-    private static string $table_name = 'SilverShop_GiftVoucherOrderItem';
 
     protected LoggerInterface $logger;
 
@@ -122,11 +122,17 @@ class GiftVoucherOrderItem extends OrderItem
 
         try {
             $email->send();
-        } catch (TransportExceptionInterface $e) {
-            $this->logger->error('GiftVoucherOrderItem.sendVoucher: error sending email in ' . __FILE__ . ' line ' . __LINE__ . ": {$e->getMessage()}");
+        } catch (TransportExceptionInterface $transportException) {
+            $this->logger->error('GiftVoucherOrderItem.sendVoucher: error sending email in ' . __FILE__ . ' line ' . __LINE__ . (': ' . $transportException->getMessage()));
             return false;
         }
 
         return true;
+    }
+
+    public function setLogger(LoggerInterface $logger): static
+    {
+        $this->logger = $logger;
+        return $this;
     }
 }

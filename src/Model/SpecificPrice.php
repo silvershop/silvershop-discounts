@@ -97,10 +97,10 @@ class SpecificPrice extends DataObject
         }
 
         $list = $list->where(
-            "(\"SilverShop_SpecificPrice\".\"StartDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"StartDate\" < '$now')"
+            sprintf("(\"SilverShop_SpecificPrice\".\"StartDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"StartDate\" < '%s')", $now)
         )
             ->where(
-                "(\"SilverShop_SpecificPrice\".\"EndDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"EndDate\" > '$nowminusone')"
+                sprintf("(\"SilverShop_SpecificPrice\".\"EndDate\" IS NULL) OR (\"SilverShop_SpecificPrice\".\"EndDate\" > '%s')", $nowminusone)
             )
             ->filter('GroupID', $groupids);
 

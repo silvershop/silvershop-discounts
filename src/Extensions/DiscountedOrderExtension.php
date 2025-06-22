@@ -80,6 +80,7 @@ class DiscountedOrderExtension extends Extension
         foreach ($this->owner->Items() as $item) {
             $item->Discounts()->removeAll();
         }
+
         foreach ($this->owner->Modifiers() as $modifier) {
             if ($modifier instanceof OrderDiscountModifier) {
                 $modifier->Discounts()->removeAll();

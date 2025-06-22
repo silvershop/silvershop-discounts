@@ -22,6 +22,7 @@ class CheckoutStepDiscount extends CheckoutStep
     {
         $config = new CheckoutComponentConfig(ShoppingCart::curr(), true);
         $config->addComponent($comp = new CouponCheckoutComponent());
+
         $comp->setValidWhenBlank(true);
 
         return $config;

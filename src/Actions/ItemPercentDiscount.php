@@ -12,6 +12,7 @@ class ItemPercentDiscount extends ItemDiscountAction
             if (!$this->itemQualifies($info)) {
                 continue;
             }
+
             $amount = $this->discount->getDiscountValue($info->getOriginalPrice());
             $amount *= $info->getQuantity();
             $amount = $this->limit($amount);

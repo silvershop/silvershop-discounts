@@ -136,6 +136,7 @@ class Calculator
                     new Adjustment($action->perform(), $discount)
                 );
             }
+
             //select best shipping-level disount
             if (($bestadjustment = $shippingpriceinfo->getBestAdjustment()) instanceof Adjustment) {
                 $discount = $bestadjustment->getAdjuster();
@@ -195,8 +196,10 @@ class Calculator
             if (!$priceInfoClass) {
                 $priceInfoClass = ItemPriceInfo::class;
             }
+
             $output[] = Injector::inst()->createWithArgs($priceInfoClass, [$item]);
         }
+
         return $output;
     }
 

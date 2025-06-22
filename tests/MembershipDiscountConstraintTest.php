@@ -17,7 +17,7 @@ class MembershipDiscountConstraintTest extends SapphireTest
 
     protected Order $cart;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();

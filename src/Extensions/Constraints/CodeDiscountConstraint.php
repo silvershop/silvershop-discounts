@@ -18,7 +18,7 @@ class CodeDiscountConstraint extends DiscountConstraint
     {
         if (($code = $this->findCouponCode()) !== null && ($code = $this->findCouponCode()) !== '' && ($code = $this->findCouponCode()) !== '0') {
             $list = $list
-                ->where("(\"Code\" IS NULL) OR (\"Code\" = '$code')");
+                ->where(sprintf("(\"Code\" IS NULL) OR (\"Code\" = '%s')", $code));
         } else {
             $list = $list->where('"Code" IS NULL');
         }
@@ -31,7 +31,7 @@ class CodeDiscountConstraint extends DiscountConstraint
         $code = strtolower($this->findCouponCode() ?? '');
 
         if ($discount->Code && ($code !== strtolower($discount->Code ?? ''))) {
-            $this->error("Coupon code doesn't match $code");
+            $this->error("Coupon code doesn't match " . $code);
             return false;
         }
 

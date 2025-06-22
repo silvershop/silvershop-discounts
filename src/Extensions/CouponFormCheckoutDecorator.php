@@ -21,6 +21,7 @@ class CouponFormCheckoutDecorator extends Extension
         if (($cart = ShoppingCart::curr()) instanceof Order) {
             return CouponForm::create($this->owner, 'CouponForm', $cart);
         }
+
         return null;
     }
 }

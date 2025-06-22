@@ -65,10 +65,6 @@ class GiftVoucherProduct extends Product
             return false;
         }
 
-        if (!$this->isPublished()) {
-            return false;
-        }
-
-        return true;
+        return (bool) $this->isPublished();
     }
 }

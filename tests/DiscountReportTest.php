@@ -14,7 +14,7 @@ class DiscountReportTest extends SapphireTest
 
     public function testDiscountReport(): void
     {
-        $discount = $this->objFromFixture(OrderDiscount::class, 'used');
+        $this->objFromFixture(OrderDiscount::class, 'used');
         $report = DiscountReport::create();
         $records = $report->sourceRecords([]);
         $this->assertEquals(44, $records->find('Title', 'Limited Discount')->getSavingsTotal());

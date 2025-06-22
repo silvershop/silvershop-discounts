@@ -18,15 +18,22 @@ class ProductsDiscountConstraintTest extends SapphireTest
     ];
 
     protected Order $cart;
+
     protected Order $megacart;
+
     protected Order $modifiedcart;
+
     protected Order $othercart;
+
     protected Order $placedorder;
+
     protected Product $mp3player;
+
     protected Product $socks;
+
     protected Product $tshirt;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -39,8 +46,10 @@ class ProductsDiscountConstraintTest extends SapphireTest
 
         $this->socks = $this->objFromFixture(Product::class, 'socks');
         $this->socks->publishRecursive();
+
         $this->tshirt = $this->objFromFixture(Product::class, 'tshirt');
         $this->tshirt->publishRecursive();
+
         $this->mp3player = $this->objFromFixture(Product::class, 'mp3player');
         $this->mp3player->publishRecursive();
     }

@@ -88,9 +88,6 @@ class OrderDiscountModifier extends OrderModifier
         return $this->getUsedCodes();
     }
 
-    /**
-     * @return string
-     */
     public function getUsedCodes(): string
     {
         $discounts = $this->Order()->Discounts()->filter("Code:not", "");

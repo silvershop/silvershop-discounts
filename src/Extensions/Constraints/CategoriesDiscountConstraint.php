@@ -61,11 +61,13 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         if (empty($discountcategoryids)) {
             return true;
         }
+
         //get category ids from buyable
         $buyable = $item->Buyable();
         if (!method_exists($buyable, 'getCategoryIDs')) {
             return false;
         }
+
         $ids = array_intersect(
             $buyable->getCategoryIDs(),
             $discountcategoryids

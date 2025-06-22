@@ -87,7 +87,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
 
         $incart = $discount->ExactProducts ?
             array_values($productIds) === array_values($intersection) :
-            count($intersection) > 0;
+            $intersection !== [];
 
         if (!$incart) {
             $this->error(

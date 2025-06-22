@@ -13,9 +13,10 @@ class GiftVoucherTest extends SapphireTest
     ];
 
     protected GiftVoucherProduct $fixed10;
+
     protected GiftVoucherProduct $variable;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

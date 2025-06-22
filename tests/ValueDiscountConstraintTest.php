@@ -11,15 +11,19 @@ use SilverShop\Model\Order;
 class ValueDiscountConstraintTest extends SapphireTest
 {
 
+    public $placedorder;
+
     protected static $fixture_file = [
         'shop.yml'
     ];
 
     protected Order $cart;
+
     protected Order $othercart;
+
     protected Order $placeorder;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();
@@ -43,6 +47,7 @@ class ValueDiscountConstraintTest extends SapphireTest
             ]
         );
         $coupon->write();
+
         $context = ['CouponCode' => $coupon->Code];
         $this->assertFalse($coupon->validateOrder($this->cart, $context), "$8 order isn't enough");
         $this->assertTrue($coupon->validateOrder($this->othercart, $context), '$200 is enough');

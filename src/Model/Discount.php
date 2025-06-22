@@ -127,9 +127,6 @@ class Discount extends DataObject implements PermissionProvider
      */
     private static int $unpaid_use_timeout = 10;
 
-    /**
-     * @return array
-     */
     public function getConstraints(): array
     {
         $extensions = $this->getExtensionInstances();
@@ -498,6 +495,7 @@ class Discount extends DataObject implements PermissionProvider
         if ($this->ForCart) {
             return 'Cart';
         }
+
         return null;
     }
 
@@ -525,11 +523,11 @@ class Discount extends DataObject implements PermissionProvider
 
         if ($includeunpaid) {
             $minutes = self::config()->unpaid_use_timeout;
-            $timeouttime = date('Y-m-d H:i:s', strtotime("-{$minutes} minutes"));
+            $timeouttime = date('Y-m-d H:i:s', strtotime(sprintf('-%s minutes', $minutes)));
             $orders = $orders->leftJoin('Omnipay_Payment', '"Omnipay_Payment"."OrderID" = "SilverShop_Order"."ID"')
                 ->where(
                     '("SilverShop_Order"."Paid" IS NOT NULL) OR ' .
-                        "(\"Omnipay_Payment\".\"Created\" > '$timeouttime' AND \"Omnipay_Payment\".\"Status\" NOT IN('Refunded', 'Void'))"
+                        sprintf("(\"Omnipay_Payment\".\"Created\" > '%s' AND \"Omnipay_Payment\".\"Status\" NOT IN('Refunded', 'Void'))", $timeouttime)
                 );
         } else {
             $orders = $orders->where('"SilverShop_Order"."Paid" IS NOT NULL');
@@ -643,7 +641,6 @@ class Discount extends DataObject implements PermissionProvider
      * @deprecated
      * @param      $order
      * @param      array $context
-     * @return     bool
      */
     public function valid(Order $order, $context = []): bool
     {

@@ -21,7 +21,6 @@ abstract class ItemDiscountConstraint extends DiscountConstraint
      */
     public static function match(OrderItem $item, Discount $discount): bool
     {
-        $singletons = [];
         $itemconstraints = ClassInfo::subclassesFor(self::class);
 
         array_shift($itemconstraints); //exclude abstract base class

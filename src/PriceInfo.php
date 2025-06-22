@@ -17,7 +17,8 @@ class PriceInfo
 
     public function __construct(int|float $price)
     {
-        $this->currentprice = $this->originalprice = $price;
+        $this->currentprice = $price;
+        $this->originalprice = $price;
     }
 
     public function getOriginalPrice(): int|float
@@ -47,6 +48,7 @@ class PriceInfo
         if ($this->bestadjustment instanceof Adjustment) {
             return $this->bestadjustment->getValue();
         }
+
         return 0;
     }
 

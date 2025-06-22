@@ -11,6 +11,7 @@ use Exception;
 class Adjustment
 {
     protected int|float $value;
+
     protected $adjuster;
 
     public function __construct(int|float $val, $adjuster = null)

@@ -46,7 +46,7 @@ class ItemPriceInfo extends PriceInfo
         $total = $discount * $this->getQuantity();
         $val = 'item: ' . $this->getItem()->TableTitle();
         $price = $this->getOriginalPrice();
-        $val .= " price:$price discount:$discount total:$total.\n";
+        $val .= " price:{$price} discount:{$discount} total:{$total}.\n";
 
         if (($best = $this->getBestAdjustment()) instanceof Adjustment) {
             $val .= $this->getBestAdjustment() . ' ';
@@ -57,8 +57,7 @@ class ItemPriceInfo extends PriceInfo
 
         $val .= "\n";
         $val .= implode(',', $this->getAdjustments());
-        $val .= "\n\n";
 
-        return $val;
+        return $val . "\n\n";
     }
 }

@@ -49,7 +49,7 @@ abstract class DiscountAction extends Action
 
     public function reduceRemaining(float $amount): static
     {
-        if ($this->remaining) {
+        if ($this->remaining !== 0.0) {
             $this->remaining -= $amount;
         }
 

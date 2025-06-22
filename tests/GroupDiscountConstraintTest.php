@@ -17,9 +17,10 @@ class GroupDiscountConstraintTest extends SapphireTest
     ];
 
     protected Order $cart;
+
     protected Order $othercart;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();

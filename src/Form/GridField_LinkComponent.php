@@ -7,7 +7,9 @@ use SilverStripe\Forms\GridField\GridField_HTMLProvider;
 class GridField_LinkComponent implements GridField_HTMLProvider
 {
     protected string $title = '';
+
     protected string $url = '';
+
     protected string $extraclasses = '';
 
     public function __construct(string $title, string $url)
@@ -19,7 +21,7 @@ class GridField_LinkComponent implements GridField_HTMLProvider
     public function getHTMLFragments($gridField)
     {
         return [
-            'before' => "<a href=\"$this->url\" class=\"ss-ui-button $this->extraclasses\">$this->title</a>"
+            'before' => sprintf('<a href="%s" class="ss-ui-button %s">%s</a>', $this->url, $this->extraclasses, $this->title)
         ];
     }
 

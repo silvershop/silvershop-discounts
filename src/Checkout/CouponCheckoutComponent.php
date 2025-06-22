@@ -18,7 +18,7 @@ class CouponCheckoutComponent extends CheckoutComponent
 
     public function getFormFields(Order $order): FieldList
     {
-        $fields = FieldList::create(
+        return FieldList::create(
             TextField::create(
                 'Code',
                 _t(
@@ -27,8 +27,6 @@ class CouponCheckoutComponent extends CheckoutComponent
                 )
             )
         );
-
-        return $fields;
     }
 
     public function setValidWhenBlank(bool $valid): void

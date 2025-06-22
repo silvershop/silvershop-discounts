@@ -39,6 +39,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         if ($types === null || $types === []) {
             return true;
         }
+
         $incart = $this->itemsInCart($discount);
         if (!$incart) {
             $this->error(_t(__CLASS__ . '.PRODUCTTYPESNOTINCART', 'The required product type(s), are not in the cart.'));
@@ -56,6 +57,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         if ($types === null || $types === []) {
             return true;
         }
+
         $buyable = $item->Buyable();
         return isset($types[$buyable->class]);
     }
@@ -65,11 +67,13 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         $types = $selected ? array_filter(explode(',', $discount->ProductTypes)) : $this->BuyableClasses();
         if ($types && $types !== []) {
             $types = array_combine($types, $types);
-            foreach ($types as $type => $name) {
+            foreach (array_keys($types) as $type) {
                 $types[$type] = singleton($type)->i18n_singular_name();
             }
+
             return $types;
         }
+
         return null;
     }
 
@@ -77,9 +81,10 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
     {
         $implementors = ClassInfo::implementorsOf('Buyable');
         $classes = [];
-        foreach ($implementors as $key => $class) {
+        foreach ($implementors as $class) {
             $classes = array_merge($classes, array_values(ClassInfo::subclassesFor($class)));
         }
+
         $classes = array_combine($classes, $classes);
         unset($classes['ProductVariation']);
         return $classes;

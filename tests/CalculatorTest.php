@@ -23,15 +23,22 @@ class CalculatorTest extends SapphireTest
     ];
 
     protected Order $cart;
+
     protected Order $emptycart;
+
     protected Order $megacart;
+
     protected Order $modifiedcart;
+
     protected Order $othercart;
+
     protected Product $socks;
+
     protected Product $tshirt;
+
     protected Product $mp3player;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();
@@ -42,8 +49,10 @@ class CalculatorTest extends SapphireTest
 
         $this->socks = $this->objFromFixture(Product::class, 'socks');
         $this->socks->publishRecursive();
+
         $this->tshirt = $this->objFromFixture(Product::class, 'tshirt');
         $this->tshirt->publishRecursive();
+
         $this->mp3player = $this->objFromFixture(Product::class, 'mp3player');
         $this->mp3player->publishRecursive();
 
@@ -306,6 +315,7 @@ class CalculatorTest extends SapphireTest
             ]
         );
         $discount->write();
+
         $calculator = new Calculator($this->megacart);
         $this->assertEquals(200, $calculator->calculate());
         //clean up
@@ -323,6 +333,7 @@ class CalculatorTest extends SapphireTest
             ]
         );
         $discount->write();
+
         $calculator = new Calculator($this->megacart);
         $this->assertEquals(20, $calculator->calculate());
         //clean up

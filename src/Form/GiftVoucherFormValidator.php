@@ -27,6 +27,7 @@ class GiftVoucherFormValidator extends RequiredFields
                     );
                     return false;
                 }
+
                 if ($giftvalue <= 0) {
                     $this->validationError(
                         'UnitPrice',

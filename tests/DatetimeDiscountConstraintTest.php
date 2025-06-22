@@ -15,7 +15,7 @@ class DatetimeDiscountConstraintTest extends SapphireTest
 
     protected Order $cart;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -37,6 +37,7 @@ class DatetimeDiscountConstraintTest extends SapphireTest
         );
 
         $unreleasedcoupon->write();
+
         $context = ['CouponCode' => $unreleasedcoupon->Code];
         $this->assertFalse(
             $unreleasedcoupon->validateOrder($this->cart, $context),
@@ -56,6 +57,7 @@ class DatetimeDiscountConstraintTest extends SapphireTest
         );
 
         $expiredcoupon->write();
+
         $context = ['CouponCode' => $expiredcoupon->Code];
         $this->assertFalse(
             $expiredcoupon->validateOrder($this->cart, $context),
