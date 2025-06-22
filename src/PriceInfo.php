@@ -68,7 +68,7 @@ class PriceInfo
      */
     protected function setBestAdjustment(Adjustment $candidate): void
     {
-        $this->bestadjustment = $this->bestadjustment ?
+        $this->bestadjustment = $this->bestadjustment instanceof Adjustment ?
             Adjustment::better_of($this->bestadjustment, $candidate) : $candidate;
     }
 }

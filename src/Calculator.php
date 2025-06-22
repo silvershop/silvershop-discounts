@@ -110,7 +110,7 @@ class Calculator
         $cartremainder = $cartremainder < 0 ? 0 : $cartremainder;
 
         // select best cart-level discount
-        if ($bestadjustment = $cartpriceinfo->getBestAdjustment()) {
+        if (($bestadjustment = $cartpriceinfo->getBestAdjustment()) instanceof Adjustment) {
             $discount = $bestadjustment->getAdjuster();
             $amount = $bestadjustment->getValue();
             // don't let amount be greater than remainder
@@ -137,7 +137,7 @@ class Calculator
                 );
             }
             //select best shipping-level disount
-            if ($bestadjustment = $shippingpriceinfo->getBestAdjustment()) {
+            if (($bestadjustment = $shippingpriceinfo->getBestAdjustment()) instanceof Adjustment) {
                 $discount = $bestadjustment->getAdjuster();
                 $amount = $bestadjustment->getValue();
                 //don't let amount be greater than remainder

@@ -36,7 +36,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
     {
         $types = $this->getTypes(true, $discount);
         //valid if no categories defined
-        if (!$types) {
+        if ($types === null || $types === []) {
             return true;
         }
         $incart = $this->itemsInCart($discount);
@@ -53,7 +53,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
     public function itemMatchesCriteria(OrderItem $item, Discount $discount): bool
     {
         $types = $this->getTypes(true, $discount);
-        if (!$types) {
+        if ($types === null || $types === []) {
             return true;
         }
         $buyable = $item->Buyable();
@@ -63,7 +63,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
     protected function getTypes($selected, Discount $discount): ?array
     {
         $types = $selected ? array_filter(explode(',', $discount->ProductTypes)) : $this->BuyableClasses();
-        if ($types && !empty($types)) {
+        if ($types && $types !== []) {
             $types = array_combine($types, $types);
             foreach ($types as $type => $name) {
                 $types[$type] = singleton($type)->i18n_singular_name();

@@ -56,7 +56,7 @@ class MembershipDiscountConstraint extends DiscountConstraint
     {
         $members = $discount->Members();
         $member = $this->getMember();
-        if ($members->exists() && (!$member || !$members->byID($member->ID))) {
+        if ($members->exists() && (!$member instanceof Member || !$members->byID($member->ID))) {
             $this->error(
                 _t(
                     'Discount.MEMBERSHIP',

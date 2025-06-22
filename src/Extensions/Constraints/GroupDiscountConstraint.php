@@ -48,7 +48,7 @@ class GroupDiscountConstraint extends DiscountConstraint
     {
         $group = $discount->Group();
         $member = $this->getMember();
-        if ($group->exists() && (!$member || !$member->inGroup($group))) {
+        if ($group->exists() && (!$member instanceof Member || !$member->inGroup($group))) {
             $this->error(
                 _t(
                     'Discount.GROUPED',

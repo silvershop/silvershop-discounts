@@ -225,7 +225,7 @@ class Discount extends DataObject implements PermissionProvider
             );
         }
 
-        if ($count = $this->getUseCount()) {
+        if (($count = $this->getUseCount()) !== 0) {
             $useHeader = _t('Discount.USEHEADER', 'Use Count: {count}', ['count' => $count]);
 
             $fields->addFieldsToTab(
@@ -432,7 +432,7 @@ class Discount extends DataObject implements PermissionProvider
     {
         $used = $this->getAppliedOrders(true);
 
-        if ($orderID) {
+        if ($orderID !== null && $orderID !== 0) {
             $used = $used->exclude('ID', $orderID);
         }
 

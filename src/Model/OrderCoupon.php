@@ -61,7 +61,7 @@ class OrderCoupon extends Discount
      */
     public static function generate_code(?int $length = null, string $prefix = ''): string
     {
-        $length = $length ?: self::config()->generated_code_length;
+        $length = $length !== null && $length !== 0 ? $length : self::config()->generated_code_length;
         $code = null;
         $generator = Injector::inst()->create(RandomGenerator::class);
         do {
@@ -151,7 +151,7 @@ class OrderCoupon extends Discount
 
     public function canDelete($member = null): bool
     {
-        if ($this->getUseCount()) {
+        if ($this->getUseCount() !== 0) {
             return false;
         }
 

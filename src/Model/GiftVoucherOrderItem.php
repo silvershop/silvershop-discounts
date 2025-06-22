@@ -15,6 +15,10 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
  */
 class GiftVoucherOrderItem extends OrderItem
 {
+    /**
+     * @var LoggerInterface
+     */
+    public $Logger;
     private static array $db = [
         'GiftedTo' => 'Varchar'
     ];

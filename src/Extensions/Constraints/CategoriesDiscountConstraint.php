@@ -71,6 +71,6 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
             $discountcategoryids
         );
 
-        return !empty($ids);
+        return $ids !== [];
     }
 }

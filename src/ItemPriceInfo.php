@@ -48,7 +48,7 @@ class ItemPriceInfo extends PriceInfo
         $price = $this->getOriginalPrice();
         $val .= " price:$price discount:$discount total:$total.\n";
 
-        if ($best = $this->getBestAdjustment()) {
+        if (($best = $this->getBestAdjustment()) instanceof Adjustment) {
             $val .= $this->getBestAdjustment() . ' ';
             $val .= $this->getBestAdjustment()->getAdjuster()->Title;
         } else {

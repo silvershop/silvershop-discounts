@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts\Extensions;
 
+use SilverShop\Model\Order;
 use SilverStripe\Core\Extension;
 use SilverShop\Cart\ShoppingCart;
 use SilverShop\Discounts\Form\CouponForm;
@@ -17,7 +18,7 @@ class CouponFormCheckoutDecorator extends Extension
 
     public function CouponForm(): ?CouponForm
     {
-        if ($cart = ShoppingCart::curr()) {
+        if (($cart = ShoppingCart::curr()) instanceof Order) {
             return CouponForm::create($this->owner, 'CouponForm', $cart);
         }
         return null;
