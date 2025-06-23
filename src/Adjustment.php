@@ -45,7 +45,7 @@ class Adjustment
     {
         try {
             return (string) $this->value;
-        } catch (Exception $exception) {
+        } catch (Exception) {
             return '';
         }
     }

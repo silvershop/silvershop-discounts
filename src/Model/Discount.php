@@ -134,7 +134,7 @@ class Discount extends DataObject implements PermissionProvider
 
         foreach ($extensions as $extension) {
             if ($extension instanceof DiscountConstraint) {
-                $output[] = get_class($extension);
+                $output[] = $extension::class;
             }
         }
 

@@ -38,6 +38,6 @@ class CodeDiscountConstraint extends DiscountConstraint
 
     protected function findCouponCode(): ?string
     {
-        return isset($this->context['CouponCode']) ? $this->context['CouponCode'] : null;
+        return $this->context['CouponCode'] ?? null;
     }
 }

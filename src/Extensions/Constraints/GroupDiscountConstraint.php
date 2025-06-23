@@ -63,6 +63,6 @@ class GroupDiscountConstraint extends DiscountConstraint
 
     public function getMember(): Member
     {
-        return isset($this->context['Member']) ? $this->context['Member'] : $this->order->Member();
+        return $this->context['Member'] ?? $this->order->Member();
     }
 }

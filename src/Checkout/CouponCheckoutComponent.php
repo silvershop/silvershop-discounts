@@ -72,7 +72,7 @@ class CouponCheckoutComponent extends CheckoutComponent
     public function setData(Order $order, array $data): Order
     {
         if ($data['Code']) {
-            Controller::curr()->getRequest()->getSession()->set('cart.couponcode', strtoupper($data['Code']));
+            Controller::curr()->getRequest()->getSession()->set('cart.couponcode', strtoupper((string) $data['Code']));
         }
 
         $order->getModifier(OrderDiscountModifier::class, true);

@@ -163,7 +163,7 @@ class DiscountModelAdmin extends ModelAdmin
             $count = (int) $data['Number'];
         }
 
-        $prefix = isset($data['Prefix']) ? $data['Prefix'] : '';
+        $prefix = $data['Prefix'] ?? '';
         $length = isset($data['Length']) ? (int) $data['Length'] : OrderCoupon::config()->generated_code_length;
 
         for ($i = 0; $i < $count; $i++) {
