@@ -60,57 +60,57 @@ class OrderCouponTest extends SapphireTest
 
         $coupon = OrderCoupon::create();
         $result = $coupon->validate();
-        self::assertNotContains('INVALIDMINLENGTH', $result->getMessages(), 'Leaving the Code field generates a code');
+        $this->assertNotContains('INVALIDMINLENGTH', $result->getMessages(), 'Leaving the Code field generates a code');
 
         $coupon = OrderCoupon::create(['Code' => '12345678']);
         $result = $coupon->validate();
-        self::assertNotContains('INVALIDMINLENGTH', $result->getMessages());
+        $this->assertNotContains('INVALIDMINLENGTH', $result->getMessages());
 
         Config::inst()->set(OrderCoupon::class, 'minimum_code_length', null);
 
         $coupon = OrderCoupon::create(['Code' => '1']);
         $result = $coupon->validate();
-        self::assertNotContains('INVALIDMINLENGTH', $result->getMessages());
+        $this->assertNotContains('INVALIDMINLENGTH', $result->getMessages());
     }
 
     public function testPercent(): void
     {
         $orderCoupon = OrderCoupon::create(
             [
-            'Title' => '40% off each item',
-            'Code' => '5B97AA9D75',
-            'Type' => 'Percent',
-            'Percent' => 0.40,
-            'StartDate' => '2000-01-01 12:00:00',
-            'EndDate' => '2200-01-01 12:00:00'
+                'Title' => '40% off each item',
+                'Code' => '5B97AA9D75',
+                'Type' => 'Percent',
+                'Percent' => 0.40,
+                'StartDate' => '2000-01-01 12:00:00',
+                'EndDate' => '2200-01-01 12:00:00'
             ]
         );
         $orderCoupon->write();
 
         $context = ['CouponCode' => $orderCoupon->Code];
         $this->assertTrue($orderCoupon->validateOrder($this->cart, $context), (string)$orderCoupon->getMessage());
-        $this->assertEquals(4, $orderCoupon->getDiscountValue(10), '40% off value');
-        $this->assertEquals(200, $this->calc($this->unpaid, $orderCoupon), '40% off order');
+        $this->assertEqualsWithDelta(4, (int) (int) $orderCoupon->getDiscountValue(10), PHP_FLOAT_EPSILON);
+        $this->assertSame(200, (int) $this->calc($this->unpaid, $orderCoupon), '40% off order');
     }
 
     public function testAmount(): void
     {
         $orderCoupon = OrderCoupon::create(
             [
-            'Title' => '$10 off each item',
-            'Code' => 'TENDOLLARSOFF',
-            'Type' => 'Amount',
-            'Amount' => 10,
-            'Active' => 1
+                'Title' => '$10 off each item',
+                'Code' => 'TENDOLLARSOFF',
+                'Type' => 'Amount',
+                'Amount' => 10,
+                'Active' => 1
             ]
         );
         $orderCoupon->write();
 
         $context = ['CouponCode' => $orderCoupon->Code];
         $this->assertTrue($orderCoupon->validateOrder($this->cart, $context), (string)$orderCoupon->getMessage());
-        $this->assertEquals($orderCoupon->getDiscountValue(1000), 10, '$10 off fixed value');
+        $this->assertSame(10, (int) $orderCoupon->getDiscountValue(1000), '$10 off fixed value');
         $this->assertTrue($orderCoupon->validateOrder($this->unpaid, $context), (string)$orderCoupon->getMessage());
-        $this->assertEquals(60, $this->calc($this->unpaid, $orderCoupon), '$10 off each item: $60 total');
+        $this->assertEqualsWithDelta(60, (int) $this->calc($this->unpaid, $orderCoupon), PHP_FLOAT_EPSILON);
         //TODO: test amount that is greater than item value
     }
 
@@ -118,11 +118,11 @@ class OrderCouponTest extends SapphireTest
     {
         $orderCoupon = OrderCoupon::create(
             [
-            'Title' => 'Not active',
-            'Code' => 'EE891574D6',
-            'Type' => 'Amount',
-            'Amount' => 10,
-            'Active' => 0
+                'Title' => 'Not active',
+                'Code' => 'EE891574D6',
+                'Type' => 'Amount',
+                'Amount' => 10,
+                'Active' => 0
             ]
         );
         $orderCoupon->write();

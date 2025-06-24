@@ -379,7 +379,7 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Works out the discount on a given value.
      */
-    public function getDiscountValue($value)
+    public function getDiscountValue($value): float
     {
         $discount = 0;
 
@@ -542,7 +542,7 @@ class Discount extends DataObject implements PermissionProvider
      * Get the total amount saved through the use of this discount,
      * accross all paid orders.
      */
-    public function getSavingsTotal(): float|int|array
+    public function getSavingsTotal(): float
     {
         $itemsavings = $this->OrderItems()
             ->innerJoin(

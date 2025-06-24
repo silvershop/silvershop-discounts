@@ -37,13 +37,13 @@ class ValueDiscountConstraintTest extends SapphireTest
     {
         $orderCoupon = OrderCoupon::create(
             [
-            'Title' => 'Orders 200 and more',
-            'Code' => '200PLUS',
-            'Type' => 'Amount',
-            'Amount' => 35,
-            'ForItems' => 0,
-            'ForCart' => 1,
-            'MinOrderValue' => 200
+                'Title' => 'Orders 200 and more',
+                'Code' => '200PLUS',
+                'Type' => 'Amount',
+                'Amount' => 35,
+                'ForItems' => 0,
+                'ForCart' => 1,
+                'MinOrderValue' => 200
             ]
         );
         $orderCoupon->write();
@@ -54,10 +54,10 @@ class ValueDiscountConstraintTest extends SapphireTest
         $this->assertTrue($orderCoupon->validateOrder($this->placedorder, $context), '$500 order is enough');
 
         $calculator = new Calculator($this->cart, $context);
-        $this->assertEquals(0, $calculator->calculate());
+        $this->assertSame(0, (int) $calculator->calculate());
         $calculator = new Calculator($this->othercart, $context);
-        $this->assertEquals(35, $calculator->calculate());
+        $this->assertSame(35, (int) $calculator->calculate());
         $calculator = new Calculator($this->placedorder, $context);
-        $this->assertEquals(35, $calculator->calculate());
+        $this->assertSame(35, (int) $calculator->calculate());
     }
 }

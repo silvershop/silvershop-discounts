@@ -7,9 +7,10 @@ use SilverStripe\Dev\FunctionalTest;
 use SilverShop\Page\Product;
 use SilverShop\Page\CheckoutPage;
 use SilverShop\Page\CheckoutPageController;
-use SilverStripe\Control\Session;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Discounts\Form\CouponForm;
+use SilverStripe\Control\Controller;
+use SilverStripe\Security\Member;
 
 class CouponFormTest extends FunctionalTest
 {
@@ -28,27 +29,41 @@ class CouponFormTest extends FunctionalTest
 
     public function testCouponForm(): void
     {
+        $member = $this->objFromFixture(Member::class, "joebloggs");
+        $this->logInAs($member);
         OrderCoupon::create(
             [
-            'Title' => '40% off each item',
-            'Code' => '5B97AA9D75',
-            'Type' => 'Percent',
-            'Percent' => 0.40
+                'Title' => '40% off each item',
+                'Code' => '5B97AA9D75',
+                'Type' => 'Percent',
+                'Percent' => 0.40
             ]
         )->write();
 
         $checkoutpage = $this->objFromFixture(CheckoutPage::class, 'checkout');
         $checkoutpage->publishRecursive();
-        $controller = new CheckoutPageController($checkoutpage);
-        $order =  $this->objFromFixture(Order::class, 'cart');
-        $form = new CouponForm($controller, CouponForm::class, $order);
-        $data = ['Code' => '5B97AA9D75'];
-        $form->loadDataFrom($data);
-        $this->assertTrue($form->validationResult()->isValid());
-        $form->applyCoupon($data, $form);
 
-        $coupon = $controller->getRequest()->getSession()->get('cart.couponcode');
-        $this->assertEquals('5B97AA9D75', $coupon);
-        $form->removeCoupon([], $form);
+        $checkoutPageController = CheckoutPageController::create($checkoutpage);
+        $order =  $this->objFromFixture(Order::class, 'cart');
+        $couponForm = CouponForm::create($checkoutPageController, CouponForm::class, $order);
+        $data = ['Code' => '5B97AA9D75'];
+        $couponForm->loadDataFrom($data);
+
+        $valid = $couponForm->validationResult()->isValid();
+        $this->assertTrue($valid);
+
+        $errors = $couponForm->getValidator()->getErrors();
+        $this->assertTrue($valid, print_r($errors, true));
+
+        $couponForm->applyCoupon($data, $couponForm);
+        $configData = $couponForm->config->getData();
+        $this->assertSame('5B97AA9D75', $configData['Code']);
+
+        $coupon = Controller::curr()->getRequest()->getSession()->get('cart.couponcode');
+        $this->assertSame('5B97AA9D75', $coupon);
+
+        $couponForm->removeCoupon([], $couponForm);
+        $fresh_copy_of_order = Order::get()->byID($order->ID);
+        $this->assertEmpty($fresh_copy_of_order->CouponCode);
     }
 }

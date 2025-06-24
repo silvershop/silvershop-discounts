@@ -32,23 +32,23 @@ class OrderDiscountTest extends SapphireTest
     {
         OrderDiscount::create(
             [
-            'Title' => '10% off',
-            'Type' => 'Percent',
-            'Percent' => 0.10
+                'Title' => '10% off',
+                'Type' => 'Percent',
+                'Percent' => 0.10
             ]
         )->write();
         OrderDiscount::create(
             [
-            'Title' => '$5 off',
-            'Type' => 'Amount',
-            'Amount' => 5
+                'Title' => '$5 off',
+                'Type' => 'Amount',
+                'Amount' => 5
             ]
         )->write();
         $arrayList = OrderDiscount::get_matching($this->cart);
         $this->assertListEquals(
             [
-            ['Title' => '10% off'],
-            ['Title' => '$5 off'],
+                ['Title' => '10% off'],
+                ['Title' => '$5 off'],
             ],
             $arrayList
         );
@@ -58,14 +58,14 @@ class OrderDiscountTest extends SapphireTest
     {
         OrderDiscount::create(
             [
-            'Title' => '10% off',
-            'Type' => 'Percent',
-            'Percent' => 0.10
+                'Title' => '10% off',
+                'Type' => 'Percent',
+                'Percent' => 0.10
             ]
         )->write();
         $this->assertListEquals(
             [
-            ['Title' => '10% off']
+                ['Title' => '10% off']
             ],
             OrderDiscount::get_matching($this->cart)
         );
@@ -75,14 +75,14 @@ class OrderDiscountTest extends SapphireTest
     {
         OrderDiscount::create(
             [
-            'Title' => '$5 off',
-            'Type' => 'Amount',
-            'Amount' => 5
+                'Title' => '$5 off',
+                'Type' => 'Amount',
+                'Amount' => 5
             ]
         )->write();
         $this->assertListEquals(
             [
-            ['Title' => '$5 off']
+                ['Title' => '$5 off']
             ],
             OrderDiscount::get_matching($this->cart)
         );
@@ -99,15 +99,15 @@ class OrderDiscountTest extends SapphireTest
         //set payment to be created 20 min ago
         $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->write();
-        $this->assertEquals(1, $orderDiscount->getUseCount());
+        $this->assertSame(1, $orderDiscount->getUseCount());
         //set payment ot be created 2 days ago
         $payment->Created = date('Y-m-d H:i:s', strtotime('-2 days'));
         $payment->write();
-        $this->assertEquals(0, $orderDiscount->getUseCount());
+        $this->assertSame(0, $orderDiscount->getUseCount());
         //failed payments should be ignored
         $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->Status = 'Void';
         $payment->write();
-        $this->assertEquals(0, $orderDiscount->getUseCount());
+        $this->assertSame(0, $orderDiscount->getUseCount());
     }
 }

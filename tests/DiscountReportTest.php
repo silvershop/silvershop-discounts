@@ -17,7 +17,7 @@ class DiscountReportTest extends SapphireTest
         $this->objFromFixture(OrderDiscount::class, 'used');
         $discountReport = DiscountReport::create();
         $sqlQueryList = $discountReport->sourceRecords([]);
-        $this->assertEquals(44, $sqlQueryList->find('Title', 'Limited Discount')->getSavingsTotal());
-        $this->assertEquals(22, $sqlQueryList->find('Title', 'Limited Coupon')->getSavingsTotal());
+        $this->assertEqualsWithDelta(44, (int) $sqlQueryList->find('Title', 'Limited Discount')->getSavingsTotal(), PHP_FLOAT_EPSILON);
+        $this->assertSame(22, (int) $sqlQueryList->find('Title', 'Limited Coupon')->getSavingsTotal());
     }
 }

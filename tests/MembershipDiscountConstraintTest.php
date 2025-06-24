@@ -28,9 +28,9 @@ class MembershipDiscountConstraintTest extends SapphireTest
     {
         $orderDiscount = OrderDiscount::create(
             [
-            'Title' => 'Membership Coupon',
-            'Type' => 'Amount',
-            'Amount' => 1.33
+                'Title' => 'Membership Coupon',
+                'Type' => 'Amount',
+                'Amount' => 1.33
             ]
         );
         $orderDiscount->write();

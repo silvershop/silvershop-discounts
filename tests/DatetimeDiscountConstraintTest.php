@@ -28,11 +28,11 @@ class DatetimeDiscountConstraintTest extends SapphireTest
     {
         $orderCoupon = OrderCoupon::create(
             [
-            'Title' => 'Unreleased $10 off',
-            'Code' => '0444444440',
-            'Type' => 'Amount',
-            'Amount' => 10,
-            'StartDate' => '2200-01-01 12:00:00'
+                'Title' => 'Unreleased $10 off',
+                'Code' => '0444444440',
+                'Type' => 'Amount',
+                'Amount' => 10,
+                'StartDate' => '2200-01-01 12:00:00'
             ]
         );
 
@@ -46,13 +46,13 @@ class DatetimeDiscountConstraintTest extends SapphireTest
 
         $expiredcoupon = OrderCoupon::create(
             [
-            'Title' => 'Save lots',
-            'Code' => '04994C332A',
-            'Type' => 'Percent',
-            'Percent' => 0.8,
-            'Active' => 1,
-            'StartDate' => '',
-            'EndDate' => '12/12/1990'
+                'Title' => 'Save lots',
+                'Code' => '04994C332A',
+                'Type' => 'Percent',
+                'Percent' => 0.8,
+                'Active' => 1,
+                'StartDate' => '',
+                'EndDate' => '12/12/1990'
             ]
         );
 

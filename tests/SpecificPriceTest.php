@@ -25,17 +25,17 @@ class SpecificPriceTest extends SapphireTest
     public function testProductPrice(): void
     {
         $product = $this->objFromFixture(Product::class, 'raspberrypi');
-        $this->assertEquals(45, $product->sellingPrice());
+        $this->assertSame(45, (int) $product->sellingPrice());
         $this->assertTrue($product->IsReduced());
-        $this->assertEquals(5, $product->getTotalReduction());
+        $this->assertSame(5, (int) $product->getTotalReduction());
     }
 
     public function testProductVariationPrice(): void
     {
         $variation = $this->objFromFixture(Variation::class, 'robot_30gb');
-        $this->assertEquals(90, $variation->sellingPrice());
+        $this->assertSame(90, (int) $variation->sellingPrice());
         $this->assertTrue($variation->IsReduced());
-        $this->assertEquals(10, $variation->getTotalReduction());
+        $this->assertSame(10, (int) $variation->getTotalReduction());
     }
 
     public function testProductPricePercentage(): void
@@ -45,9 +45,9 @@ class SpecificPriceTest extends SapphireTest
         $specificPrice->Price = 0;
         $specificPrice->write();
         $product = $this->objFromFixture(Product::class, 'raspberrypi');
-        $this->assertEquals(25, $product->sellingPrice());
+        $this->assertSame(25, (int) $product->sellingPrice());
         $this->assertTrue($product->IsReduced());
-        $this->assertEquals(25, $product->getTotalReduction());
+        $this->assertSame(25, (int) $product->getTotalReduction());
     }
 
     public function testProductVariationPricePercentage(): void
@@ -57,8 +57,8 @@ class SpecificPriceTest extends SapphireTest
         $specificPrice->Price = 0;
         $specificPrice->write();
         $variation = $this->objFromFixture(Variation::class, 'robot_30gb');
-        $this->assertEquals(50, $variation->sellingPrice());
+        $this->assertSame(50, (int) $variation->sellingPrice());
         $this->assertTrue($variation->IsReduced());
-        $this->assertEquals(50, $variation->getTotalReduction());
+        $this->assertSame(50, (int) $variation->getTotalReduction());
     }
 }

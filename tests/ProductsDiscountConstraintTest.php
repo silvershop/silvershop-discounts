@@ -58,8 +58,8 @@ class ProductsDiscountConstraintTest extends SapphireTest
     {
         $orderDiscount = OrderDiscount::create(
             [
-            'Title' => '20% off each selected products',
-            'Percent' => 0.2
+                'Title' => '20% off each selected products',
+                'Percent' => 0.2
             ]
         );
         $orderDiscount->write();
@@ -78,9 +78,9 @@ class ProductsDiscountConstraintTest extends SapphireTest
     {
         $orderCoupon = OrderCoupon::create(
             [
-            'Title' => 'Selected products',
-            'Code' => 'PRODUCTS',
-            'Percent' => 0.2
+                'Title' => 'Selected products',
+                'Code' => 'PRODUCTS',
+                'Percent' => 0.2
             ]
         );
         $orderCoupon->write();
@@ -89,24 +89,24 @@ class ProductsDiscountConstraintTest extends SapphireTest
         $calculator = new Calculator(
             $this->placedorder,
             [
-            'CouponCode' => $orderCoupon->Code
+                'CouponCode' => $orderCoupon->Code
             ]
         );
 
-        $this->assertEquals($calculator->calculate(), 20);
+        $this->assertSame(20, (int) $calculator->calculate());
         //add another product to coupon product list
         $orderCoupon->Products()->add($this->objFromFixture(Product::class, 'mp3player'));
-        $this->assertEquals($calculator->calculate(), 100);
+        $this->assertSame(100, (int) $calculator->calculate());
     }
 
     public function testProductDiscount(): void
     {
         $discount = OrderDiscount::create(
             [
-            'Title' => '20% off each selected products',
-            'Percent' => 0.2,
-            'Active' => 1,
-            'ExactProducts' => 1
+                'Title' => '20% off each selected products',
+                'Percent' => 0.2,
+                'Active' => 1,
+                'ExactProducts' => 1
             ]
         );
         $discount->write();
@@ -119,31 +119,31 @@ class ProductsDiscountConstraintTest extends SapphireTest
         //2 * mp3player($200) = 400 ..nothing off = 0
         //total discount: 82
         $calculator = new Calculator($this->megacart);
-        $this->assertEquals(82, $calculator->calculate(), '20% off selected products');
+        $this->assertSame(82, (int) $calculator->calculate(), '20% off selected products');
         //no discount for cart
         $calculator = new Calculator($this->cart);
-        $this->assertEquals(0, $calculator->calculate(), '20% off selected products');
+        $this->assertSame(0, (int) $calculator->calculate(), '20% off selected products');
         //no discount for modifiedcart
         $calculator = new Calculator($this->modifiedcart);
-        $this->assertEquals(0, $calculator->calculate(), '20% off selected products');
+        $this->assertSame(0, (int) $calculator->calculate(), '20% off selected products');
 
         //partial match
         $discount->ExactProducts = 0;
         $discount->write();
         //total discount: 82
         $calculator = new Calculator($this->megacart);
-        $this->assertEquals(82, $calculator->calculate(), '20% off selected products');
+        $this->assertSame(82, (int) $calculator->calculate(), '20% off selected products');
         //discount for cart: 32 (just socks)
         $calculator = new Calculator($this->cart);
-        $this->assertEquals(1.6, $calculator->calculate(), '20% off selected products');
+        $this->assertEqualsWithDelta(1.6, $calculator->calculate(), PHP_FLOAT_EPSILON);
         //no discount for modified cart
         $calculator = new Calculator($this->modifiedcart);
-        $this->assertEquals(0, $calculator->calculate(), '20% off selected products');
+        $this->assertSame(0, (int) $calculator->calculate(), '20% off selected products');
 
         //get individual item discounts
         $discount = $this->objFromFixture(OrderItem::class, 'megacart_socks')
             ->Discounts()->first();
-        $this->assertEquals(32, $discount->DiscountAmount);
+        $this->assertSame(32, (int) $discount->DiscountAmount);
     }
 
 
@@ -155,10 +155,10 @@ class ProductsDiscountConstraintTest extends SapphireTest
 
         $orderDiscount = OrderDiscount::create(
             [
-            'Title' => '20% off each selected products',
-            'Percent' => 0.2,
-            'Active' => 1,
-            'ExactProducts' => 1
+                'Title' => '20% off each selected products',
+                'Percent' => 0.2,
+                'Active' => 1,
+                'ExactProducts' => 1
             ]
         );
 
@@ -168,6 +168,6 @@ class ProductsDiscountConstraintTest extends SapphireTest
         $order = $this->objFromFixture(Order::class, 'othercart');
         $calculator = new Calculator($order);
 
-        $this->assertEquals(0, $calculator->calculate(), "Product coupon does not apply as draft products don't exist");
+        $this->assertSame(0, (int) $calculator->calculate(), "Product coupon does not apply as draft products don't exist");
     }
 }

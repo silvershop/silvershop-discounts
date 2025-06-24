@@ -36,8 +36,6 @@ class Calculator
 
     /**
      * Work out the discount for a given order.
-     *
-     * @return double - discount amount
      */
     public function calculate(): int|float
     {
@@ -177,10 +175,8 @@ class Calculator
     /**
      * Work out how much the given discount has already
      * been used
-     *
-     * @return Discount[]
      */
-    protected function discountSubtotal(Discount $discount)
+    protected function discountSubtotal(Discount $discount): string
     {
         return $this->modifier->Discounts()
             ->filter('ID', $discount->ID)

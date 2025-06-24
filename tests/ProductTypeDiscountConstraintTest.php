@@ -38,9 +38,7 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
         Config::inst()->merge(
             Discount::class,
             'constraints',
-            [
-            'ProductTypeDiscountConstraint'
-            ]
+            ['ProductTypeDiscountConstraint']
         );
 
         $this->cart = $this->objFromFixture(Order::class, 'cart');
@@ -63,9 +61,9 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
     {
         $orderDiscount = OrderDiscount::create(
             [
-            'Title' => '20% off each products',
-            'Percent' => 0.2,
-            'ProductTypes' => Product::class
+                'Title' => '20% off each products',
+                'Percent' => 0.2,
+                'ProductTypes' => Product::class
             ]
         );
         $orderDiscount->write();

@@ -32,12 +32,12 @@ class GroupDiscountConstraintTest extends SapphireTest
     {
         $orderCoupon = OrderCoupon::create(
             [
-            'Title' => 'Special Members Coupon',
-            'Code' => 'GROUPED',
-            'Type' => 'Percent',
-            'Percent' => 0.9,
-            'Active' => 1,
-            'GroupID' => $this->objFromFixture(Group::class, 'resellers')->ID
+                'Title' => 'Special Members Coupon',
+                'Code' => 'GROUPED',
+                'Type' => 'Percent',
+                'Percent' => 0.9,
+                'Active' => 1,
+                'GroupID' => $this->objFromFixture(Group::class, 'resellers')->ID
             ]
         );
         $orderCoupon->write();
