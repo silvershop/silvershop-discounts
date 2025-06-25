@@ -72,11 +72,11 @@ class CategoriesDiscountConstraintTest extends SapphireTest
             $orderDiscount->validateOrder($this->cart),
             'Order contains a t-shirt. ' . $orderDiscount->getMessage()
         );
-        $calculator = new Calculator($this->cart);
+        $calculator = Calculator::create($this->cart);
         $this->assertEqualsWithDelta(0.4, $calculator->calculate(), PHP_FLOAT_EPSILON);
 
         $this->assertFalse($orderDiscount->validateOrder($this->othercart), 'Order does not contain clothing');
-        $calculator = new Calculator($this->othercart);
+        $calculator = Calculator::create($this->othercart);
         $this->assertSame(0, $calculator->calculate(), 'No discount, because no product in category');
 
         $orderDiscount->Categories()->removeAll();
@@ -89,7 +89,7 @@ class CategoriesDiscountConstraintTest extends SapphireTest
             $orderDiscount->validateOrder($this->kitecart),
             "Order contains a kite. " . $orderDiscount->getMessage()
         );
-        $calculator = new Calculator($this->kitecart);
+        $calculator = Calculator::create($this->kitecart);
         $this->assertEqualsWithDelta(1.75, $calculator->calculate(), PHP_FLOAT_EPSILON);
     }
 }

@@ -116,7 +116,7 @@ class CalculatorTest extends SapphireTest
         $valid = $orderDiscount->validateOrder($this->cart);
         $this->assertTrue($valid, 'discount is valid');
         //check calculator
-        $calculator = new Calculator($this->cart);
+        $calculator = Calculator::create($this->cart);
         $this->assertEqualsWithDelta(0.8, $calculator->calculate(), PHP_FLOAT_EPSILON);
     }
 
@@ -167,20 +167,20 @@ class CalculatorTest extends SapphireTest
             $arrayList
         );
 
-        $calculator = new Calculator($this->emptycart);
+        $calculator = Calculator::create($this->emptycart);
         $this->assertSame(0, (int) $calculator->calculate(), 'nothing in cart');
         //check that best discount was chosen
-        $calculator = new Calculator($this->cart);
+        $calculator = Calculator::create($this->cart);
         $this->assertSame(5, (int) $calculator->calculate(), '$5 off $8 is best discount');
 
-        $calculator = new Calculator($this->othercart);
+        $calculator = Calculator::create($this->othercart);
         $this->assertSame(20, (int) $calculator->calculate(), '10% off $400 is best discount');
         //total discount calculation
         //20 * socks($8) = 160 ...$5 off each = 100
         //10 * tshirt($25) = 250 ..$5 off each  = 50
         //2 * mp3player($200) = 400 ..10% off each = 40
         //total discount: 190
-        $calculator = new Calculator($this->megacart);
+        $calculator = Calculator::create($this->megacart);
         $this->assertSame(190, (int) $calculator->calculate(), 'complex savings example');
 
         $this->assertListEquals(
@@ -215,7 +215,7 @@ class CalculatorTest extends SapphireTest
         //10 * tshirt($25) = 250 ..$10 off each  = 100
         //2 * mp3player($200) = 400 ..10% off each = 40
         //total discount: 300
-        $calculator = new Calculator(
+        $calculator = Calculator::create(
             $this->megacart,
             [
                 'CouponCode' => 'TENDOLLARSOFF'
@@ -223,7 +223,7 @@ class CalculatorTest extends SapphireTest
         );
         $this->assertSame(300, (int) $calculator->calculate(), 'complex savings example');
         //no coupon in context
-        $calculator = new Calculator($this->megacart);
+        $calculator = Calculator::create($this->megacart);
         $this->assertSame(81, (int) $calculator->calculate(), 'complex savings example');
         //write a test that combines discounts which sum to a greater discount than
         //the order subtotal
@@ -251,7 +251,7 @@ class CalculatorTest extends SapphireTest
             ]
         )->write();
 
-        $calculator = new Calculator($this->megacart);
+        $calculator = Calculator::create($this->megacart);
         $this->assertSame(810, (int) $calculator->calculate(), "total shouldn't exceed what is possible");
 
         $this->markTestIncomplete('test distribution of amounts');
@@ -271,11 +271,11 @@ class CalculatorTest extends SapphireTest
         );
         $orderDiscount->write();
         $this->assertTrue($orderDiscount->validateOrder($this->cart));
-        $calculator = new Calculator($this->cart);
+        $calculator = Calculator::create($this->cart);
         $this->assertSame(8, (int) $calculator->calculate());
-        $calculator = new Calculator($this->othercart);
+        $calculator = Calculator::create($this->othercart);
         $this->assertSame(25, (int) $calculator->calculate());
-        $calculator = new Calculator($this->megacart);
+        $calculator = Calculator::create($this->megacart);
         $this->assertSame(25, (int) $calculator->calculate());
     }
 
@@ -299,9 +299,9 @@ class CalculatorTest extends SapphireTest
                 $this->tshirt
             ]
         );
-        $calculator = new Calculator($this->cart);
+        $calculator = Calculator::create($this->cart);
         $this->assertSame(4, (int) $calculator->calculate());
-        $calculator = new Calculator($this->megacart);
+        $calculator = Calculator::create($this->megacart);
         $this->assertSame(205, (int) $calculator->calculate());
     }
 
@@ -319,10 +319,10 @@ class CalculatorTest extends SapphireTest
         );
         $discount->write();
 
-        $calculator = new Calculator($this->megacart);
+        $calculator = Calculator::create($this->megacart);
         $this->assertSame(200, (int) $calculator->calculate());
         //clean up
-        $discount->Active = 0;
+        $discount->Active = false;
         $discount->write();
 
         //amount item discounts
@@ -337,10 +337,10 @@ class CalculatorTest extends SapphireTest
         );
         $discount->write();
 
-        $calculator = new Calculator($this->megacart);
+        $calculator = Calculator::create($this->megacart);
         $this->assertSame(20, (int) $calculator->calculate());
         //clean up
-        $discount->Active = 0;
+        $discount->Active = false;
         $discount->write();
 
         //percent cart discounts
@@ -354,7 +354,7 @@ class CalculatorTest extends SapphireTest
                 'ForCart' => true
             ]
         )->write();
-        $calculator = new Calculator($this->megacart);
+        $calculator = Calculator::create($this->megacart);
         $this->assertSame(40, (int) $calculator->calculate());
     }
 
@@ -390,7 +390,7 @@ class CalculatorTest extends SapphireTest
         )->write();
         $order = $this->objFromFixture(Order::class, 'payablecart');
         $this->assertSame(16, (int) $order->calculate());
-        $orderProcessor = new OrderProcessor($order);
+        $orderProcessor = OrderProcessor::create($order);
         $orderProcessor->placeOrder();
         $this->assertSame(16, (int) Order::get()->byID($order->ID)->GrandTotal());
     }

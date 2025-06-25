@@ -36,7 +36,7 @@ class CouponCheckoutComponent extends CheckoutComponent
 
     public function validateData(Order $order, array $data): bool
     {
-        $validationResult = new ValidationResult();
+        $validationResult = ValidationResult::create();
         $code = $data['Code'];
 
         if ($this->validwhenblank && !$code) {

@@ -23,8 +23,8 @@ class CouponForm extends Form
 
     public function __construct(RequestHandler $requestHandler, $name, Order $order)
     {
-        $this->config = new CheckoutComponentConfig($order, false);
-        $this->config->addComponent($couponCheckoutComponent = new CouponCheckoutComponent());
+        $this->config = CheckoutComponentConfig::create($order, false);
+        $this->config->addComponent($couponCheckoutComponent = CouponCheckoutComponent::create());
 
         $checkoutComponentValidator = Injector::inst()->create(CheckoutComponentValidator::class, $this->config);
 

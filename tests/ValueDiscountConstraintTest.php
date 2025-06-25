@@ -53,11 +53,11 @@ class ValueDiscountConstraintTest extends SapphireTest
         $this->assertTrue($orderCoupon->validateOrder($this->othercart, $context), '$200 is enough');
         $this->assertTrue($orderCoupon->validateOrder($this->placedorder, $context), '$500 order is enough');
 
-        $calculator = new Calculator($this->cart, $context);
+        $calculator = Calculator::create($this->cart, $context);
         $this->assertSame(0, (int) $calculator->calculate());
-        $calculator = new Calculator($this->othercart, $context);
+        $calculator = Calculator::create($this->othercart, $context);
         $this->assertSame(35, (int) $calculator->calculate());
-        $calculator = new Calculator($this->placedorder, $context);
+        $calculator = Calculator::create($this->placedorder, $context);
         $this->assertSame(35, (int) $calculator->calculate());
     }
 }

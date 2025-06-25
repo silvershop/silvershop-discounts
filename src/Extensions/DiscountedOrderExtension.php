@@ -22,7 +22,7 @@ class DiscountedOrderExtension extends Extension
     {
         $fieldList->addFieldToTab(
             'Root.Discounts',
-            $grid = GridField::create('Discounts', Config::inst()->get(Discount::class, 'plural_name'), $this->Discounts(), new GridFieldConfig_RecordViewer())
+            $grid = GridField::create('Discounts', Config::inst()->get(Discount::class, 'plural_name'), $this->Discounts(), GridFieldConfig_RecordViewer::create())
         );
 
         $grid->setModelClass(Discount::class);

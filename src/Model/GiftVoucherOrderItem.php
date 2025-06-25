@@ -81,11 +81,11 @@ class GiftVoucherOrderItem extends OrderItem
 
         $orderCoupon = OrderCoupon::create(
             [
-            'Title' => $this->Product()->Title,
-            'Type' => 'Amount',
-            'Amount' => $this->UnitPrice,
-            'UseLimit' => 1,
-            'MinOrderValue' => $this->UnitPrice //safeguard that means coupons must be used entirely
+                'Title' => $this->Product()->Title,
+                'Type' => 'Amount',
+                'Amount' => $this->UnitPrice,
+                'UseLimit' => 1,
+                'MinOrderValue' => $this->UnitPrice //safeguard that means coupons must be used entirely
             ]
         );
 

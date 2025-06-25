@@ -164,8 +164,7 @@ class Calculator
         foreach ($this->order->Items() as $hasManyList) {
             if (ItemDiscountConstraint::match($hasManyList, $discount)) {
                 $amount += $hasManyList->hasMethod('DiscountableAmount') ?
-                            $hasManyList->DiscountableAmount() * $hasManyList->Quantity :
-                            $hasManyList->Total();
+                            $hasManyList->DiscountableAmount() * $hasManyList->Quantity : $hasManyList->Total();
             }
         }
 

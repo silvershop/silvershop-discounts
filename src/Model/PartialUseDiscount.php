@@ -7,9 +7,9 @@ use SilverStripe\ORM\ValidationResult;
 
 /**
  * @property int $ChildID
- * @method \SilverShop\Discounts\Model\PartialUseDiscount Child()
+ * @method   \SilverShop\Discounts\Model\PartialUseDiscount Child()
  * @property int $ParentID
- * @method \SilverShop\Discounts\Model\PartialUseDiscount Parent()
+ * @method   \SilverShop\Discounts\Model\PartialUseDiscount Parent()
  */
 class PartialUseDiscount extends Discount
 {
@@ -37,18 +37,14 @@ class PartialUseDiscount extends Discount
 
     public function getCMSFields($params = null)
     {
-        $fieldList = parent::getCMSFields(
-            [
-            'forcetype' => 'Amount'
-            ]
-        );
+        $fieldList = parent::getCMSFields(['forcetype' => 'Amount']);
 
         $fieldList->removeByName(
             [
-            'ForCart',
-            'ForItems',
-            'ForShipping',
-            'For'
+                'ForCart',
+                'ForItems',
+                'ForShipping',
+                'For'
             ]
         );
 

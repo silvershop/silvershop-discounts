@@ -20,8 +20,8 @@ class CheckoutStepDiscount extends CheckoutStep
 
     protected function checkoutconfig(): CheckoutComponentConfig
     {
-        $checkoutComponentConfig = new CheckoutComponentConfig(ShoppingCart::curr(), true);
-        $checkoutComponentConfig->addComponent($couponCheckoutComponent = new CouponCheckoutComponent());
+        $checkoutComponentConfig = CheckoutComponentConfig::create(ShoppingCart::curr(), true);
+        $checkoutComponentConfig->addComponent($couponCheckoutComponent = CouponCheckoutComponent::create());
 
         $couponCheckoutComponent->setValidWhenBlank(true);
 

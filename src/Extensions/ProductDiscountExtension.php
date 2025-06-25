@@ -4,6 +4,7 @@ namespace SilverShop\Discounts\Extensions;
 
 use SilverStripe\Core\Extension;
 use SilverShop\Page\Product;
+
 /**
  * @extends Extension<Product&static>
  */

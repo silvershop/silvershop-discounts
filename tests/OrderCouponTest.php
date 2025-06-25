@@ -89,7 +89,7 @@ class OrderCouponTest extends SapphireTest
 
         $context = ['CouponCode' => $orderCoupon->Code];
         $this->assertTrue($orderCoupon->validateOrder($this->cart, $context), (string)$orderCoupon->getMessage());
-        $this->assertEqualsWithDelta(4, (int) (int) $orderCoupon->getDiscountValue(10), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(4, (int) $orderCoupon->getDiscountValue(10), PHP_FLOAT_EPSILON);
         $this->assertSame(200, (int) $this->calc($this->unpaid, $orderCoupon), '40% off order');
     }
 
@@ -133,7 +133,7 @@ class OrderCouponTest extends SapphireTest
 
     protected function getCalculator(Order $order, OrderCoupon $orderCoupon): Calculator
     {
-        return new Calculator($order, ['CouponCode' => $orderCoupon->Code]);
+        return Calculator::create($order, ['CouponCode' => $orderCoupon->Code]);
     }
 
     protected function calc(Order $order, OrderCoupon $orderCoupon): int|float

@@ -9,9 +9,10 @@ use SilverStripe\Security\RandomGenerator;
 
 /**
  * Applies a discount to current order, if applicable, when entered at checkout.
+ *
  * @property ?string $Code
  * @property int $GiftVoucherID
- * @method GiftVoucherOrderItem GiftVoucher()
+ * @method   GiftVoucherOrderItem GiftVoucher()
  */
 class OrderCoupon extends Discount
 {
@@ -124,15 +125,11 @@ class OrderCoupon extends Discount
 
     /**
      * Forces codes to be alpha-numeric, uppercase, and trimmed
-     *
-     * @param string
-     *
-     * @return $this
      */
-    public function setCode($code): static
+    public function setCode(string $code): static
     {
-        if ($code) {
-            $code = trim((string) preg_replace('/[^0-9a-zA-Z]+/', '', (string) $code));
+        if ($code !== '' && $code !== '0') {
+            $code = trim((string) preg_replace('/[^0-9a-zA-Z]+/', '', $code));
             $this->setField('Code', strtoupper($code));
         }
 

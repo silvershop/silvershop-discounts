@@ -13,17 +13,6 @@ use SilverStripe\ORM\DataList;
 /**
  * Represents a price change applied to a Product or ProductVariation, for a
  * period of time or for a specific group.
- *
- * @property float Price
- * @property float DiscountPercent
- * @property string StartDate
- * @property string EndDate
- * @property int ProductID
- * @property int ProductVariationID
- * @property int GroupID
- * @method   Product Product()
- * @method   Variation ProductVariation()
- * @method   Group Group()
  * @property float $Price
  * @property float $DiscountPercent
  * @property ?string $StartDate
@@ -31,6 +20,9 @@ use SilverStripe\ORM\DataList;
  * @property int $ProductID
  * @property int $ProductVariationID
  * @property int $GroupID
+ * @method Product Product()
+ * @method Variation ProductVariation()
+ * @method Group Group()
  */
 class SpecificPrice extends DataObject
 {

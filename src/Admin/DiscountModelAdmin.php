@@ -84,8 +84,8 @@ class DiscountModelAdmin extends ModelAdmin
                     implode(
                         " OR ",
                         [
-                        '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."Product_OrderItemID"',
-                        '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID"'
+                            '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."Product_OrderItemID"',
+                            '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID"'
                         ]
                     )
                 );
@@ -133,11 +133,11 @@ class DiscountModelAdmin extends ModelAdmin
         );
 
         $actions = FieldList::create(FormAction::create('generate', 'Generate'));
-        $requiredFields = new RequiredFields(
+        $requiredFields = RequiredFields::create(
             [
-            'Title',
-            'Number',
-            'Type'
+                'Title',
+                'Number',
+                'Type'
             ]
         );
         $form = Form::create($this, 'GenerateCouponsForm', $fieldList, $actions, $requiredFields);
@@ -146,10 +146,10 @@ class DiscountModelAdmin extends ModelAdmin
         $form->setHTMLID('Form_EditForm');
         $form->loadDataFrom(
             [
-            'Number' => 1,
-            'Active' => 1,
-            'ForCart' => 1,
-            'UseLimit' => 1
+                'Number' => 1,
+                'Active' => 1,
+                'ForCart' => 1,
+                'UseLimit' => 1
             ]
         );
         return $form;

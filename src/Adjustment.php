@@ -20,7 +20,7 @@ class Adjustment
         $this->adjuster = $adjuster;
     }
 
-    public static function better_of(Adjustment $i, Adjustment $j): static
+    public static function better_of(Adjustment $i, Adjustment $j): Adjustment
     {
         return $i->compareTo($j) > 0 ? $i : $j;
     }

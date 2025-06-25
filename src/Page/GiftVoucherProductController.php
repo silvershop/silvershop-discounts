@@ -7,9 +7,6 @@ use SilverShop\Page\ProductController;
 use SilverStripe\Forms\CurrencyField;
 use SilverStripe\Forms\Form;
 
-/**
- * @extends ProductController<GiftVoucherProduct>
- */
 class GiftVoucherProductController extends ProductController
 {
     private static array $allowed_actions = [
@@ -21,11 +18,7 @@ class GiftVoucherProductController extends ProductController
         $form = parent::Form();
 
         if ($this->VariableAmount) {
-            $form->setSaveableFields(
-                [
-                    'UnitPrice'
-                ]
-            );
+            $form->setSaveableFields(['UnitPrice']);
             $form->Fields()->push(
                 $giftamount = CurrencyField::create('UnitPrice', _t('GiftVoucherProduct.Amount', 'Amount'), $this->BasePrice)
             );
@@ -33,10 +26,10 @@ class GiftVoucherProductController extends ProductController
         }
 
         $form->setValidator(
-            $giftVoucherFormValidator = new GiftVoucherFormValidator(
+            $giftVoucherFormValidator = GiftVoucherFormValidator::create(
                 [
-                'Quantity',
-                'UnitPrice'
+                    'Quantity',
+                    'UnitPrice'
                 ]
             )
         );

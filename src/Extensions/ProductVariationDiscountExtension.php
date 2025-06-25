@@ -4,6 +4,7 @@ namespace SilverShop\Discounts\Extensions;
 
 use SilverStripe\Core\Extension;
 use SilverShop\Model\Variation\Variation;
+
 /**
  * @extends Extension<Variation&static>
  */

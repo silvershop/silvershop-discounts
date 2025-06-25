@@ -11,6 +11,7 @@ use SilverStripe\Forms\TextField;
 /**
  * Gift voucher products, when purchased will send out a voucher code to the
  * customer via email.
+ *
  * @property bool $VariableAmount
  * @property float $MinimumAmount
  */
@@ -34,10 +35,14 @@ class GiftVoucherProduct extends Product
         $fieldList = parent::getCMSFields();
         $fieldList->addFieldToTab(
             'Root.Pricing',
-            OptionsetField::create('VariableAmount', 'Price', [
-                0 => 'Fixed',
-                1 => 'Allow customer to choose'
-            ]),
+            OptionsetField::create(
+                'VariableAmount',
+                'Price',
+                [
+                    0 => 'Fixed',
+                    1 => 'Allow customer to choose'
+                ]
+            ),
             'BasePrice'
         );
 

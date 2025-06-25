@@ -58,16 +58,16 @@ use SilverStripe\ORM\Search\SearchContext;
  * @property bool $ForCart
  * @property bool $ForShipping
  * @property float $MaxAmount
- * @method ManyManyList<OrderItem> OrderItems()
- * @method ManyManyList<OrderDiscountModifier> DiscountModifiers()
- * @mixin CategoriesDiscountConstraint
- * @mixin ProductsDiscountConstraint
- * @mixin GroupDiscountConstraint
- * @mixin MembershipDiscountConstraint
- * @mixin DatetimeDiscountConstraint
- * @mixin ValueDiscountConstraint
- * @mixin UseLimitDiscountConstraint
- * @mixin CodeDiscountConstraint
+ * @method   ManyManyList<OrderItem> OrderItems()
+ * @method   ManyManyList<OrderDiscountModifier> DiscountModifiers()
+ * @mixin    CategoriesDiscountConstraint
+ * @mixin    ProductsDiscountConstraint
+ * @mixin    GroupDiscountConstraint
+ * @mixin    MembershipDiscountConstraint
+ * @mixin    DatetimeDiscountConstraint
+ * @mixin    ValueDiscountConstraint
+ * @mixin    UseLimitDiscountConstraint
+ * @mixin    CodeDiscountConstraint
  */
 class Discount extends DataObject implements PermissionProvider
 {
@@ -180,35 +180,52 @@ class Discount extends DataObject implements PermissionProvider
     public function getCMSFields($params = null)
     {
         //fields that shouldn't be changed once coupon is used
-        $fieldList = FieldList::create([
-            TabSet::create('Root', Tab::create('Main', TextField::create('Title'), CheckboxField::create('Active', 'Active')
-                ->setDescription('Enable/disable all use of this discount.'), HeaderField::create('ActionTitle', 'Action', 3), $typefield = SelectionGroup::create(
-                'Type',
-                [
-                    SelectionGroup_Item::create('Percent', $percentgroup = FieldGroup::create(
-                        $percentfield = NumericField::create('Percent', 'Percentage', '0.00')
-                            ->setScale(null)
-                            ->setDescription('e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%'),
-                        $maxamountfield = CurrencyField::create(
-                            'MaxAmount',
-                            _t('MaxAmount', 'Maximum Amount')
-                        )->setDescription(
-                            'The total allowable discount. 0 means unlimited.'
-                        )
-                    ), 'Discount by percentage'),
-                    SelectionGroup_Item::create('Amount', $amountfield = CurrencyField::create('Amount', 'Amount', '$0.00'), 'Discount by fixed amount')
-                ]
-            )->setTitle('Type'), OptionSetField::create(
-                'For',
-                'Applies to',
-                [
-                    'Order' => 'Entire order',
-                    'Cart' => 'Cart subtotal',
-                    'Shipping' => 'Shipping subtotal',
-                    'Items' => 'Each individual item'
-                ]
-            )), Tab::create('Constraints', TabSet::create('ConstraintsTabs', $general = Tab::create('General', 'General'))))
-        ]);
+        $fieldList = FieldList::create(
+            [
+            TabSet::create(
+                'Root',
+                Tab::create(
+                    'Main',
+                    TextField::create('Title'),
+                    CheckboxField::create('Active', 'Active')
+                    ->setDescription('Enable/disable all use of this discount.'),
+                    HeaderField::create('ActionTitle', 'Action', 3),
+                    SelectionGroup::create(
+                        'Type',
+                        [
+                            SelectionGroup_Item::create(
+                                'Percent',
+                                $percentgroup = FieldGroup::create(
+                                    $percentfield = NumericField::create('Percent', 'Percentage', '0.00')
+                                        ->setScale(null)
+                                        ->setDescription('e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%'),
+                                    $maxamountfield = CurrencyField::create(
+                                        'MaxAmount',
+                                        _t('MaxAmount', 'Maximum Amount')
+                                    )->setDescription(
+                                        'The total allowable discount. 0 means unlimited.'
+                                    )
+                                ),
+                                'Discount by percentage'
+                            ),
+                            SelectionGroup_Item::create('Amount', $amountfield = CurrencyField::create('Amount', 'Amount', '$0.00'), 'Discount by fixed amount')
+                        ]
+                    )->setTitle('Type'),
+                    OptionSetField::create(
+                        'For',
+                        'Applies to',
+                        [
+                            'Order' => 'Entire order',
+                            'Cart' => 'Cart subtotal',
+                            'Shipping' => 'Shipping subtotal',
+                            'Items' => 'Each individual item'
+                        ]
+                    )
+                ),
+                Tab::create('Constraints', TabSet::create('ConstraintsTabs', $general = Tab::create('General', 'General')))
+            )
+            ]
+        );
 
         if (!$this->isInDB()) {
             $general->push(
@@ -453,20 +470,18 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Map the single 'For' to the For"X" boolean fields
-     *
-     * @param string $val
      */
-    public function setFor($val): void
+    public function setFor(string $val): void
     {
-        if (!$val) {
+        if ($val === '' || $val === '0') {
             return;
         }
 
         $map = [
-            'Items' => [1, 0, 0],
-            'Cart' => [0, 1, 0],
-            'Shipping' => [0, 0, 1],
-            'Order' => [0, 1, 1]
+            'Items' => [true, false, false],
+            'Cart' => [false, true, false],
+            'Shipping' => [false, false, true],
+            'Order' => [false, true, true]
         ];
 
         $mapping = $map[$val];
