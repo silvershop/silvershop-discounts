@@ -34,7 +34,7 @@ class OrderCouponTest extends SapphireTest
         parent::setUp();
         ShopTest::setConfiguration();
 
-        Config::inst()->set(OrderCoupon::class, 'minimum_code_length', null);
+        Config::modify()->set(OrderCoupon::class, 'minimum_code_length', null);
 
         $this->socks = $this->objFromFixture(Product::class, 'socks');
         $this->socks->publishRecursive();
@@ -52,7 +52,7 @@ class OrderCouponTest extends SapphireTest
 
     public function testMinimumLengthCode(): void
     {
-        Config::inst()->set(OrderCoupon::class, 'minimum_code_length', 8);
+        Config::modify()->set(OrderCoupon::class, 'minimum_code_length', 8);
         $coupon = OrderCoupon::create();
         $coupon->Code = '1234567';
         $result = $coupon->validate();
@@ -66,7 +66,7 @@ class OrderCouponTest extends SapphireTest
         $result = $coupon->validate();
         $this->assertNotContains('INVALIDMINLENGTH', $result->getMessages());
 
-        Config::inst()->set(OrderCoupon::class, 'minimum_code_length', null);
+        Config::modify()->set(OrderCoupon::class, 'minimum_code_length', null);
 
         $coupon = OrderCoupon::create(['Code' => '1']);
         $result = $coupon->validate();

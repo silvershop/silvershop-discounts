@@ -81,7 +81,7 @@ class PartialUseDiscount extends Discount
             $remainder->deleteRelationships();
 
             // create proper new relationships
-            $this->duplicateManyManyRelations($this, $remainder, true);
+            $this->duplicateRelations($this, $remainder, $this->manyMany());
 
             //TODO: there may be some relationships that shouldn't be copied?
             $remainder->Amount = $amount - $used;

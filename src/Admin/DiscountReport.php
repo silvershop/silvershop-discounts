@@ -33,11 +33,11 @@ class DiscountReport extends ShopPeriodReport
     /**
      * Remove unsortable columns
      */
-    public function sortColumns()
+    public function sortColumns(): array
     {
-        $cols = parent::sortColumns();
+        $cols = $this->columns();
         unset($cols['DiscountNice']);
-        return $cols;
+        return array_keys($cols);
     }
 
     public function query($params): ShopReportQuery|SQLSelect

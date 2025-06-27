@@ -18,10 +18,11 @@ SilverShop\Model\OrderItem:
 SilverShop\Discounts\Model\Discount:
   extensions:
     - SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint
-    - SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint
     - SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint
     - SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint
-    - SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint
-    - SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\ProductTypeDiscountConstraint
     - SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint
-    - SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint

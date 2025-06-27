@@ -104,7 +104,7 @@ class GiftVoucherOrderItem extends OrderItem
     public function sendVoucher(OrderCoupon $orderCoupon): bool
     {
         $from = Email::config()->admin_email;
-        $to = $this->Order()->getLatestEmail();
+        $to = $this->Order()->exists() ? $this->Order()->getLatestEmail() : '';
         $subject = _t('Order.GIFTVOUCHERSUBJECT', 'Gift voucher');
         $email = Email::create();
         $email->setFrom($from);

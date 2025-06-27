@@ -90,6 +90,10 @@ class OrderDiscountModifier extends OrderModifier
 
     public function getUsedCodes(): string
     {
+        if (!$this->Order()->exists()) {
+            return '';
+        }
+
         $discounts = $this->Order()->Discounts()->filter("Code:not", "");
 
         if (!$discounts->count()) {

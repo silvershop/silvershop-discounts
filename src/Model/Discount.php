@@ -344,7 +344,7 @@ class Discount extends DataObject implements PermissionProvider
      */
     public function validateOrder(Order $order, array $context = []): bool
     {
-        if (empty($order)) {
+        if (!$order instanceof Order) {
             $this->error(_t('Discount.NOORDER', 'Order has not been started.'));
 
             return false;

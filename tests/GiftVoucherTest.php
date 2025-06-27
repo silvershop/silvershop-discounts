@@ -12,24 +12,24 @@ class GiftVoucherTest extends SapphireTest
         'GiftVouchers.yml'
     ];
 
-    protected GiftVoucherProduct $fixed10;
+    protected GiftVoucherProduct $fixed10GiftVoucherProduct;
 
-    protected GiftVoucherProduct $variable;
+    protected GiftVoucherProduct $variableGiftVoucherProduct;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->variable = $this->objFromFixture(GiftVoucherProduct::class, 'variable');
-        $this->variable->copyVersionToStage('Stage', 'Live');
+        $this->variableGiftVoucherProduct = $this->objFromFixture(GiftVoucherProduct::class, 'variable');
+        $this->variableGiftVoucherProduct->copyVersionToStage('Stage', 'Live');
 
-        $this->fixed10 = $this->objFromFixture(GiftVoucherProduct::class, '10fixed');
-        $this->fixed10->copyVersionToStage('Stage', 'Live');
+        $this->fixed10GiftVoucherProduct = $this->objFromFixture(GiftVoucherProduct::class, '10fixed');
+        $this->fixed10GiftVoucherProduct->copyVersionToStage('Stage', 'Live');
     }
 
     public function testCusomisableVoucher(): void
     {
-        $giftVoucherProductController =  GiftVoucherProductController::create($this->variable);
+        $giftVoucherProductController =  GiftVoucherProductController::create($this->variableGiftVoucherProduct);
         $form = $giftVoucherProductController->Form();
 
         $form->loadDataFrom(
@@ -59,7 +59,7 @@ class GiftVoucherTest extends SapphireTest
 
     public function testFixedVoucher(): void
     {
-        $giftVoucherProductController =  GiftVoucherProductController::create($this->fixed10);
+        $giftVoucherProductController =  GiftVoucherProductController::create($this->fixed10GiftVoucherProduct);
         $form = $giftVoucherProductController->Form();
         $form->loadDataFrom(
             ['Quantity' => 2]
@@ -70,7 +70,7 @@ class GiftVoucherTest extends SapphireTest
 
     public function testCreateCoupon(): void
     {
-        $orderItem = $this->variable->createItem(
+        $orderItem = $this->variableGiftVoucherProduct->createItem(
             1,
             ['UnitPrice' => 15.00]
         );
