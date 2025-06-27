@@ -43,10 +43,6 @@ class Adjustment
 
     public function __tostring(): string
     {
-        try {
-            return (string) $this->value;
-        } catch (Exception) {
-            return '';
-        }
+        return strval($this->value);
     }
 }

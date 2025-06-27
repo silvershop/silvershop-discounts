@@ -41,7 +41,8 @@ class MembershipDiscountConstraint extends DiscountConstraint
     public function filter(DataList $dataList): DataList
     {
         $memberid = 0;
-        if ($member = $this->getMember()) {
+        $member = $this->getMember();
+        if ($member->exists()) {
             $memberid = $member->ID;
         }
 

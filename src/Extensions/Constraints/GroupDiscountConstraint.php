@@ -11,7 +11,7 @@ use SilverStripe\Security\Member;
 
 /**
  * @property int $GroupID
- * @method Group Group()
+ * @method   Group Group()
  */
 class GroupDiscountConstraint extends DiscountConstraint
 {
@@ -35,7 +35,8 @@ class GroupDiscountConstraint extends DiscountConstraint
     public function filter(DataList $dataList): DataList
     {
         $groupids = [0];
-        if ($member = $this->getMember()) {
+        $member = $this->getMember();
+        if ($member->exists()) {
             $groupids += $member->Groups()
                 ->map('ID', 'ID')
                 ->toArray();

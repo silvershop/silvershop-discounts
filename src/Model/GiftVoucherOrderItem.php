@@ -75,7 +75,7 @@ class GiftVoucherOrderItem extends OrderItem
      */
     public function createCoupon(): OrderCoupon|bool
     {
-        if (!$this->Product()) {
+        if (!$this->Product()->exists()) {
             return false;
         }
 

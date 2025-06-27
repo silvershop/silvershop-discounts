@@ -83,7 +83,7 @@ class OrderCoupon extends Discount
             ],
             'Active'
         );
-        if ($this->owner->Code && $codefield) {
+        if ($this->owner->Code && $codefield->exists()) {
             $fieldList->replaceField(
                 'Code',
                 $codefield->performReadonlyTransformation()

@@ -63,7 +63,7 @@ class CouponForm extends Form
 
         $order = $this->config->getOrder();
 
-        if ($order) {
+        if ($order->exists()) {
             $order->removeDiscounts();
         }
 
