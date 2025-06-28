@@ -175,9 +175,9 @@ class Calculator
      * Work out how much the given discount has already
      * been used
      */
-    protected function discountSubtotal(Discount $discount): string
+    protected function discountSubtotal(Discount $discount): float
     {
-        return $this->modifier->Discounts()
+        return (float) $this->modifier->Discounts()
             ->filter('ID', $discount->ID)
             ->sum('DiscountAmount');
     }
