@@ -81,9 +81,12 @@ class PartialUseDiscount extends Discount
             $remainder->deleteRelationships();
 
             // create proper new relationships
-            $this->duplicateRelations($this, $remainder, $this->manyMany());
+            $this->duplicateRelations(
+                $this,
+                $remainder,
+                array_keys($this->manyMany())
+            );
 
-            //TODO: there may be some relationships that shouldn't be copied?
             $remainder->Amount = $amount - $used;
             $remainder->ParentID = $this->ID;
             //unset old code
@@ -92,19 +95,6 @@ class PartialUseDiscount extends Discount
         }
 
         return $remainder;
-    }
-
-    public function validate(): ValidationResult
-    {
-        $validationResult = parent::validate();
-        //prevent vital things from changing
-        foreach ($this->config()->get('defaults') as $field => $value) {
-            if ($this->isChanged($field)) {
-                $validationResult->addError($field . ' should not be changed for partial use discounts.');
-            }
-        }
-
-        return $validationResult;
     }
 
     /**
@@ -117,5 +107,21 @@ class PartialUseDiscount extends Discount
                 $this->{$name}()->removeAll();
             }
         }
+    }
+
+    public function validate(): ValidationResult
+    {
+        $validationResult = parent::validate();
+
+        //prevent vital things from changing.  Note: only this extension's defaults.
+        if ($this->isInDB()) {
+            foreach (static::$defaults as $field => $value) {
+                if ($this->isChanged($field)) {
+                    $validationResult->addError('The field: ' . $field . ' should not be changed for partial use discounts.  Current value is: ' . $value . '.  Expected: ' . static::$defaults[$field] . '.');
+                }
+            }
+        }
+
+        return $validationResult;
     }
 }

@@ -428,9 +428,9 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get discounting amount
      */
-    public function getAmount()
+    public function getAmount(): float
     {
-        $amount = $this->getField('Amount');
+        $amount = (float) $this->getField('Amount');
 
         $this->extend('updateAmount', $amount);
 
@@ -587,8 +587,8 @@ class Discount extends DataObject implements PermissionProvider
                 'SilverShop_OrderItem_Discounts',
                 '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."SilverShop_OrderItemID"'
             )
-            ->filter('SilverShop_OrderItem_Discounts.DiscountID', $this->ID)
-            ->filter('OrderAttribute.OrderID', $order->ID)
+            ->filter('SilverShop_DiscountID', $this->ID)
+            ->filter('OrderID', $order->ID)
             ->sum('DiscountAmount');
 
         $modifiersavings = OrderAttribute::get()
@@ -596,8 +596,8 @@ class Discount extends DataObject implements PermissionProvider
                 'SilverShop_OrderDiscountModifier_Discounts',
                 '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID"'
             )
-            ->filter('SilverShop_OrderDiscountModifier_Discounts.DiscountID', $this->ID)
-            ->filter('OrderAttribute.OrderID', $order->ID)
+            ->filter('SilverShop_DiscountID', $this->ID)
+            ->filter('OrderID', $order->ID)
             ->sum('DiscountAmount');
 
         return $itemsavings + $modifiersavings;

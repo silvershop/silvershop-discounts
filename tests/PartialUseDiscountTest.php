@@ -20,7 +20,7 @@ class PartialUseDiscountTest extends SapphireTest
         $this->assertNull($discount->createRemainder(5000));
         $this->assertNull($discount->createRemainder(90));
         $remainderdiscount = $discount->createRemainder(40);
-        $this->assertSame(50, $remainderdiscount->Amount, 'Subtract $40 from $90 discount');
+        $this->assertSame(50.0, $remainderdiscount->Amount, 'Subtract $40 from $90 discount');
 
         $discount->Active = false;
         $discount->write();

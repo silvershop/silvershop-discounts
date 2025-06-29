@@ -14,4 +14,5 @@ jobs:
         phpunit/phpunit:^9.6.22
         symfony/http-foundation:^6.4.8
         moneyphp/money:^4.6.0
+        silverstripe/installer:^5.3.0
         silvershop/core:dev-main

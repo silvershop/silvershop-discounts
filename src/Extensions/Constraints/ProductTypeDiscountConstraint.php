@@ -67,12 +67,12 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         }
 
         $buyable = $orderItem->Buyable();
-        return isset($types[$buyable->class]);
+        return isset($types[$buyable->getClassName()]);
     }
 
     protected function getTypes($selected, Discount $discount): ?array
     {
-        $types = $selected ? array_filter(explode(',', $discount->ProductTypes)) : $this->BuyableClasses();
+        $types = $selected ? array_filter(explode(',', $discount->ProductTypes ?? '')) : $this->BuyableClasses();
         if ($types && $types !== []) {
             $types = array_combine($types, $types);
             foreach (array_keys($types) as $type) {
