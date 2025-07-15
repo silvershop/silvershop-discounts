@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
+use SilverStripe\ORM\ManyManyList;
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
@@ -11,16 +12,19 @@ use SilverStripe\Security\Member;
 use SilverStripe\Forms\GridField\GridFieldAddNewButton;
 use SilverStripe\Forms\GridField\GridFieldEditButton;
 
+/**
+ * @method ManyManyList<Member> Members()
+ */
 class MembershipDiscountConstraint extends DiscountConstraint
 {
-    private static $many_many = [
+    private static array $many_many = [
         'Members' => Member::class
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fieldList): void
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldToTab(
+            $fieldList->addFieldToTab(
                 'Root.Constraints.ConstraintsTabs.Membership',
                 GridField::create(
                     'Members',
@@ -34,25 +38,27 @@ class MembershipDiscountConstraint extends DiscountConstraint
         }
     }
 
-    public function filter(DataList $list)
+    public function filter(DataList $dataList): DataList
     {
         $memberid = 0;
-        if ($member = $this->getMember()) {
+        $member = $this->getMember();
+        if ($member->exists()) {
             $memberid = $member->ID;
         }
-        $list = $list->leftJoin(
+
+        $dataList = $dataList->leftJoin(
             'SilverShop_Discount_Members',
             '"SilverShop_Discount_Members"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
-        )->where("(\"SilverShop_Discount_Members\".\"MemberID\" IS NULL) OR \"SilverShop_Discount_Members\".\"MemberID\" = $memberid");
+        )->where('("SilverShop_Discount_Members"."MemberID" IS NULL) OR "SilverShop_Discount_Members"."MemberID" = ' . $memberid);
 
-        return $list;
+        return $dataList;
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
-        $members = $discount->Members();
+        $manyManyList = $discount->Members();
         $member = $this->getMember();
-        if ($members->exists() && (!$member || !$members->byID($member->ID))) {
+        if ($manyManyList->exists() && (!$member instanceof Member || !$manyManyList->byID($member->ID))) {
             $this->error(
                 _t(
                     'Discount.MEMBERSHIP',
@@ -65,7 +71,7 @@ class MembershipDiscountConstraint extends DiscountConstraint
         return true;
     }
 
-    public function getMember()
+    public function getMember(): Member
     {
         return isset($this->context['Member']) && is_object($this->context['Member']) ? $this->context['Member'] : $this->order->Member();
     }

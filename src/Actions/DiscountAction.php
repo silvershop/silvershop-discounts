@@ -6,20 +6,14 @@ use SilverShop\Discounts\Model\Discount;
 
 abstract class DiscountAction extends Action
 {
-    /**
-     * @var Discount
-     */
-    protected $discount;
+    protected Discount $discount;
 
     /**
      * @var float used for keeping total discount within MaxAmount
      */
-    protected $remaining;
+    protected float $remaining;
 
-    /**
-     * @var bool
-     */
-    protected $limited;
+    protected bool $limited;
 
     public function __construct(Discount $discount)
     {
@@ -31,12 +25,8 @@ abstract class DiscountAction extends Action
     /**
      * Limit an amount to be within maximum allowable discount, and update the
      * total remaining discountable amount;
-     *
-     * @param float $amount
-     *
-     * @return float new amount
      */
-    protected function limit($amount)
+    protected function limit(float $amount): float
     {
         if ($this->limited) {
             if ($amount > $this->remaining) {
@@ -51,21 +41,15 @@ abstract class DiscountAction extends Action
 
     /**
      * Check if there is any further allowable amount to be discounted.
-     *
-     * @return boolean
      */
-    protected function hasRemainingDiscount()
+    protected function hasRemainingDiscount(): bool
     {
         return !$this->limited || $this->remaining > 0;
     }
 
-    /**
-     * @param float
-     * @return DiscountAction
-     */
-    public function reduceRemaining($amount)
+    public function reduceRemaining(float $amount): static
     {
-        if ($this->remaining) {
+        if ($this->remaining !== 0.0) {
             $this->remaining -= $amount;
         }
 

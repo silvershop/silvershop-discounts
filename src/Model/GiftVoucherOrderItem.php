@@ -2,24 +2,41 @@
 
 namespace SilverShop\Discounts\Model;
 
+use SilverStripe\ORM\HasManyList;
+use Psr\Log\LoggerInterface;
+use SilverStripe\ORM\ValidationException;
 use SilverShop\Model\Product\OrderItem;
 use SilverStripe\Control\Email\Email;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
+/**
+ * @property ?string $GiftedTo
+ * @method   HasManyList<OrderCoupon> Coupons()
+ */
 class GiftVoucherOrderItem extends OrderItem
 {
-    private static $db = [
+    private static array $db = [
         'GiftedTo' => 'Varchar'
     ];
 
-    private static $has_many = [
+    private static array $has_many = [
         'Coupons' => OrderCoupon::class
     ];
 
-    private static $required_fields = [
+    private static array $required_fields = [
         'UnitPrice'
     ];
 
-    private static $table_name = 'SilverShop_GiftVoucherOrderItem';
+    private static string $table_name = 'SilverShop_GiftVoucherOrderItem';
+
+    private static array $dependencies = [
+        'Logger' => '%$' . LoggerInterface::class,
+    ];
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * Don't get unit price from product
@@ -36,7 +53,7 @@ class GiftVoucherOrderItem extends OrderItem
     /**
      * Create vouchers on order payment success event
      */
-    public function onPayment()
+    public function onPayment(): void
     {
         parent::onPayment();
 
@@ -54,41 +71,40 @@ class GiftVoucherOrderItem extends OrderItem
     /**
      * Create a new coupon
      *
-     * @return OrderCoupon
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws ValidationException
      */
-    public function createCoupon()
+    public function createCoupon(): OrderCoupon|bool
     {
-        if (!$this->Product()) {
+        if (!$this->Product()->exists()) {
             return false;
         }
 
-        $coupon = new OrderCoupon(
+        $orderCoupon = OrderCoupon::create(
             [
-            'Title' => $this->Product()->Title,
-            'Type' => 'Amount',
-            'Amount' => $this->UnitPrice,
-            'UseLimit' => 1,
-            'MinOrderValue' => $this->UnitPrice //safeguard that means coupons must be used entirely
+                'Title' => $this->Product()->Title,
+                'Type' => 'Amount',
+                'Amount' => $this->UnitPrice,
+                'UseLimit' => 1,
+                'MinOrderValue' => $this->UnitPrice //safeguard that means coupons must be used entirely
             ]
         );
 
-        $this->extend('updateCreateCupon', $coupon);
+        $this->extend('updateCreateCupon', $orderCoupon);
 
-        $coupon->write();
+        $orderCoupon->write();
 
-        $this->Coupons()->add($coupon);
+        $this->Coupons()->add($orderCoupon);
 
-        return $coupon;
+        return $orderCoupon;
     }
 
     /*
      * Send the voucher to the appropriate email
      */
-    public function sendVoucher(OrderCoupon $coupon)
+    public function sendVoucher(OrderCoupon $orderCoupon): bool
     {
         $from = Email::config()->admin_email;
-        $to = $this->Order()->getLatestEmail();
+        $to = $this->Order()->exists() ? $this->Order()->getLatestEmail() : '';
         $subject = _t('Order.GIFTVOUCHERSUBJECT', 'Gift voucher');
         $email = Email::create();
         $email->setFrom($from);
@@ -97,12 +113,25 @@ class GiftVoucherOrderItem extends OrderItem
         $email->setHTMLTemplate('GiftVoucherEmail');
         $email->setData(
             [
-            'Coupon' => $coupon
+                'Coupon' => $orderCoupon
             ]
         );
 
-        $this->extend('updateVoucherMail', $email, $coupon);
+        $this->extend('updateVoucherMail', $email, $orderCoupon);
 
-        return $email->send();
+        try {
+            $email->send();
+        } catch (TransportExceptionInterface $transportException) {
+            $this->logger->error('GiftVoucherOrderItem.sendVoucher: error sending email in ' . __FILE__ . ' line ' . __LINE__ . (': ' . $transportException->getMessage()));
+            return false;
+        }
+
+        return true;
+    }
+
+    public function setLogger(LoggerInterface $logger): static
+    {
+        $this->logger = $logger;
+        return $this;
     }
 }

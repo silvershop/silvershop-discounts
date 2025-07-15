@@ -14,11 +14,11 @@ use SilverShop\Model\Order;
 
 class CouponCheckoutComponent extends CheckoutComponent
 {
-    protected $validwhenblank = false;
+    protected bool $validwhenblank = false;
 
-    public function getFormFields(Order $order)
+    public function getFormFields(Order $order): FieldList
     {
-        $fields = FieldList::create(
+        return FieldList::create(
             TextField::create(
                 'Code',
                 _t(
@@ -27,57 +27,55 @@ class CouponCheckoutComponent extends CheckoutComponent
                 )
             )
         );
-
-        return $fields;
     }
 
-    public function setValidWhenBlank($valid)
+    public function setValidWhenBlank(bool $valid): void
     {
         $this->validwhenblank = $valid;
     }
 
-    public function validateData(Order $order, array $data)
+    public function validateData(Order $order, array $data): bool
     {
-        $result = new ValidationResult();
+        $validationResult = ValidationResult::create();
         $code = $data['Code'];
 
         if ($this->validwhenblank && !$code) {
-            return $result;
+            return $validationResult->isValid();
         }
 
         // check the coupon exists, and can be used
         if ($coupon = OrderCoupon::get_by_code($code)) {
             if (!$coupon->validateOrder($order, ['CouponCode' => $code])) {
-                $result->addError($coupon->getMessage(), 'Code');
+                $validationResult->addError($coupon->getMessage(), 'Code');
 
-                throw new ValidationException($result);
+                throw ValidationException::create($validationResult);
             }
         } else {
-            $result->addError(
+            $validationResult->addError(
                 _t('OrderCouponModifier.NOTFOUND', 'Coupon could not be found'),
                 'Code'
             );
 
-            throw new ValidationException($result);
+            throw ValidationException::create($validationResult);
         }
 
-
-        return $result;
+        return $validationResult->isValid();
     }
 
-    public function getData(Order $order)
+    public function getData(Order $order): array
     {
         return [
             'Code' => Controller::curr()->getRequest()->getSession()->get('cart.couponcode')
         ];
     }
 
-    public function setData(Order $order, array $data)
+    public function setData(Order $order, array $data): Order
     {
         if ($data['Code']) {
-            Controller::curr()->getRequest()->getSession()->set('cart.couponcode', strtoupper($data['Code']));
+            Controller::curr()->getRequest()->getSession()->set('cart.couponcode', strtoupper((string) $data['Code']));
         }
 
         $order->getModifier(OrderDiscountModifier::class, true);
+        return $order;
     }
 }

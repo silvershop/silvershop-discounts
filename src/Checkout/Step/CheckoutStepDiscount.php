@@ -9,43 +9,41 @@ use SilverShop\Discounts\Checkout\CouponCheckoutComponent;
 use SilverShop\Forms\CheckoutForm;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
-use SilverShop\Discounts\Form\CouponForm;
 
 class CheckoutStepDiscount extends CheckoutStep
 {
-    private static $allowed_actions = [
+    private static array $allowed_actions = [
         'discount',
         'CouponForm',
         'setcoupon'
     ];
 
-    protected function checkoutconfig()
+    protected function checkoutconfig(): CheckoutComponentConfig
     {
-        $config = new CheckoutComponentConfig(ShoppingCart::curr(), true);
-        $config->addComponent($comp = new CouponCheckoutComponent());
-        $comp->setValidWhenBlank(true);
+        $checkoutComponentConfig = CheckoutComponentConfig::create(ShoppingCart::curr(), true);
+        $checkoutComponentConfig->addComponent($couponCheckoutComponent = CouponCheckoutComponent::create());
 
-        return $config;
+        $couponCheckoutComponent->setValidWhenBlank(true);
+
+        return $checkoutComponentConfig;
     }
 
-    public function discount()
+    public function discount(): array
     {
         return [
             'OrderForm' => $this->CouponForm()
         ];
     }
 
-    public function CouponForm()
+    public function CouponForm(): CheckoutForm
     {
-        $form = new CheckoutForm($this->owner, 'CouponForm', $this->checkoutconfig());
-        $form->setActions(
-            new FieldList(
-                FormAction::create('setcoupon', _t('SilverShop\Checkout\Step\CheckoutStep.Continue', 'Continue'))
-            )
+        $checkoutForm = CheckoutForm::create($this->owner, 'CouponForm', $this->checkoutconfig());
+        $checkoutForm->setActions(
+            FieldList::create(FormAction::create('setcoupon', _t('SilverShop\Checkout\Step\CheckoutStep.Continue', 'Continue')))
         );
-        $this->owner->extend('updateCouponForm', $form);
+        $this->owner->extend('updateCouponForm', $checkoutForm);
 
-        return $form;
+        return $checkoutForm;
     }
 
     public function setcoupon($data, $form)

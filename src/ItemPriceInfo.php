@@ -9,47 +9,47 @@ use SilverShop\Model\OrderItem;
  */
 class ItemPriceInfo extends PriceInfo
 {
-    protected $item;
+    protected OrderItem $item;
 
-    protected $quantity;
+    protected int|float $quantity = 0;
 
-    public function __construct(OrderItem $item)
+    public function __construct(OrderItem $orderItem)
     {
-        $this->item = $item;
-        $this->quantity = $item->Quantity;
+        $this->item = $orderItem;
+        $this->quantity = $orderItem->Quantity;
 
-        $originalprice = $item->hasMethod('DiscountableAmount') ?
-                            $item->DiscountableAmount() :
-                            $item->UnitPrice();
+        $originalprice = $orderItem->hasMethod('DiscountableAmount') ?
+                            $orderItem->DiscountableAmount() :
+                            $orderItem->UnitPrice();
 
         parent::__construct($originalprice);
     }
 
-    public function getItem()
+    public function getItem(): OrderItem
     {
         return $this->item;
     }
 
-    public function getQuantity()
+    public function getQuantity(): int|float
     {
         return $this->quantity;
     }
 
-    public function getOriginalTotal()
+    public function getOriginalTotal(): int|float
     {
         return $this->originalprice * $this->quantity;
     }
 
-    public function debug()
+    public function debug(): string
     {
         $discount = $this->getBestDiscount();
         $total = $discount * $this->getQuantity();
-        $val = 'item: ' .$this->getItem()->TableTitle();
+        $val = 'item: ' . $this->getItem()->getTableTitle();
         $price = $this->getOriginalPrice();
-        $val .= " price:$price discount:$discount total:$total.\n";
+        $val .= " price:{$price} discount:{$discount} total:{$total}.\n";
 
-        if ($best = $this->getBestAdjustment()) {
-            $val .= $this->getBestAdjustment(). ' ';
+        if (($best = $this->getBestAdjustment()) instanceof Adjustment) {
+            $val .= $this->getBestAdjustment() . ' ';
             $val .= $this->getBestAdjustment()->getAdjuster()->Title;
         } else {
             $val .= 'No adjustments';
@@ -57,8 +57,7 @@ class ItemPriceInfo extends PriceInfo
 
         $val .= "\n";
         $val .= implode(',', $this->getAdjustments());
-        $val .= "\n\n";
 
-        return $val;
+        return $val . "\n\n";
     }
 }

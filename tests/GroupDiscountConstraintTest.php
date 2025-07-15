@@ -16,7 +16,11 @@ class GroupDiscountConstraintTest extends SapphireTest
         'shop.yml'
     ];
 
-    public function setUp(): void
+    protected Order $cart;
+
+    protected Order $othercart;
+
+    protected function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();
@@ -24,27 +28,29 @@ class GroupDiscountConstraintTest extends SapphireTest
         $this->othercart = $this->objFromFixture(Order::class, 'othercart');
     }
 
-    public function testMemberGroup()
+    public function testMemberGroup(): void
     {
-        $coupon = OrderCoupon::create(
+        $orderCoupon = OrderCoupon::create(
             [
-            'Title' => 'Special Members Coupon',
-            'Code' => 'GROUPED',
-            'Type' => 'Percent',
-            'Percent' => 0.9,
-            'Active' => 1,
-            'GroupID' => $this->objFromFixture(Group::class, 'resellers')->ID
+                'Title' => 'Special Members Coupon',
+                'Code' => 'GROUPED',
+                'Type' => 'Percent',
+                'Percent' => 0.9,
+                'Active' => 1,
+                'GroupID' => $this->objFromFixture(Group::class, 'resellers')->ID
             ]
         );
-        $coupon->write();
+        $orderCoupon->write();
 
-        $context = ['CouponCode' => $coupon->Code];
-        $this->assertFalse($coupon->validateOrder($this->cart, $context), 'Invalid for memberless order');
+        $context = ['CouponCode' => $orderCoupon->Code];
+        $this->assertFalse($orderCoupon->validateOrder($this->cart, $context), 'Invalid for memberless order');
         $context = [
-            'CouponCode' => $coupon->Code,
+            'CouponCode' => $orderCoupon->Code,
             'Member' => $this->objFromFixture(Member::class, 'bobjones')
         ];
-        $this->assertTrue($coupon->validateOrder($this->othercart, $context),
-            'Valid because member is in resellers group');
+        $this->assertTrue(
+            $orderCoupon->validateOrder($this->othercart, $context),
+            'Valid because member is in resellers group'
+        );
     }
 }

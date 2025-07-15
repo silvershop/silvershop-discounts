@@ -6,7 +6,7 @@ use SilverStripe\Forms\RequiredFields;
 
 class GiftVoucherFormValidator extends RequiredFields
 {
-    public function php($data)
+    public function php($data): bool
     {
         $valid =  parent::php($data);
 
@@ -27,10 +27,12 @@ class GiftVoucherFormValidator extends RequiredFields
                     );
                     return false;
                 }
+
                 if ($giftvalue <= 0) {
                     $this->validationError(
                         'UnitPrice',
-                        'Gift value must be greater than 0');
+                        'Gift value must be greater than 0'
+                    );
                     return false;
                 }
             }

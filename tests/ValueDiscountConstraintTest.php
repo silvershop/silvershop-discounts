@@ -11,11 +11,19 @@ use SilverShop\Model\Order;
 class ValueDiscountConstraintTest extends SapphireTest
 {
 
+    public $placedorder;
+
     protected static $fixture_file = [
         'shop.yml'
     ];
 
-    public function setUp(): void
+    protected Order $cart;
+
+    protected Order $othercart;
+
+    protected Order $placeorder;
+
+    protected function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();
@@ -25,30 +33,31 @@ class ValueDiscountConstraintTest extends SapphireTest
         $this->placedorder = $this->objFromFixture(Order::class, 'unpaid');
     }
 
-    public function testMinOrderValue()
+    public function testMinOrderValue(): void
     {
-        $coupon = OrderCoupon::create(
+        $orderCoupon = OrderCoupon::create(
             [
-            'Title' => 'Orders 200 and more',
-            'Code' => '200PLUS',
-            'Type' => 'Amount',
-            'Amount' => 35,
-            'ForItems' => 0,
-            'ForCart' => 1,
-            'MinOrderValue' => 200
+                'Title' => 'Orders 200 and more',
+                'Code' => '200PLUS',
+                'Type' => 'Amount',
+                'Amount' => 35,
+                'ForItems' => 0,
+                'ForCart' => 1,
+                'MinOrderValue' => 200
             ]
         );
-        $coupon->write();
-        $context = ['CouponCode' => $coupon->Code];
-        $this->assertFalse($coupon->validateOrder($this->cart, $context), "$8 order isn't enough");
-        $this->assertTrue($coupon->validateOrder($this->othercart, $context), '$200 is enough');
-        $this->assertTrue($coupon->validateOrder($this->placedorder, $context), '$500 order is enough');
+        $orderCoupon->write();
 
-        $calculator = new Calculator($this->cart, $context);
-        $this->assertEquals(0, $calculator->calculate());
-        $calculator = new Calculator($this->othercart, $context);
-        $this->assertEquals(35, $calculator->calculate());
-        $calculator = new Calculator($this->placedorder, $context);
-        $this->assertEquals(35, $calculator->calculate());
+        $context = ['CouponCode' => $orderCoupon->Code];
+        $this->assertFalse($orderCoupon->validateOrder($this->cart, $context), "$8 order isn't enough");
+        $this->assertTrue($orderCoupon->validateOrder($this->othercart, $context), '$200 is enough');
+        $this->assertTrue($orderCoupon->validateOrder($this->placedorder, $context), '$500 order is enough');
+
+        $calculator = Calculator::create($this->cart, $context);
+        $this->assertSame(0, (int) $calculator->calculate());
+        $calculator = Calculator::create($this->othercart, $context);
+        $this->assertSame(35, (int) $calculator->calculate());
+        $calculator = Calculator::create($this->placedorder, $context);
+        $this->assertSame(35, (int) $calculator->calculate());
     }
 }

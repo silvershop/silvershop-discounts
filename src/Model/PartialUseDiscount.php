@@ -2,18 +2,26 @@
 
 namespace SilverShop\Discounts\Model;
 
+use SilverStripe\ORM\ValidationException;
+use SilverStripe\ORM\ValidationResult;
 
+/**
+ * @property int $ChildID
+ * @method   \SilverShop\Discounts\Model\PartialUseDiscount Child()
+ * @property int $ParentID
+ * @method   \SilverShop\Discounts\Model\PartialUseDiscount Parent()
+ */
 class PartialUseDiscount extends Discount
 {
-    private static $has_one = [
+    private static array $has_one = [
         'Parent' => PartialUseDiscount::class
     ];
 
-    private static $belongs_to = [
+    private static array $belongs_to = [
         'Child' => PartialUseDiscount::class
     ];
 
-    private static $defaults = [
+    private static array $defaults = [
         'Type' => 'Amount',
         'ForCart' => 1,
         'ForItems' => 0,
@@ -21,44 +29,44 @@ class PartialUseDiscount extends Discount
         'UseLimit' => 1
     ];
 
-    private static $singular_name = 'Partial Use Discount';
+    private static string $singular_name = 'Partial Use Discount';
 
-    private static $plural_name = 'Partial Use Discounts';
+    private static string $plural_name = 'Partial Use Discounts';
 
-    private static $table_name = 'SilverShop_PartialUseDiscount';
+    private static string $table_name = 'SilverShop_PartialUseDiscount';
 
     public function getCMSFields($params = null)
     {
-        $fields = parent::getCMSFields([
-            'forcetype' => 'Amount'
-        ]);
+        $fieldList = parent::getCMSFields(['forcetype' => 'Amount']);
 
-        $fields->removeByName([
-            'ForCart',
-            'ForItems',
-            'ForShipping',
-            'For'
-        ]);
+        $fieldList->removeByName(
+            [
+                'ForCart',
+                'ForItems',
+                'ForShipping',
+                'For'
+            ]
+        );
 
-        $limitfield = $fields->dataFieldByName('UseLimit');
+        $limitfield = $fieldList->dataFieldByName('UseLimit');
 
-        $fields->replaceField('UseLimit', $limitfield->performReadonlyTransformation());
-        return $fields;
+        $fieldList->replaceField('UseLimit', $limitfield->performReadonlyTransformation());
+        return $fieldList;
     }
 
     /**
-     * Create remainder discount object.
+     * Create remainder discount object.  Return new 'remainder' discount.
+     * $used the amount of this discount that was used up
      *
-     * @param  float $used the amount of this discount that was used up
-     * @return PartialUseDiscount  new 'remainder' discount
-     * @throws \SilverStripe\ORM\ValidationException
+     * @throws ValidationException
      */
-    public function createRemainder($used)
+    public function createRemainder(float $used): ?static
     {
         //don't recreate or do stuff with inactive discount
         if (!$this->Active || $this->Child()->exists()) {
             return null;
         }
+
         $remainder = null;
         //only create remainder if used less than amount
         $amount = $this->getAmount();
@@ -73,9 +81,12 @@ class PartialUseDiscount extends Discount
             $remainder->deleteRelationships();
 
             // create proper new relationships
-            $this->duplicateManyManyRelations($this, $remainder, true);
+            $this->duplicateRelations(
+                $this,
+                $remainder,
+                array_keys($this->manyMany())
+            );
 
-            //TODO: there may be some relationships that shouldn't be copied?
             $remainder->Amount = $amount - $used;
             $remainder->ParentID = $this->ID;
             //unset old code
@@ -86,28 +97,31 @@ class PartialUseDiscount extends Discount
         return $remainder;
     }
 
-    public function validate()
-    {
-        $result = parent::validate();
-        //prevent vital things from changing
-        foreach (self::$defaults as $field => $value) {
-            if ($this->isChanged($field)) {
-                $result->addError("$field should not be changed for partial use discounts.");
-            }
-        }
-
-        return $result;
-    }
-
     /**
      * Delete complex relations
      */
-    protected function deleteRelationships()
+    protected function deleteRelationships(): void
     {
         if ($this->manyMany()) {
             foreach ($this->manyMany() as $name => $type) {
                 $this->{$name}()->removeAll();
             }
         }
+    }
+
+    public function validate(): ValidationResult
+    {
+        $validationResult = parent::validate();
+
+        //prevent vital things from changing.  Note: only this extension's defaults.
+        if ($this->isInDB()) {
+            foreach (static::$defaults as $field => $value) {
+                if ($this->isChanged($field)) {
+                    $validationResult->addError('The field: ' . $field . ' should not be changed for partial use discounts.  Current value is: ' . $value . '.  Expected: ' . static::$defaults[$field] . '.');
+                }
+            }
+        }
+
+        return $validationResult;
     }
 }

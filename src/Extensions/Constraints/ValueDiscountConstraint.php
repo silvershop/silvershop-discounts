@@ -7,38 +7,41 @@ use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\CurrencyField;
 use SilverStripe\ORM\DataList;
 
+/**
+ * @property float $MinOrderValue
+ */
 class ValueDiscountConstraint extends DiscountConstraint
 {
-    private static $db = [
+    private static array $db = [
         'MinOrderValue' => 'Currency'
     ];
 
-    private static $field_labels = [
+    private static array $field_labels = [
         'MinOrderValue' => 'Minimum subtotal of order'
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fieldList): void
     {
-        $fields->addFieldToTab(
+        $fieldList->addFieldToTab(
             'Root.Constraints.ConstraintsTabs.General',
             CurrencyField::create(
                 'MinOrderValue',
-                _t(__CLASS__.'.MINORDERVALUE', $this->owner->fieldLabel('MinOrderValue'))
+                _t(__CLASS__ . '.MINORDERVALUE', $this->owner->fieldLabel('MinOrderValue'))
             )
         );
     }
 
-    public function filter(DataList $list)
+    public function filter(DataList $dataList): DataList
     {
-        return $list->filterAny(
+        return $dataList->filterAny(
             [
-            'MinOrderValue' => 0,
-            'MinOrderValue:LessThanOrEqual' => $this->order->SubTotal()
+                'MinOrderValue' => 0,
+                'MinOrderValue:LessThanOrEqual' => $this->order->SubTotal()
             ]
         );
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         if ($discount->MinOrderValue > 0 && $this->order->SubTotal() < $discount->MinOrderValue) {
             $this->error(

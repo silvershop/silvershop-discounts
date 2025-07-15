@@ -9,23 +9,27 @@ use SilverStripe\Security\RandomGenerator;
 
 /**
  * Applies a discount to current order, if applicable, when entered at checkout.
+ *
+ * @property ?string $Code
+ * @property int $GiftVoucherID
+ * @method   GiftVoucherOrderItem GiftVoucher()
  */
 class OrderCoupon extends Discount
 {
-    private static $db = [
+    private static array $db = [
         'Code' => 'Varchar(255)'
     ];
 
-    private static $has_one = [
+    private static array $has_one = [
         'GiftVoucher' => GiftVoucherOrderItem::class
     ];
 
-    private static $searchable_fields = [
+    private static array $searchable_fields = [
         'Title',
         'Code'
     ];
 
-    private static $summary_fields = [
+    private static array $summary_fields = [
         'Title',
         'Code',
         'DiscountNice' => 'Discount',
@@ -33,15 +37,15 @@ class OrderCoupon extends Discount
         'EndDate'
     ];
 
-    private static $singular_name = 'Coupon';
+    private static string $singular_name = 'Coupon';
 
-    private static $plural_name = 'Coupons';
+    private static string $plural_name = 'Coupons';
 
-    private static $minimum_code_length = null;
+    private static $minimum_code_length;
 
-    private static $generated_code_length = 10;
+    private static int $generated_code_length = 10;
 
-    private static $table_name = 'SilverShop_OrderCoupon';
+    private static string $table_name = 'SilverShop_OrderCoupon';
 
     public static function get_by_code($code)
     {
@@ -53,19 +57,16 @@ class OrderCoupon extends Discount
     /**
      * Generates a unique code.
      *
-     * @todo   depending on the length, it may be possible that all the possible
+     * @todo depending on the length, it may be possible that all the possible
      *       codes have been generated.
-     * @param null $length
-     * @param string $prefix
-     * @return string the new code
      */
-    public static function generate_code($length = null, $prefix = '')
+    public static function generate_code(?int $length = null, string $prefix = ''): string
     {
-        $length = $length ?: self::config()->generated_code_length;
+        $length = $length !== null && $length !== 0 ? $length : self::config()->generated_code_length;
         $code = null;
-        $generator = Injector::inst()->create(RandomGenerator::class);
+        $randomGenerator = Injector::inst()->create(RandomGenerator::class);
         do {
-            $code = $prefix.strtoupper(substr($generator->randomToken(), 0, $length));
+            $code = $prefix . strtoupper(substr($randomGenerator->randomToken(), 0, $length));
         } while (self::get()->filter('Code:nocase', $code)->exists()
         );
 
@@ -74,32 +75,32 @@ class OrderCoupon extends Discount
 
     public function getCMSFields($params = null)
     {
-        $fields = parent::getCMSFields();
-        $fields->addFieldsToTab(
+        $fieldList = parent::getCMSFields();
+        $fieldList->addFieldsToTab(
             'Root.Main',
             [
                 $codefield = TextField::create('Code')->setMaxLength(25),
             ],
             'Active'
         );
-        if ($this->owner->Code && $codefield) {
-            $fields->replaceField(
+        if ($this->owner->Code && $codefield->exists()) {
+            $fieldList->replaceField(
                 'Code',
                 $codefield->performReadonlyTransformation()
             );
         }
 
-        return $fields;
+        return $fieldList;
     }
 
-    public function validate()
+    public function validate(): ValidationResult
     {
-        $result = parent::validate();
+        $validationResult = parent::validate();
         $minLength = self::config()->minimum_code_length;
         $code = $this->getField('Code');
 
-        if ($minLength && $code && $this->isChanged('Code') && strlen($code) < $minLength) {
-            $result->addError(
+        if ($minLength && $code && $this->isChanged('Code') && strlen((string) $code) < $minLength) {
+            $validationResult->addError(
                 _t(
                     'OrderCoupon.INVALIDMINLENGTH',
                     'Coupon code must be at least {length} characters in length',
@@ -110,10 +111,10 @@ class OrderCoupon extends Discount
             );
         }
 
-        return $result;
+        return $validationResult;
     }
 
-    protected function onBeforeWrite()
+    protected function onBeforeWrite(): void
     {
         if (empty($this->Code)) {
             $this->Code = self::generate_code();
@@ -124,46 +125,34 @@ class OrderCoupon extends Discount
 
     /**
      * Forces codes to be alpha-numeric, uppercase, and trimmed
-     *
-     * @param string
-     *
-     * @return $this
      */
-    public function setCode($code)
+    public function setCode(string $code): static
     {
-        if ($code) {
-            $code = trim(preg_replace('/[^0-9a-zA-Z]+/', '', $code));
+        if ($code !== '' && $code !== '0') {
+            $code = trim((string) preg_replace('/[^0-9a-zA-Z]+/', '', $code));
             $this->setField('Code', strtoupper($code));
         }
 
         return $this;
     }
 
-    public function canView($member = null)
+    public function canView($member = null): bool
     {
         return true;
     }
 
-    public function canCreate($member = null, $context = [])
+    public function canCreate($member = null, $context = []): bool
     {
         return true;
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null): bool
     {
-        if ($this->getUseCount()) {
-            return false;
-        }
-
-        return true;
+        return $this->getUseCount() === 0;
     }
 
-    public function canEdit($member = null)
+    public function canEdit($member = null): bool
     {
-        if ($this->getUseCount() && !$this->Active) {
-            return false;
-        }
-
-        return true;
+        return !($this->getUseCount() && !$this->Active);
     }
 }

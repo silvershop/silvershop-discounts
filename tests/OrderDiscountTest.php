@@ -16,7 +16,9 @@ class OrderDiscountTest extends SapphireTest
         'shop.yml'
     ];
 
-    public function setUp(): void
+    protected Order $cart;
+
+    protected function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();
@@ -26,70 +28,70 @@ class OrderDiscountTest extends SapphireTest
     /**
      * Check that available discounts are matched to the current order.
      */
-    public function testManyMatches()
+    public function testManyMatches(): void
     {
         OrderDiscount::create(
             [
-            'Title' => '10% off',
-            'Type' => 'Percent',
-            'Percent' => 0.10
+                'Title' => '10% off',
+                'Type' => 'Percent',
+                'Percent' => 0.10
             ]
         )->write();
         OrderDiscount::create(
             [
-            'Title' => '$5 off',
-            'Type' => 'Amount',
-            'Amount' => 5
+                'Title' => '$5 off',
+                'Type' => 'Amount',
+                'Amount' => 5
             ]
         )->write();
-        $matches = OrderDiscount::get_matching($this->cart);
+        $arrayList = OrderDiscount::get_matching($this->cart);
         $this->assertListEquals(
             [
-            ['Title' => '10% off'],
-            ['Title' => '$5 off'],
+                ['Title' => '10% off'],
+                ['Title' => '$5 off'],
             ],
-            $matches
+            $arrayList
         );
     }
 
-    public function testPercent()
+    public function testPercent(): void
     {
         OrderDiscount::create(
             [
-            'Title' => '10% off',
-            'Type' => 'Percent',
-            'Percent' => 0.10
+                'Title' => '10% off',
+                'Type' => 'Percent',
+                'Percent' => 0.10
             ]
         )->write();
         $this->assertListEquals(
             [
-            ['Title' => '10% off']
-            ],
-            OrderDiscount::get_matching($this->cart)
-        );
-    }
-
-    public function testAmount()
-    {
-        OrderDiscount::create(
-            [
-            'Title' => '$5 off',
-            'Type' => 'Amount',
-            'Amount' => 5
-            ]
-        )->write();
-        $this->assertListEquals(
-            [
-            ['Title' => '$5 off']
+                ['Title' => '10% off']
             ],
             OrderDiscount::get_matching($this->cart)
         );
     }
 
-    public function testUseCount()
+    public function testAmount(): void
+    {
+        OrderDiscount::create(
+            [
+                'Title' => '$5 off',
+                'Type' => 'Amount',
+                'Amount' => 5
+            ]
+        )->write();
+        $this->assertListEquals(
+            [
+                ['Title' => '$5 off']
+            ],
+            OrderDiscount::get_matching($this->cart)
+        );
+    }
+
+    public function testUseCount(): void
     {
         //check that order with payment started counts as a use
-        $discount = $this->objFromFixture(OrderDiscount::class, 'paymentused');
+        $orderDiscount = $this->objFromFixture(OrderDiscount::class, 'paymentused');
         $payment = $this->objFromFixture(Payment::class, 'paymentstarted_recent');
 
         // set timeout to 60 minutes
@@ -97,15 +99,15 @@ class OrderDiscountTest extends SapphireTest
         //set payment to be created 20 min ago
         $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->write();
-        $this->assertEquals(1, $discount->getUseCount());
+        $this->assertSame(1, $orderDiscount->getUseCount());
         //set payment ot be created 2 days ago
         $payment->Created = date('Y-m-d H:i:s', strtotime('-2 days'));
         $payment->write();
-        $this->assertEquals(0, $discount->getUseCount());
+        $this->assertSame(0, $orderDiscount->getUseCount());
         //failed payments should be ignored
         $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->Status = 'Void';
         $payment->write();
-        $this->assertEquals(0, $discount->getUseCount());
+        $this->assertSame(0, $orderDiscount->getUseCount());
     }
 }

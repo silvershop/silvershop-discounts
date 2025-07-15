@@ -7,55 +7,57 @@ namespace SilverShop\Discounts;
  */
 class PriceInfo
 {
-    protected $originalprice;
+    protected int|float $originalprice;
 
-    protected $currentprice; //for compounding discounts
+    protected int|float $currentprice; //for compounding discounts
 
-    protected $adjustments = [];
+    protected array $adjustments = [];
 
-    protected $bestadjustment;
+    protected ?Adjustment $bestadjustment = null;
 
-    public function __construct($price)
+    public function __construct(int|float $price)
     {
-        $this->currentprice = $this->originalprice = $price;
+        $this->currentprice = $price;
+        $this->originalprice = $price;
     }
 
-    public function getOriginalPrice()
+    public function getOriginalPrice(): int|float
     {
         return $this->originalprice;
     }
 
-    public function getPrice()
+    public function getPrice(): int|float
     {
         return $this->currentprice;
     }
 
-    public function adjustPrice(Adjustment $a)
+    public function adjustPrice(Adjustment $adjustment): void
     {
-        $this->currentprice -= $a->getValue();
-        $this->setBestAdjustment($a);
-        $this->adjustments[] = $a;
+        $this->currentprice -= $adjustment->getValue();
+        $this->setBestAdjustment($adjustment);
+        $this->adjustments[] = $adjustment;
     }
 
-    public function getCompoundedDiscount()
+    public function getCompoundedDiscount(): int|float
     {
         return $this->originalprice - $this->currentprice;
     }
 
-    public function getBestDiscount()
+    public function getBestDiscount(): int|float
     {
-        if ($this->bestadjustment) {
+        if ($this->bestadjustment instanceof Adjustment) {
             return $this->bestadjustment->getValue();
         }
+
         return 0;
     }
 
-    public function getBestAdjustment()
+    public function getBestAdjustment(): ?Adjustment
     {
         return $this->bestadjustment;
     }
 
-    public function getAdjustments()
+    public function getAdjustments(): array
     {
         return $this->adjustments;
     }
@@ -64,11 +66,11 @@ class PriceInfo
      * Sets the best adjustment, if the passed adjustment
      * is indeed better.
      *
-     * @param Adjustment $candidate for better adjustment
+     * @param Adjustment $adjustment for better adjustment
      */
-    protected function setBestAdjustment(Adjustment $candidate)
+    protected function setBestAdjustment(Adjustment $adjustment): void
     {
-        $this->bestadjustment = $this->bestadjustment ?
-            Adjustment::better_of($this->bestadjustment, $candidate) : $candidate;
+        $this->bestadjustment = $this->bestadjustment instanceof Adjustment ?
+            Adjustment::better_of($this->bestadjustment, $adjustment) : $adjustment;
     }
 }

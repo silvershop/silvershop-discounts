@@ -13,14 +13,14 @@ class PartialUseDiscountTest extends SapphireTest
         'PartialUseDiscount.yml'
     ];
 
-    public function testCreateRemainder()
+    public function testCreateRemainder(): void
     {
         //basic remainder
         $discount = $this->objFromFixture(PartialUseDiscount::class, 'partial');
         $this->assertNull($discount->createRemainder(5000));
         $this->assertNull($discount->createRemainder(90));
         $remainderdiscount = $discount->createRemainder(40);
-        $this->assertEquals(50, $remainderdiscount->Amount, 'Subtract $40 from $90 discount');
+        $this->assertSame(50.0, $remainderdiscount->Amount, 'Subtract $40 from $90 discount');
 
         $discount->Active = false;
         $discount->write();
@@ -33,20 +33,23 @@ class PartialUseDiscountTest extends SapphireTest
         $remainder = $discount->createRemainder(40);
         $this->assertListEquals(
             [
-            ['FirstName' => 'Joe']
+                ['FirstName' => 'Joe']
             ],
             $remainder->Members()
         );
         $this->assertListEquals(
             [
-            ['Title' => 'ProductA'],
-            ['Title' => 'ProductB']
+                ['Title' => 'ProductA'],
+                ['Title' => 'ProductB']
             ],
             $remainder->Products()
         );
     }
 
-    public function testCheckoutProcessing()
+    /**
+     * @doesNotPerformAssertions
+     */
+    public function testCheckoutProcessing(): void
     {
         $this->markTestIncomplete('This should be tested');
     }

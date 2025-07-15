@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
+use SilverStripe\ORM\ManyManyList;
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
@@ -11,20 +12,23 @@ use SilverStripe\Forms\GridField\GridFieldEditButton;
 use SilverShop\Model\OrderItem;
 use SilverShop\Page\ProductCategory;
 
+/**
+ * @method ManyManyList<ProductCategory> Categories()
+ */
 class CategoriesDiscountConstraint extends ItemDiscountConstraint
 {
-    private static $many_many = [
+    private static array $many_many = [
         'Categories' => ProductCategory::class
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fieldList): void
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldToTab(
+            $fieldList->addFieldToTab(
                 'Root.Constraints.ConstraintsTabs.Product',
                 GridField::create(
                     'Categories',
-                    _t(__CLASS__.'.PRODUCTCATEGORIES', 'Product categories'),
+                    _t(__CLASS__ . '.PRODUCTCATEGORIES', 'Product categories'),
                     $this->owner->Categories(),
                     GridFieldConfig_RelationEditor::create()
                         ->removeComponentsByType(GridFieldAddNewButton::class)
@@ -34,39 +38,41 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
         }
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
-        $categories = $discount->Categories();
+        $manyManyList = $discount->Categories();
 
-        if (!$categories->exists()) {
+        if (!$manyManyList->exists()) {
             return true;
         }
 
         $incart = $this->itemsInCart($discount);
 
         if (!$incart) {
-            $this->error(_t(__CLASS__.'.CATEGORIESNOTINCART', 'The required products (categories) are not in the cart.'));
+            $this->error(_t(__CLASS__ . '.CATEGORIESNOTINCART', 'The required products (categories) are not in the cart.'));
         }
 
         return $incart;
     }
 
-    public function itemMatchesCriteria(OrderItem $item, Discount $discount)
+    public function itemMatchesCriteria(OrderItem $orderItem, Discount $discount): bool
     {
         $discountcategoryids = $discount->Categories()->getIDList();
         if (empty($discountcategoryids)) {
             return true;
         }
+
         //get category ids from buyable
-        $buyable = $item->Buyable();
+        $buyable = $orderItem->Buyable();
         if (!method_exists($buyable, 'getCategoryIDs')) {
             return false;
         }
+
         $ids = array_intersect(
             $buyable->getCategoryIDs(),
             $discountcategoryids
         );
 
-        return !empty($ids);
+        return $ids !== [];
     }
 }

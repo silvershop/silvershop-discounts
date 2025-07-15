@@ -2,6 +2,16 @@
 
 namespace SilverShop\Discounts\Model;
 
+use SilverStripe\ORM\ManyManyList;
+use SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint;
+use SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint;
+use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverShop\Model\Order;
 use SilverStripe\ORM\ArrayList;
@@ -36,10 +46,32 @@ use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverStripe\Core\Injector\Injector;
 use SilverShop\Discounts\Extensions\Constraints\DiscountConstraint;
 use SilverStripe\ORM\FieldType\DBCurrency;
+use SilverStripe\ORM\Search\SearchContext;
 
+/**
+ * @property string $Title
+ * @property ?string $Type
+ * @property mixed $Amount
+ * @property float $Percent
+ * @property bool $Active
+ * @property bool $ForItems
+ * @property bool $ForCart
+ * @property bool $ForShipping
+ * @property float $MaxAmount
+ * @method   ManyManyList<OrderItem> OrderItems()
+ * @method   ManyManyList<OrderDiscountModifier> DiscountModifiers()
+ * @mixin    CategoriesDiscountConstraint
+ * @mixin    ProductsDiscountConstraint
+ * @mixin    GroupDiscountConstraint
+ * @mixin    MembershipDiscountConstraint
+ * @mixin    DatetimeDiscountConstraint
+ * @mixin    ValueDiscountConstraint
+ * @mixin    UseLimitDiscountConstraint
+ * @mixin    CodeDiscountConstraint
+ */
 class Discount extends DataObject implements PermissionProvider
 {
-    private static $db = [
+    private static array $db = [
         'Title' => 'Varchar(255)', //store the promotion name, or whatever you like
         'Type' => "Enum('Percent,Amount','Percent')",
         'Amount' => 'Currency',
@@ -51,63 +83,58 @@ class Discount extends DataObject implements PermissionProvider
         'MaxAmount' => 'Currency'
     ];
 
-    private static $belongs_many_many = [
+    private static array $belongs_many_many = [
         'OrderItems' => OrderItem::class,
         'DiscountModifiers' => OrderDiscountModifier::class
     ];
 
-    private static $defaults = [
+    private static array $defaults = [
         'Type' => 'Percent',
         'Active' => true,
         'ForItems' => 1
     ];
 
-    private static $field_labels = [
+    private static array $field_labels = [
         'DiscountNice' => 'Discount'
     ];
 
-    private static $summary_fields = [
+    private static array $summary_fields = [
         'Title',
         'DiscountNice' => 'Discount',
         'StartDate',
         'EndDate'
     ];
 
-    private static $searchable_fields = [
+    private static array $searchable_fields = [
         'Title'
     ];
 
-    private static $singular_name = 'Discount';
+    private static string $singular_name = 'Discount';
 
-    private static $plural_name = 'Discounts';
+    private static string $plural_name = 'Discounts';
 
-    private static $default_sort = 'EndDate DESC, StartDate DESC';
+    private static string $default_sort = 'EndDate DESC, StartDate DESC';
 
-    private static $table_name = 'SilverShop_Discount';
+    private static string $table_name = 'SilverShop_Discount';
 
-    protected $message;
+    protected string $message = '';
 
-    protected $messagetype;
+    protected string $messagetype = '';
 
     /**
      * Number of minutes ago to include for carts with paymetn start
      * in the {@link getAppliedOrders()} function
-     *
-     * @var integer
      */
-    private static $unpaid_use_timeout = 10;
+    private static int $unpaid_use_timeout = 10;
 
-    /**
-     * @return array
-     */
-    public function getConstraints()
+    public function getConstraints(): array
     {
         $extensions = $this->getExtensionInstances();
         $output = [];
 
         foreach ($extensions as $extension) {
             if ($extension instanceof DiscountConstraint) {
-                $output[] = get_class($extension);
+                $output[] = $extension::class;
             }
         }
 
@@ -117,12 +144,8 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get the smallest possible list of discounts that can apply
      * to a given order.
-     *
-     * @param  Order $order order to check against
-     * @param array $context
-     * @return ArrayList matching discounts
      */
-    public static function get_matching(Order $order, $context = [])
+    public static function get_matching(Order $order, $context = []): ArrayList
     {
         $discounts = self::get()
             ->filter('Active', true)
@@ -143,71 +166,64 @@ class Discount extends DataObject implements PermissionProvider
         }
 
         // cull remaining invalid discounts problematically
-        $validdiscounts = new ArrayList();
+        $arrayList = ArrayList::create();
 
         foreach ($discounts as $discount) {
             if ($discount->validateOrder($order, $context)) {
-                $validdiscounts->push($discount);
+                $arrayList->push($discount);
             }
         }
 
-        return $validdiscounts;
+        return $arrayList;
     }
 
     public function getCMSFields($params = null)
     {
         //fields that shouldn't be changed once coupon is used
-        $fields = new FieldList(
+        $fieldList = FieldList::create(
             [
-                new TabSet(
-                    'Root',
-                    new Tab(
-                        'Main',
-                        TextField::create('Title'),
-                        CheckboxField::create('Active', 'Active')
-                            ->setDescription('Enable/disable all use of this discount.'),
-                        HeaderField::create('ActionTitle', 'Action', 3),
-                        $typefield = SelectionGroup::create(
-                            'Type',
-                            [
-                                new SelectionGroup_Item(
-                                    'Percent',
-                                    $percentgroup = FieldGroup::create(
-                                        $percentfield = NumericField::create('Percent', 'Percentage', '0.00')
-                                            ->setScale(null)
-                                            ->setDescription('e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%'),
-                                        $maxamountfield = CurrencyField::create(
-                                            'MaxAmount',
-                                            _t('MaxAmount', 'Maximum Amount')
-                                        )->setDescription(
-                                            'The total allowable discount. 0 means unlimited.'
-                                        )
-                                    ),
-                                    'Discount by percentage'
+            TabSet::create(
+                'Root',
+                Tab::create(
+                    'Main',
+                    TextField::create('Title'),
+                    CheckboxField::create('Active', 'Active')
+                    ->setDescription('Enable/disable all use of this discount.'),
+                    HeaderField::create('ActionTitle', 'Action', 3),
+                    SelectionGroup::create(
+                        'Type',
+                        [
+                            SelectionGroup_Item::create(
+                                'Percent',
+                                $percentgroup = FieldGroup::create(
+                                    $percentfield = NumericField::create('Percent', 'Percentage', '0.00')
+                                        ->setScale(null)
+                                        ->setDescription('e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%'),
+                                    $maxamountfield = CurrencyField::create(
+                                        'MaxAmount',
+                                        _t('MaxAmount', 'Maximum Amount')
+                                    )->setDescription(
+                                        'The total allowable discount. 0 means unlimited.'
+                                    )
                                 ),
-                                new SelectionGroup_Item(
-                                    'Amount',
-                                    $amountfield = CurrencyField::create('Amount', 'Amount', '$0.00'),
-                                    'Discount by fixed amount'
-                                )
-                            ]
-                        )->setTitle('Type'),
-                        OptionSetField::create(
-                            'For',
-                            'Applies to',
-                            [
-                                'Order' => 'Entire order',
-                                'Cart' => 'Cart subtotal',
-                                'Shipping' => 'Shipping subtotal',
-                                'Items' => 'Each individual item'
-                            ]
-                        )
-                    ),
-                    new Tab(
-                        'Constraints',
-                        TabSet::create('ConstraintsTabs', $general = new Tab('General', 'General'))
+                                'Discount by percentage'
+                            ),
+                            SelectionGroup_Item::create('Amount', $amountfield = CurrencyField::create('Amount', 'Amount', '$0.00'), 'Discount by fixed amount')
+                        ]
+                    )->setTitle('Type'),
+                    OptionSetField::create(
+                        'For',
+                        'Applies to',
+                        [
+                            'Order' => 'Entire order',
+                            'Cart' => 'Cart subtotal',
+                            'Shipping' => 'Shipping subtotal',
+                            'Items' => 'Each individual item'
+                        ]
                     )
-                )
+                ),
+                Tab::create('Constraints', TabSet::create('ConstraintsTabs', $general = Tab::create('General', 'General')))
+            )
             ]
         );
 
@@ -223,10 +239,10 @@ class Discount extends DataObject implements PermissionProvider
             );
         }
 
-        if ($count = $this->getUseCount()) {
+        if (($count = $this->getUseCount()) !== 0) {
             $useHeader = _t('Discount.USEHEADER', 'Use Count: {count}', ['count' => $count]);
 
-            $fields->addFieldsToTab(
+            $fieldList->addFieldsToTab(
                 'Root.Usage',
                 [
                     HeaderField::create('UseCount', $useHeader),
@@ -243,37 +259,37 @@ class Discount extends DataObject implements PermissionProvider
 
         if ($params && isset($params['forcetype'])) {
             $valuefield = $params['forcetype'] === 'Percent' ? $percentfield : $amountfield;
-            $fields->insertAfter('Type', $valuefield);
-            $fields->makeFieldReadonly('Type');
+            $fieldList->insertAfter('Type', $valuefield);
+            $fieldList->makeFieldReadonly('Type');
         } elseif ($this->Type && (float)$this->{$this->Type}) {
             $valuefield = $this->Type === 'Percent' ? $percentfield : $amountfield;
 
-            $fields->makeFieldReadonly('Type');
-            $fields->insertAfter('ActionTitle', $valuefield);
+            $fieldList->makeFieldReadonly('Type');
+            $fieldList->insertAfter('ActionTitle', $valuefield);
 
-            $fields->replaceField(
+            $fieldList->replaceField(
                 $this->Type,
                 $valuefield->performReadonlyTransformation()
             );
 
             if ($this->Type === 'Percent') {
-                $fields->insertAfter('Percent', $maxamountfield);
+                $fieldList->insertAfter('Percent', $maxamountfield);
             }
         }
 
-        $this->extend('updateCMSFields', $fields, $params);
+        $this->extend('updateCMSFields', $fieldList, $params);
 
-        return $fields;
+        return $fieldList;
     }
 
-    public function getDefaultSearchContext()
+    public function getDefaultSearchContext(): SearchContext
     {
-        $context = parent::getDefaultSearchContext();
+        $searchContext = parent::getDefaultSearchContext();
 
-        $fields = $context->getFields();
-        $fields->push(CheckboxField::create('HasBeenUsed'));
+        $fieldList = $searchContext->getFields();
+        $fieldList->push(CheckboxField::create('HasBeenUsed'));
 
-        $fields->push(
+        $fieldList->push(
             ToggleCompositeField::create(
                 'StartDate',
                 'Start Date',
@@ -283,7 +299,7 @@ class Discount extends DataObject implements PermissionProvider
                 ]
             )
         );
-        $fields->push(
+        $fieldList->push(
             ToggleCompositeField::create(
                 'EndDate',
                 'End Date',
@@ -297,41 +313,38 @@ class Discount extends DataObject implements PermissionProvider
         // must be enabled in config, because some sites may have many products = slow load time, or memory maxes out
         // future solution is using an ajaxified field
         if (self::config()->filter_by_product) {
-            $fields->push(
+            $fieldList->push(
                 ListboxField::create('Products', 'Products', Product::get()->map()->toArray())
             );
         }
 
         if (self::config()->filter_by_category) {
-            $fields->push(
+            $fieldList->push(
                 ListboxField::create('Categories', 'Categories', ProductCategory::get()->map()->toArray())
             );
         }
 
-        if ($field = $fields->fieldByName('Code')) {
+        if ($field = $fieldList->fieldByName('Code')) {
             $field->setDescription('This can be a partial match.');
         }
 
-        $filters = $context->getFilters();
+        $filters = $searchContext->getFilters();
         $filters['StartDateFrom'] = GreaterThanOrEqualFilter::create('StartDate');
         $filters['StartDateTo'] = LessThanOrEqualFilter::create('StartDate');
         $filters['EndDateFrom'] = GreaterThanOrEqualFilter::create('EndDate');
         $filters['EndDateTo'] = LessThanOrEqualFilter::create('EndDate');
-        $context->setFilters($filters);
+        $searchContext->setFilters($filters);
 
-        return $context;
+        return $searchContext;
     }
 
     /**
      * Check if this coupon can be used with a given order
-     *
-     * @param  Order $order
-     * @param  array $context addional data to be checked in constraints.
-     * @return boolean
+     * $context provides addional data to be checked in constraints.
      */
-    public function validateOrder($order, $context = [])
+    public function validateOrder(Order $order, array $context = []): bool
     {
-        if (empty($order)) {
+        if (!$order instanceof Order) {
             $this->error(_t('Discount.NOORDER', 'Order has not been started.'));
 
             return false;
@@ -382,11 +395,8 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Works out the discount on a given value.
-     *
-     * @param $value
-     * @return calculated discount
      */
-    public function getDiscountValue($value)
+    public function getDiscountValue($value): float
     {
         $discount = 0;
 
@@ -406,7 +416,7 @@ class Discount extends DataObject implements PermissionProvider
         return $discount;
     }
 
-    public function getDiscountNice()
+    public function getDiscountNice(): float|string
     {
         if ($this->Type === 'Percent') {
             return $this->dbObject('Percent')->Nice();
@@ -418,9 +428,9 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get discounting amount
      */
-    public function getAmount()
+    public function getAmount(): float
     {
-        $amount = $this->getField('Amount');
+        $amount = (float) $this->getField('Amount');
 
         $this->extend('updateAmount', $amount);
 
@@ -431,14 +441,12 @@ class Discount extends DataObject implements PermissionProvider
      * Get the number of times a discount has been used.
      *
      * @param int $orderID - ignore this order when counting uses
-     *
-     * @return int count
      */
-    public function getUseCount($orderID = null)
+    public function getUseCount(?int $orderID = null): int
     {
         $used = $this->getAppliedOrders(true);
 
-        if ($orderID) {
+        if ($orderID !== null && $orderID !== 0) {
             $used = $used->exclude('ID', $orderID);
         }
 
@@ -447,17 +455,13 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Returns whether this coupon is used.
-     *
-     * @param int $orderID
-     *
-     * @return boolean
      */
-    public function isUsed($orderID = null)
+    public function isUsed(?int $orderID = null): bool
     {
         return $this->getUseCount($orderID) > 0;
     }
 
-    public function setPercent($value)
+    public function setPercent($value): void
     {
         $value = $value > 100 ? 100 : $value;
 
@@ -466,20 +470,18 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Map the single 'For' to the For"X" boolean fields
-     *
-     * @param string $val
      */
-    public function setFor($val)
+    public function setFor(string $val): void
     {
-        if (!$val) {
+        if ($val === '' || $val === '0') {
             return;
         }
 
         $map = [
-            'Items' => [1, 0, 0],
-            'Cart' => [0, 1, 0],
-            'Shipping' => [0, 0, 1],
-            'Order' => [0, 1, 1]
+            'Items' => [true, false, false],
+            'Cart' => [false, true, false],
+            'Shipping' => [false, false, true],
+            'Order' => [false, true, true]
         ];
 
         $mapping = $map[$val];
@@ -491,7 +493,7 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * @return string
      */
-    public function getFor()
+    public function getFor(): ?string
     {
         if ($this->ForShipping && $this->ForCart) {
             return 'Order';
@@ -508,17 +510,16 @@ class Discount extends DataObject implements PermissionProvider
         if ($this->ForCart) {
             return 'Cart';
         }
+
+        return null;
     }
 
     /**
      * Get the orders that this discount has been used on.
-     *
-     * @param bool $includeunpaid include orders where the payment process has started
-     * less than 'unpaid_use_timeout' minutes ago.
-     *
-     * @return \SilverStripe\ORM\DataList list of orders
+     * $includeunpaid include orders where the payment process has
+     * started less than 'unpaid_use_timeout' minutes ago.
      */
-    public function getAppliedOrders($includeunpaid = false)
+    public function getAppliedOrders(bool $includeunpaid = false):DataList
     {
         $orders =  Order::get()
             ->innerJoin('SilverShop_OrderAttribute', '"SilverShop_OrderAttribute"."OrderID" = "SilverShop_Order"."ID"')
@@ -537,11 +538,11 @@ class Discount extends DataObject implements PermissionProvider
 
         if ($includeunpaid) {
             $minutes = self::config()->unpaid_use_timeout;
-            $timeouttime = date('Y-m-d H:i:s', strtotime("-{$minutes} minutes"));
+            $timeouttime = date('Y-m-d H:i:s', strtotime(sprintf('-%s minutes', $minutes)));
             $orders = $orders->leftJoin('Omnipay_Payment', '"Omnipay_Payment"."OrderID" = "SilverShop_Order"."ID"')
                 ->where(
                     '("SilverShop_Order"."Paid" IS NOT NULL) OR ' .
-                        "(\"Omnipay_Payment\".\"Created\" > '$timeouttime' AND \"Omnipay_Payment\".\"Status\" NOT IN('Refunded', 'Void'))"
+                        sprintf("(\"Omnipay_Payment\".\"Created\" > '%s' AND \"Omnipay_Payment\".\"Status\" NOT IN('Refunded', 'Void'))", $timeouttime)
                 );
         } else {
             $orders = $orders->where('"SilverShop_Order"."Paid" IS NOT NULL');
@@ -555,10 +556,8 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get the total amount saved through the use of this discount,
      * accross all paid orders.
-     *
-     * @return float amount saved
      */
-    public function getSavingsTotal()
+    public function getSavingsTotal(): float
     {
         $itemsavings = $this->OrderItems()
             ->innerJoin(
@@ -580,19 +579,16 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * Get the amount saved on the given order with this discount.
-     *
-     * @param  Order $order order to match against
-     * @return double  savings amount
      */
-    public function getSavingsForOrder(Order $order)
+    public function getSavingsForOrder(Order $order): float|int|array
     {
         $itemsavings = OrderAttribute::get()
             ->innerJoin(
                 'SilverShop_OrderItem_Discounts',
                 '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."SilverShop_OrderItemID"'
             )
-            ->filter('SilverShop_OrderItem_Discounts.DiscountID', $this->ID)
-            ->filter('OrderAttribute.OrderID', $order->ID)
+            ->filter('SilverShop_DiscountID', $this->ID)
+            ->filter('OrderID', $order->ID)
             ->sum('DiscountAmount');
 
         $modifiersavings = OrderAttribute::get()
@@ -600,56 +596,56 @@ class Discount extends DataObject implements PermissionProvider
                 'SilverShop_OrderDiscountModifier_Discounts',
                 '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID"'
             )
-            ->filter('SilverShop_OrderDiscountModifier_Discounts.DiscountID', $this->ID)
-            ->filter('OrderAttribute.OrderID', $order->ID)
+            ->filter('SilverShop_DiscountID', $this->ID)
+            ->filter('OrderID', $order->ID)
             ->sum('DiscountAmount');
 
         return $itemsavings + $modifiersavings;
     }
 
 
-    public function canView($member = null)
+    public function canView($member = null): bool
     {
         return true;
     }
 
-    public function canCreate($member = null, $context = [])
+    public function canCreate($member = null, $context = []): bool
     {
         return Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
-    public function canDelete($member = null)
+    public function canDelete($member = null): bool
     {
         return !$this->isUsed();
     }
 
-    public function canEdit($member = null)
+    public function canEdit($member = null): bool
     {
         return Permission::checkMember($member, 'MANAGE_DISCOUNTS');
     }
 
-    protected function message($message, $type = 'good')
+    protected function message(string $message, string $type = 'good'): void
     {
         $this->message = $message;
         $this->messagetype = $type;
     }
 
-    protected function error($message)
+    protected function error(string $message): void
     {
         $this->message($message, 'bad');
     }
 
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
-    public function getMessageType()
+    public function getMessageType(): string
     {
         return $this->messagetype;
     }
 
-    public function providePermissions()
+    public function providePermissions(): array
     {
         return [
             'MANAGE_DISCOUNTS' => 'Manage discounts',
@@ -658,11 +654,10 @@ class Discount extends DataObject implements PermissionProvider
 
     /**
      * @deprecated
-     * @param $order
-     * @param array $context
-     * @return bool
+     * @param      $order
+     * @param      array $context
      */
-    public function valid($order, $context = [])
+    public function valid(Order $order, $context = []): bool
     {
         Deprecation::notice('1.2', 'use validateOrder instead');
         return $this->validateOrder($order, $context);

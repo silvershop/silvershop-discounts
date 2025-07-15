@@ -19,14 +19,26 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
         'GiftVouchers.yml'
     ];
 
-    public function setUp(): void
+    protected GiftVoucherProduct $voucher;
+
+    protected Order $cart;
+
+    protected Order $giftcart;
+
+    protected Product $mp3player;
+
+    protected Product $socks;
+
+    protected Product $tshirt;
+
+    protected function setUp(): void
     {
         parent::setUp();
         ShopTest::setConfiguration();
-        Config::inst()->merge(Discount::class, 'constraints',
-            [
-            'ProductTypeDiscountConstraint'
-            ]
+        Config::modify()->merge(
+            Discount::class,
+            'constraints',
+            ['ProductTypeDiscountConstraint']
         );
 
         $this->cart = $this->objFromFixture(Order::class, 'cart');
@@ -34,8 +46,10 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
 
         $this->socks = $this->objFromFixture(Product::class, 'socks');
         $this->socks->publishRecursive();
+
         $this->tshirt = $this->objFromFixture(Product::class, 'tshirt');
         $this->tshirt->publishRecursive();
+
         $this->mp3player = $this->objFromFixture(Product::class, 'mp3player');
         $this->mp3player->publishRecursive();
 
@@ -43,18 +57,18 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
         $this->voucher->copyVersionToStage('Stage', 'Live');
     }
 
-    public function testProducts()
+    public function testProducts(): void
     {
-        $discount = OrderDiscount::create(
+        $orderDiscount = OrderDiscount::create(
             [
-            'Title' => '20% off each products',
-            'Percent' => 0.2,
-            'ProductTypes' => Product::class
+                'Title' => '20% off each products',
+                'Percent' => 0.2,
+                'ProductTypes' => Product::class
             ]
         );
-        $discount->write();
+        $orderDiscount->write();
 
-        $this->assertTrue($discount->validateOrder($this->cart));
-        $this->assertFalse($discount->validateOrder($this->giftcart));
+        $this->assertTrue($orderDiscount->validateOrder($this->cart));
+        $this->assertFalse($orderDiscount->validateOrder($this->giftcart));
     }
 }

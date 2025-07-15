@@ -5,38 +5,39 @@ namespace SilverShop\Discounts\Extensions\Constraints;
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\ORM\DataList;
 
+/**
+ * @property ?string $Code
+ */
 class CodeDiscountConstraint extends DiscountConstraint
 {
-    private static $db = [
+    private static array $db = [
         'Code' => 'Varchar(25)'
     ];
 
-    public function filter(DataList $list)
+    public function filter(DataList $dataList): DataList
     {
-        if ($code = $this->findCouponCode()) {
-            $list = $list
-                ->where("(\"Code\" IS NULL) OR (\"Code\" = '$code')");
-        } else {
-            $list = $list->where('"Code" IS NULL');
+        if (($code = $this->findCouponCode()) !== null && ($code = $this->findCouponCode()) !== '' && ($code = $this->findCouponCode()) !== '0') {
+            return $dataList
+                ->where(sprintf("(\"Code\" IS NULL) OR (\"Code\" = '%s')", $code));
         }
 
-        return $list;
+        return $dataList->where('"Code" IS NULL');
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         $code = strtolower($this->findCouponCode() ?? '');
 
         if ($discount->Code && ($code !== strtolower($discount->Code ?? ''))) {
-            $this->error("Coupon code doesn't match $code");
+            $this->error("Coupon code doesn't match " . $code);
             return false;
         }
 
         return true;
     }
 
-    protected function findCouponCode()
+    protected function findCouponCode(): ?string
     {
-        return isset($this->context['CouponCode']) ? $this->context['CouponCode'] : null;
+        return $this->context['CouponCode'] ?? null;
     }
 }

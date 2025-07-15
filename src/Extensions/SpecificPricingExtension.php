@@ -2,27 +2,32 @@
 
 namespace SilverShop\Discounts\Extensions;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
+use SilverStripe\ORM\HasManyList;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
 use SilverShop\Discounts\Model\SpecificPrice;
 use SilverStripe\Security\Security;
 
-class SpecificPricingExtension extends DataExtension
+/**
+ * @method HasManyList<SpecificPrice> SpecificPrices()
+ * @extends Extension<static>
+ */
+class SpecificPricingExtension extends Extension
 {
-    private static $has_many = [
+    private static array $has_many = [
         'SpecificPrices' => SpecificPrice::class
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fieldList): void
     {
-        if ($tab = $fields->fieldByName('Root.Pricing')) {
-            $fields = $tab->Fields();
+        if ($tab = $fieldList->fieldByName('Root.Pricing')) {
+            $fieldList = $tab->Fields();
         }
 
-        if ($this->owner->isInDB() && ($fields->fieldByName('BasePrice') || $fields->fieldByName('Price'))) {
-            $fields->push(
+        if ($this->owner->isInDB() && ($fieldList->fieldByName('BasePrice') || $fieldList->fieldByName('Price'))) {
+            $fieldList->push(
                 GridField::create(
                     'SpecificPrices',
                     'Specific Prices',
@@ -33,13 +38,13 @@ class SpecificPricingExtension extends DataExtension
         }
     }
 
-    public function updateSellingPrice(&$price)
+    public function updateSellingPrice(&$price): void
     {
-        $list = $this->owner->SpecificPrices()->filter( array('Price:LessThan' => $price ));
+        $hasManyList = $this->owner->SpecificPrices()->filter(['Price:LessThan' => $price ]);
 
-        if ($list->exists() && $specificprice = SpecificPrice::filter(
-            $list,
-                Security::getCurrentUser()
+        if ($hasManyList->exists() && $specificprice = SpecificPrice::filter(
+            $hasManyList,
+            Security::getCurrentUser()
         )->first()
         ) {
             if ($specificprice->Price > 0) {

@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
+use SilverStripe\ORM\ManyManyList;
 use SilverShop\Discounts\Model\Discount;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
@@ -13,25 +14,29 @@ use SilverStripe\Versioned\Versioned;
 use SilverShop\Model\OrderItem;
 use SilverShop\Page\Product;
 
+/**
+ * @property bool $ExactProducts
+ * @method ManyManyList<Product> Products()
+ */
 class ProductsDiscountConstraint extends ItemDiscountConstraint
 {
-    private static $db = [
+    private static array $db = [
         'ExactProducts' => 'Boolean'
     ];
 
-    private static $many_many = [
+    private static array $many_many = [
         'Products' => Product::class
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fieldList): void
     {
         if ($this->owner->isInDB()) {
-            $fields->addFieldsToTab(
+            $fieldList->addFieldsToTab(
                 'Root.Constraints.ConstraintsTabs.Product',
                 [
                     GridField::create(
                         'Products',
-                        _t(__CLASS__.'SPECIFICPRODUCTS', 'Specific products'),
+                        _t(__CLASS__ . 'SPECIFICPRODUCTS', 'Specific products'),
                         $this->owner->Products(),
                         GridFieldConfig_RelationEditor::create()
                             ->removeComponentsByType(GridFieldAddNewButton::class)
@@ -39,27 +44,27 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
                     ),
                     CheckboxField::create(
                         'ExactProducts',
-                        _t(__CLASS__.'.ALLPRODUCTSINCART', 'All the selected products must be present in cart.')
+                        _t(__CLASS__ . '.ALLPRODUCTSINCART', 'All the selected products must be present in cart.')
                     ),
                 ]
             );
         }
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         $products = $discount->Products();
         $productIds = [];
 
         if (!$products->exists()) {
             Versioned::withVersionedMode(
-                function () use ($discount, &$productIds) {
+                function () use ($discount, &$productIds): void {
                     Versioned::set_stage(Versioned::DRAFT);
 
-                    $products = $discount->Products();
+                    $manyManyList = $discount->Products();
 
-                    if ($products->exists()) {
-                        $productIds = $products->map('ID', 'ID')->toArray();
+                    if ($manyManyList->exists()) {
+                        $productIds = $manyManyList->map('ID', 'ID')->toArray();
                     }
                 }
             );
@@ -82,7 +87,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
 
         $incart = $discount->ExactProducts ?
             array_values($productIds) === array_values($intersection) :
-            count($intersection) > 0;
+            $intersection !== [];
 
         if (!$incart) {
             $this->error(
@@ -93,13 +98,13 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
         return $incart;
     }
 
-    public function itemMatchesCriteria(OrderItem $item, Discount $discount)
+    public function itemMatchesCriteria(OrderItem $orderItem, Discount $discount): bool
     {
-        $products = $discount->Products();
-        $itemproduct = $item->Product(true); // true forces the current version of product to be retrieved.
+        $manyManyList = $discount->Products();
+        $itemproduct = $orderItem->Product(true); // true forces the current version of product to be retrieved.
 
-        if ($products->exists()) {
-            foreach ($products as $product) {
+        if ($manyManyList->exists()) {
+            foreach ($manyManyList as $product) {
                 // uses 'DiscountedProductID' since some subclasses of buyable could be used as the item product (such as
                 // a bundle) rather than the product stored.
                 if ($product->ID == $itemproduct->DiscountedProductID) {

@@ -2,6 +2,7 @@
 
 namespace SilverShop\Discounts;
 
+use SilverStripe\ORM\ArrayList;
 use SilverShop\Discounts\Actions\SubtotalDiscountAction;
 use SilverShop\Discounts\Extensions\Constraints\ItemDiscountConstraint;
 use SilverShop\Discounts\Model\Discount;
@@ -17,13 +18,13 @@ class Calculator
 {
     use Injectable;
 
-    protected $order;
+    protected Order $order;
 
-    protected $discounts;
+    protected ArrayList $discounts;
 
     protected $modifier;
 
-    protected $log = [];
+    protected array $log = [];
 
     public function __construct(Order $order, $context = [])
     {
@@ -35,10 +36,8 @@ class Calculator
 
     /**
      * Work out the discount for a given order.
-     *
-     * @return double - discount amount
      */
-    public function calculate()
+    public function calculate(): int|float
     {
         $this->modifier = $this->order->getModifier(
             OrderDiscountModifier::class,
@@ -109,7 +108,7 @@ class Calculator
         $cartremainder = $cartremainder < 0 ? 0 : $cartremainder;
 
         // select best cart-level discount
-        if ($bestadjustment = $cartpriceinfo->getBestAdjustment()) {
+        if (($bestadjustment = $cartpriceinfo->getBestAdjustment()) instanceof Adjustment) {
             $discount = $bestadjustment->getAdjuster();
             $amount = $bestadjustment->getValue();
             // don't let amount be greater than remainder
@@ -135,8 +134,9 @@ class Calculator
                     new Adjustment($action->perform(), $discount)
                 );
             }
+
             //select best shipping-level disount
-            if ($bestadjustment = $shippingpriceinfo->getBestAdjustment()) {
+            if (($bestadjustment = $shippingpriceinfo->getBestAdjustment()) instanceof Adjustment) {
                 $discount = $bestadjustment->getAdjuster();
                 $amount = $bestadjustment->getValue();
                 //don't let amount be greater than remainder
@@ -156,20 +156,15 @@ class Calculator
 
     /**
      * Work out the total discountable amount for a given discount
-     *
-     * @param Discount
-     *
-     * @return float
      */
-    protected function getDiscountableAmount($discount)
+    protected function getDiscountableAmount(Discount $discount): int|float
     {
         $amount = 0;
 
-        foreach ($this->order->Items() as $item) {
-            if (ItemDiscountConstraint::match($item, $discount)) {
-                $amount += $item->hasMethod('DiscountableAmount') ?
-                            $item->DiscountableAmount() * $item->Quantity :
-                            $item->Total();
+        foreach ($this->order->Items() as $hasManyList) {
+            if (ItemDiscountConstraint::match($hasManyList, $discount)) {
+                $amount += $hasManyList->hasMethod('DiscountableAmount') ?
+                            $hasManyList->DiscountableAmount() * $hasManyList->Quantity : $hasManyList->Total();
             }
         }
 
@@ -178,33 +173,28 @@ class Calculator
 
     /**
      * Work out how much the given discount has already
-     * been used.
-     * @param $discount Discount
-     * @return Discount[]
+     * been used
      */
-    protected function discountSubtotal($discount)
+    protected function discountSubtotal(Discount $discount): float
     {
-        return $this->modifier->Discounts()
+        return (float) $this->modifier->Discounts()
             ->filter('ID', $discount->ID)
             ->sum('DiscountAmount');
     }
 
-    /**
-     * @param DataList $list
-     *
-     * @return array
-     */
-    protected function createPriceInfoList(DataList $list)
+    protected function createPriceInfoList(DataList $dataList): array
     {
         $output = [];
 
-        foreach ($list as $item) {
+        foreach ($dataList as $item) {
             $priceInfoClass = $item->getPriceInfoClass();
             if (!$priceInfoClass) {
                 $priceInfoClass = ItemPriceInfo::class;
             }
+
             $output[] = Injector::inst()->createWithArgs($priceInfoClass, [$item]);
         }
+
         return $output;
     }
 
@@ -225,12 +215,8 @@ class Calculator
 
     /**
      * Store details about discounts for loggging / debubgging
-     *
-     * @param string   $level
-     * @param double   $amount
-     * @param Discount $discount
      */
-    public function logDiscountAmount($level, $amount, Discount $discount)
+    public function logDiscountAmount(string $level, int|float $amount, Discount $discount): void
     {
         $this->log[] = [
             'Level' => $level,
@@ -239,7 +225,7 @@ class Calculator
         ];
     }
 
-    public function getLog()
+    public function getLog(): array
     {
         return $this->log;
     }

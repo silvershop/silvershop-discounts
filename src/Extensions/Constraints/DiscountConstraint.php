@@ -2,8 +2,8 @@
 
 namespace SilverShop\Discounts\Extensions\Constraints;
 
+use SilverStripe\Core\Extension;
 use SilverShop\Discounts\Model\Discount;
-use SilverStripe\ORM\DataExtension;
 use SilverShop\Model\Order;
 use SilverStripe\ORM\DataList;
 
@@ -15,28 +15,27 @@ use SilverStripe\ORM\DataList;
  *
  * Constraints are also instantiated on their own. See
  * ItemDiscountConstraint::match and Discount->valid
+ * @extends Extension<static>
  */
-abstract class DiscountConstraint extends DataExtension
+abstract class DiscountConstraint extends Extension
 {
-    protected $order;
+    protected Order $order;
 
-    protected $context;
+    protected array $context = [];
 
-    protected $message;
+    protected string $message = '';
 
-    protected $messagetype;
+    protected string $messagetype = '';
 
-    public function setOrder(Order $order)
+    public function setOrder(Order $order): static
     {
         $this->order = $order;
-
         return $this;
     }
 
-    public function setContext(array $context)
+    public function setContext(array $context): static
     {
         $this->context = $context;
-
         return $this;
     }
 
@@ -47,41 +46,35 @@ abstract class DiscountConstraint extends DataExtension
      * 'X' OR Value IS NULL
      *
      * See predefined constraints for examples.
-     *
-     * @param  DataList $discounts discount list constrain
-     * @return DataList
      */
-    public function filter(DataList $discounts)
+    public function filter(DataList $dataList): DataList
     {
-        return $discounts;
+        return $dataList;
     }
 
     /**
      * Check if the current set order falls within
      * this constraint.
-     *
-     * @param  Discount $discount
-     * @return boolean
      */
-    abstract public function check(Discount $discount);
+    abstract public function check(Discount $discount): bool;
 
-    protected function message($message, $type = 'good')
+    protected function message(string $message, string $type = 'good'): void
     {
         $this->message = $message;
         $this->messagetype = $type;
     }
 
-    protected function error($message)
+    protected function error(string $message): void
     {
         $this->message($message, 'bad');
     }
 
-    public function getMessage()
+    public function getMessage(): string
     {
         return $this->message;
     }
 
-    public function getMessageType()
+    public function getMessageType(): string
     {
         return $this->messagetype;
     }

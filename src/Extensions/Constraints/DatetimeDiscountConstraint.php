@@ -8,60 +8,64 @@ use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\DatetimeField;
 use SilverStripe\ORM\DataList;
 
+/**
+ * @property ?string $StartDate
+ * @property ?string $EndDate
+ */
 class DatetimeDiscountConstraint extends DiscountConstraint
 {
-    private static $db = [
+    private static array $db = [
         'StartDate' => 'Datetime',
         'EndDate' => 'Datetime'
     ];
 
-    public function updateCMSFields(FieldList $fields)
+    public function updateCMSFields(FieldList $fieldList): void
     {
-        $fields->addFieldToTab(
+        $fieldList->addFieldToTab(
             'Root.Constraints.ConstraintsTabs.General',
             FieldGroup::create(
-                _t(__CLASS__.'.VALIDDATERANGE', 'Valid date range:'),
+                _t(__CLASS__ . '.VALIDDATERANGE', 'Valid date range:'),
                 DatetimeField::create(
                     'StartDate',
-                    _t(__CLASS__.'.RANGESTART', 'Start date/time')
+                    _t(__CLASS__ . '.RANGESTART', 'Start date/time')
                 ),
                 DatetimeField::create(
                     'EndDate',
-                    _t(__CLASS__.'.RANGEEND', 'End date/time')
+                    _t(__CLASS__ . '.RANGEEND', 'End date/time')
                 )
             )->setDescription(
-                _t(__CLASS__.'.ENDTIMEDAYNOTE',
-                    'You should set the end time to 23:59:59, if you want to include the entire end day.')
+                _t(
+                    __CLASS__ . '.ENDTIMEDAYNOTE',
+                    'You should set the end time to 23:59:59, if you want to include the entire end day.'
+                )
             )
         );
     }
 
-    public function filter(DataList $list)
+    public function filter(DataList $dataList): DataList
     {
         // Check whether we are looking at a historic order or a current one
         $datetime = $this->order->Placed ? $this->order->Created : date('Y-m-d H:i:s');
 
         //to bad ORM filtering for NULL doesn't work...so we need to use where
-        return $list->where(
-            "(\"SilverShop_Discount\".\"StartDate\" IS NULL) OR (\"SilverShop_Discount\".\"StartDate\" < '$datetime')"
+        return $dataList->where(
+            sprintf("(\"SilverShop_Discount\".\"StartDate\" IS NULL) OR (\"SilverShop_Discount\".\"StartDate\" < '%s')", $datetime)
         )
             ->where(
-                "(\"SilverShop_Discount\".\"EndDate\" IS NULL) OR (\"SilverShop_Discount\".\"EndDate\" > '$datetime')"
+                sprintf("(\"SilverShop_Discount\".\"EndDate\" IS NULL) OR (\"SilverShop_Discount\".\"EndDate\" > '%s')", $datetime)
             );
     }
 
-    public function check(Discount $discount)
+    public function check(Discount $discount): bool
     {
         $startDate = null;
         $endDate = null;
 
-        if($discount->StartDate != null)
-        {
+        if ($discount->StartDate != null) {
             $startDate = strtotime($discount->StartDate);
         }
-        
-        if($discount->EndDate != null)
-        {
+
+        if ($discount->EndDate != null) {
             $endDate = strtotime($discount->EndDate);
         }
 

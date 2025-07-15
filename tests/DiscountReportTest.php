@@ -12,12 +12,12 @@ class DiscountReportTest extends SapphireTest
 
     protected static $fixture_file = 'Discounts.yml';
 
-    public function testDiscountReport()
+    public function testDiscountReport(): void
     {
-        $discount = $this->objFromFixture(OrderDiscount::class, 'used');
-        $report = new DiscountReport();
-        $records = $report->sourceRecords([]);
-        $this->assertEquals(44, $records->find('Title', 'Limited Discount')->getSavingsTotal());
-        $this->assertEquals(22, $records->find('Title', 'Limited Coupon')->getSavingsTotal());
+        $this->objFromFixture(OrderDiscount::class, 'used');
+        $discountReport = DiscountReport::create();
+        $sqlQueryList = $discountReport->sourceRecords([]);
+        $this->assertEqualsWithDelta(44, (int) $sqlQueryList->find('Title', 'Limited Discount')->getSavingsTotal(), PHP_FLOAT_EPSILON);
+        $this->assertSame(22, (int) $sqlQueryList->find('Title', 'Limited Coupon')->getSavingsTotal());
     }
 }

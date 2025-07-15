@@ -2,22 +2,22 @@
 
 namespace SilverShop\Discounts\Extensions;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
+use SilverShop\Model\Variation\Variation;
 
-class ProductVariationDiscountExtension extends DataExtension
+/**
+ * @extends Extension<Variation&static>
+ */
+class ProductVariationDiscountExtension extends Extension
 {
-    private static $casting = [
+    private static array $casting = [
         'TotalReduction' => 'Currency'
     ];
 
     /**
      * Get the difference between the original price and the new price.
-     *
-     * @param string $original
-     *
-     * @return float
      */
-    public function getTotalReduction($original = 'Price')
+    public function getTotalReduction($original = 'Price'): int|float
     {
         $reduction = $this->owner->{$original} - $this->owner->sellingPrice();
         //keep it above 0;
@@ -27,10 +27,8 @@ class ProductVariationDiscountExtension extends DataExtension
 
     /**
      * Check if this variation has a reduced price.
-     *
-     * @return bool
      */
-    public function IsReduced()
+    public function IsReduced(): bool
     {
         return (bool)$this->getTotalReduction();
     }

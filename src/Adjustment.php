@@ -6,31 +6,32 @@ use Exception;
 
 /**
  * Stores the calculated adjustment,
- * and the associated object that made the adjustment.
+ * and the associated object that made the adjustment
  */
 class Adjustment
 {
-    protected $value;
+    protected int|float $value;
+
     protected $adjuster;
 
-    public function __construct($val, $adjuster = null)
+    public function __construct(int|float $val, $adjuster = null)
     {
         $this->value = $val;
         $this->adjuster = $adjuster;
     }
 
-    public static function better_of(Adjustment $i, Adjustment $j)
+    public static function better_of(Adjustment $i, Adjustment $j): Adjustment
     {
         return $i->compareTo($j) > 0 ? $i : $j;
     }
 
     //biggest adjustment = best
-    public function compareTo(Adjustment $i)
+    public function compareTo(Adjustment $adjustment): int|float
     {
-        return $this->getValue() - $i->getValue();
+        return $this->getValue() - $adjustment->getValue();
     }
 
-    public function getValue()
+    public function getValue(): int|float
     {
         return $this->value;
     }
@@ -40,12 +41,8 @@ class Adjustment
         return $this->adjuster;
     }
 
-    public function __tostring()
+    public function __tostring(): string
     {
-        try {
-            return (string) $this->value;
-        } catch (Exception $exception) {
-            return '';
-        }
+        return strval($this->value);
     }
 }

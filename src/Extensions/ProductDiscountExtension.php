@@ -2,22 +2,22 @@
 
 namespace SilverShop\Discounts\Extensions;
 
-use SilverStripe\ORM\DataExtension;
+use SilverStripe\Core\Extension;
+use SilverShop\Page\Product;
 
-class ProductDiscountExtension extends DataExtension
+/**
+ * @extends Extension<Product&static>
+ */
+class ProductDiscountExtension extends Extension
 {
-    private static $casting = [
+    private static array $casting = [
         'TotalReduction' => 'Currency'
     ];
 
     /**
      * Get the difference between the original price and the new price.
-     *
-     * @param string $original
-     *
-     * @return float
      */
-    public function getTotalReduction($original = 'BasePrice')
+    public function getTotalReduction($original = 'BasePrice'): int|float
     {
         $reduction = $this->owner->{$original} - $this->owner->sellingPrice();
         //keep it above 0;
@@ -27,18 +27,13 @@ class ProductDiscountExtension extends DataExtension
 
     /**
      * Check if this product or variation has a reduced price.
-     *
-     * @return bool
      */
-    public function IsReduced()
+    public function IsReduced(): bool
     {
         return (bool) $this->getTotalReduction();
     }
 
-    /**
-     * @return int
-     */
-    public function getDiscountedProductID()
+    public function getDiscountedProductID(): int
     {
         return $this->owner->ID;
     }
