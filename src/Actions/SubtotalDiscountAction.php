@@ -6,9 +6,9 @@ use SilverShop\Discounts\Model\Discount;
 
 class SubtotalDiscountAction extends DiscountAction
 {
-    protected $subtotal;
+    protected float $subtotal;
 
-    public function __construct($subtotal, Discount $discount)
+    public function __construct(float $subtotal, Discount $discount)
     {
         parent::__construct($discount);
 

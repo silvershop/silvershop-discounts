@@ -12,9 +12,9 @@ class Adjustment
 {
     protected int|float $value;
 
-    protected $adjuster;
+    protected mixed $adjuster;
 
-    public function __construct(int|float $val, $adjuster = null)
+    public function __construct(int|float $val, mixed $adjuster = null)
     {
         $this->value = $val;
         $this->adjuster = $adjuster;
@@ -36,7 +36,7 @@ class Adjustment
         return $this->value;
     }
 
-    public function getAdjuster()
+    public function getAdjuster(): mixed
     {
         return $this->adjuster;
     }

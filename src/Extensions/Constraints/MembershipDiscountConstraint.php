@@ -23,19 +23,22 @@ class MembershipDiscountConstraint extends DiscountConstraint
 
     public function updateCMSFields(FieldList $fieldList): void
     {
-        if ($this->owner->isInDB()) {
-            $fieldList->addFieldToTab(
-                'Root.Constraints.ConstraintsTabs.Membership',
-                GridField::create(
-                    'Members',
-                    _t(__CLASS__ . '.MEMBERS', 'Members'),
-                    $this->owner->Members(),
-                    GridFieldConfig_RelationEditor::create()
-                        ->removeComponentsByType(GridFieldAddNewButton::class)
-                        ->removeComponentsByType(GridFieldEditButton::class)
-                )
-            );
+        $owner = $this->getOwner();
+        if (!$owner->isInDB()) {
+            return;
         }
+
+        $fieldList->addFieldToTab(
+            'Root.Constraints.ConstraintsTabs.Membership',
+            GridField::create(
+                'Members',
+                _t(__CLASS__ . '.MEMBERS', 'Members'),
+                $owner->Members(),
+                GridFieldConfig_RelationEditor::create()
+                    ->removeComponentsByType(GridFieldAddNewButton::class)
+                    ->removeComponentsByType(GridFieldEditButton::class)
+            )
+        );
     }
 
     public function filter(DataList $dataList): DataList
@@ -58,7 +61,7 @@ class MembershipDiscountConstraint extends DiscountConstraint
     {
         $manyManyList = $discount->Members();
         $member = $this->getMember();
-        if ($manyManyList->exists() && (!$member instanceof Member || !$manyManyList->byID($member->ID))) {
+        if ($manyManyList->exists() && !$manyManyList->byID($member->ID)) {
             $this->error(
                 _t(
                     'Discount.MEMBERSHIP',
@@ -73,6 +76,7 @@ class MembershipDiscountConstraint extends DiscountConstraint
 
     public function getMember(): Member
     {
-        return isset($this->context['Member']) && is_object($this->context['Member']) ? $this->context['Member'] : $this->order->Member();
+        $member = $this->context['Member'] ?? $this->order->Member();
+        return $member instanceof Member ? $member : Member::create();
     }
 }

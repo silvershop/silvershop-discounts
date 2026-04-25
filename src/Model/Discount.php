@@ -37,6 +37,7 @@ use SilverShop\Page\Product;
 use SilverShop\Page\ProductCategory;
 use SilverStripe\Security\PermissionProvider;
 use SilverStripe\Security\Permission;
+use SilverStripe\Security\Member;
 use SilverStripe\ORM\Filters\GreaterThanOrEqualFilter;
 use SilverStripe\ORM\Filters\LessThanOrEqualFilter;
 use SilverShop\Model\OrderAttribute;
@@ -126,6 +127,7 @@ class Discount extends DataObject implements PermissionProvider
      */
     private static int $unpaid_use_timeout = 10;
 
+    /** @return array<class-string<DiscountConstraint>> */
     public function getConstraints(): array
     {
         $extensions = $this->getExtensionInstances();
@@ -144,9 +146,13 @@ class Discount extends DataObject implements PermissionProvider
      * Get the smallest possible list of discounts that can apply
      * to a given order.
      */
-    public static function get_matching(Order $order, $context = []): ArrayList
+    /**
+     * @param array<string, mixed> $context
+     * @return ArrayList<Discount>
+     */
+    public static function get_matching(Order $order, array $context = []): ArrayList
     {
-        $discounts = self::get()
+        $discounts = Discount::get()
             ->filter('Active', true)
             ->filterAny(
                 [
@@ -168,6 +174,9 @@ class Discount extends DataObject implements PermissionProvider
         $arrayList = ArrayList::create();
 
         foreach ($discounts as $discount) {
+            if (!$discount instanceof self) {
+                continue;
+            }
             if ($discount->validateOrder($order, $context)) {
                 $arrayList->push($discount);
             }
@@ -176,7 +185,8 @@ class Discount extends DataObject implements PermissionProvider
         return $arrayList;
     }
 
-    public function getCMSFields($params = null)
+    /** @param array<string, mixed>|null $params */
+    public function getCMSFields($params = null): FieldList
     {
         //fields that shouldn't be changed once coupon is used
         $fieldList = FieldList::create(
@@ -278,6 +288,10 @@ class Discount extends DataObject implements PermissionProvider
 
         $this->extend('updateCMSFields', $fieldList, $params);
 
+        if (!$fieldList instanceof FieldList) {
+            return FieldList::create();
+        }
+
         return $fieldList;
     }
 
@@ -311,13 +325,13 @@ class Discount extends DataObject implements PermissionProvider
 
         // must be enabled in config, because some sites may have many products = slow load time, or memory maxes out
         // future solution is using an ajaxified field
-        if (self::config()->filter_by_product) {
+        if (self::config()->get('filter_by_product')) {
             $fieldList->push(
                 ListboxField::create('Products', 'Products', Product::get()->map()->toArray())
             );
         }
 
-        if (self::config()->filter_by_category) {
+        if (self::config()->get('filter_by_category')) {
             $fieldList->push(
                 ListboxField::create('Categories', 'Categories', ProductCategory::get()->map()->toArray())
             );
@@ -341,14 +355,9 @@ class Discount extends DataObject implements PermissionProvider
      * Check if this coupon can be used with a given order
      * $context provides addional data to be checked in constraints.
      */
+    /** @param array<string, mixed> $context */
     public function validateOrder(Order $order, array $context = []): bool
     {
-        if (!$order instanceof Order) {
-            $this->error(_t('Discount.NOORDER', 'Order has not been started.'));
-
-            return false;
-        }
-
         // active discount.
         if (!$this->Active) {
             $this->error(
@@ -395,7 +404,7 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Works out the discount on a given value.
      */
-    public function getDiscountValue($value): float
+    public function getDiscountValue(float|int $value): float
     {
         $discount = 0;
 
@@ -460,7 +469,7 @@ class Discount extends DataObject implements PermissionProvider
         return $this->getUseCount($orderID) > 0;
     }
 
-    public function setPercent($value): void
+    public function setPercent(float|int $value): void
     {
         $value = $value > 100 ? 100 : $value;
 
@@ -518,7 +527,8 @@ class Discount extends DataObject implements PermissionProvider
      * $includeunpaid include orders where the payment process has
      * started less than 'unpaid_use_timeout' minutes ago.
      */
-    public function getAppliedOrders(bool $includeunpaid = false):DataList
+    /** @return DataList<Order> */
+    public function getAppliedOrders(bool $includeunpaid = false): DataList
     {
         $orders =  Order::get()
             ->innerJoin('SilverShop_OrderAttribute', '"SilverShop_OrderAttribute"."OrderID" = "SilverShop_Order"."ID"')
@@ -536,8 +546,9 @@ class Discount extends DataObject implements PermissionProvider
             );
 
         if ($includeunpaid) {
-            $minutes = self::config()->unpaid_use_timeout;
-            $timeouttime = date('Y-m-d H:i:s', strtotime(sprintf('-%s minutes', $minutes)));
+            $minutes = (int) self::config()->get('unpaid_use_timeout');
+            $timeoutTimestamp = strtotime(sprintf('-%s minutes', $minutes));
+            $timeouttime = date('Y-m-d H:i:s', $timeoutTimestamp ?: time());
             $orders = $orders->leftJoin('Omnipay_Payment', '"Omnipay_Payment"."OrderID" = "SilverShop_Order"."ID"')
                 ->where(
                     '("SilverShop_Order"."Paid" IS NOT NULL) OR ' .
@@ -548,6 +559,9 @@ class Discount extends DataObject implements PermissionProvider
         }
 
         $this->extend('updateAppliedOrders', $orders, $includeunpaid);
+        if (!$orders instanceof DataList) {
+            return Order::get()->filter('ID', 0);
+        }
 
         return $orders;
     }
@@ -579,7 +593,7 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Get the amount saved on the given order with this discount.
      */
-    public function getSavingsForOrder(Order $order): float|int|array
+    public function getSavingsForOrder(Order $order): float
     {
         $itemsavings = OrderAttribute::get()
             ->innerJoin(
@@ -599,7 +613,7 @@ class Discount extends DataObject implements PermissionProvider
             ->filter('OrderID', $order->ID)
             ->sum('DiscountAmount');
 
-        return $itemsavings + $modifiersavings;
+        return (float) $itemsavings + (float) $modifiersavings;
     }
 
 
@@ -608,9 +622,11 @@ class Discount extends DataObject implements PermissionProvider
         return true;
     }
 
+    /** @param array<string, mixed> $context */
     public function canCreate($member = null, $context = []): bool
     {
-        return Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+        $memberArg = $member instanceof Member ? $member : 0;
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
     public function canDelete($member = null): bool
@@ -620,7 +636,8 @@ class Discount extends DataObject implements PermissionProvider
 
     public function canEdit($member = null): bool
     {
-        return Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+        $memberArg = $member instanceof Member ? $member : 0;
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
     protected function message(string $message, string $type = 'good'): void
@@ -644,6 +661,7 @@ class Discount extends DataObject implements PermissionProvider
         return $this->messagetype;
     }
 
+    /** @return array<string, string> */
     public function providePermissions(): array
     {
         return [

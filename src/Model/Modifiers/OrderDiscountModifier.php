@@ -3,6 +3,7 @@
 namespace SilverShop\Discounts\Model\Modifiers;
 
 use SilverStripe\ORM\ManyManyList;
+use SilverStripe\Model\List\ArrayList;
 use SilverShop\Model\Modifiers\OrderModifier;
 use SilverStripe\Control\Controller;
 use SilverShop\Discounts\Model\Discount;
@@ -66,11 +67,13 @@ class OrderDiscountModifier extends OrderModifier
         return $amount;
     }
 
-    public function getCode()
+    public function getCode(): ?string
     {
-        $code = Controller::curr()->getRequest()->getSession()->get('cart.couponcode');
+        $controller = Controller::curr();
+        $code = $controller ? $controller->getRequest()->getSession()->get('cart.couponcode') : null;
 
         if (!$code && $this->Order()->exists()) {
+            /** @var ArrayList<Discount> $discounts */
             $discounts = $this->Order()->Discounts();
 
             foreach ($discounts as $discount) {
@@ -101,7 +104,7 @@ class OrderDiscountModifier extends OrderModifier
         }
 
         return implode(
-            $this->config()->subtitle_separator,
+            (string) $this->config()->get('subtitle_separator'),
             $discounts->map('ID', 'Title')->toArray()
         );
     }

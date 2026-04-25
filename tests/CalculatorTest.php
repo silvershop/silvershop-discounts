@@ -14,6 +14,7 @@ use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Page\Product;
+use SilverStripe\Model\List\SS_List;
 
 class CalculatorTest extends SapphireTest
 {
@@ -183,12 +184,14 @@ class CalculatorTest extends SapphireTest
         $calculator = Calculator::create($this->megacart);
         $this->assertSame(190, (int) $calculator->calculate(), 'complex savings example');
 
+        $orderDiscounts = $this->megacart->Discounts();
+        $this->assertInstanceOf(SS_List::class, $orderDiscounts);
         $this->assertListEquals(
             [
                 ['Title' => '10% off'],
                 ['Title' => '$5 off']
             ],
-            $this->megacart->Discounts()
+            $orderDiscounts
         );
     }
 
@@ -392,6 +395,8 @@ class CalculatorTest extends SapphireTest
         $this->assertSame(16, (int) $order->calculate());
         $orderProcessor = OrderProcessor::create($order);
         $orderProcessor->placeOrder();
-        $this->assertSame(16, (int) Order::get()->byID($order->ID)->GrandTotal());
+        $placedOrder = Order::get()->byID($order->ID);
+        $this->assertNotNull($placedOrder);
+        $this->assertSame(16, (int) $placedOrder->GrandTotal());
     }
 }

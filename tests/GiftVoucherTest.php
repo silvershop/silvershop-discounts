@@ -4,6 +4,8 @@ namespace SilverShop\Discounts\Tests;
 
 use SilverShop\Discounts\Page\GiftVoucherProduct;
 use SilverShop\Discounts\Page\GiftVoucherProductController;
+use SilverShop\Discounts\Model\GiftVoucherOrderItem;
+use SilverShop\Discounts\Model\OrderCoupon;
 use SilverStripe\Dev\SapphireTest;
 
 class GiftVoucherTest extends SapphireTest
@@ -38,7 +40,7 @@ class GiftVoucherTest extends SapphireTest
                 'Quantity' => 1
             ]
         );
-        $this->assertTrue($form->validationResult()->isValid(), 'Voucher form is valid');
+        $this->assertTrue($form->validate()->isValid(), 'Voucher form is valid');
 
         $form->loadDataFrom(
             [
@@ -46,7 +48,7 @@ class GiftVoucherTest extends SapphireTest
                 'Quantity' => 5
             ]
         );
-        $this->assertFalse($form->validationResult()->isValid(), 'Tested unit price is below minimum amount');
+        $this->assertFalse($form->validate()->isValid(), 'Tested unit price is below minimum amount');
 
         $form->loadDataFrom(
             [
@@ -54,7 +56,7 @@ class GiftVoucherTest extends SapphireTest
                 'Quantity' => 5
             ]
         );
-        $this->assertFalse($form->validationResult()->isValid(), 'Tested unit price is zero');
+        $this->assertFalse($form->validate()->isValid(), 'Tested unit price is zero');
     }
 
     public function testFixedVoucher(): void
@@ -65,7 +67,7 @@ class GiftVoucherTest extends SapphireTest
             ['Quantity' => 2]
         );
 
-        $this->assertTrue($form->validationResult()->isValid(), 'Valid voucher');
+        $this->assertTrue($form->validate()->isValid(), 'Valid voucher');
     }
 
     public function testCreateCoupon(): void
@@ -75,7 +77,9 @@ class GiftVoucherTest extends SapphireTest
             ['UnitPrice' => 15.00]
         );
 
+        $this->assertInstanceOf(GiftVoucherOrderItem::class, $orderItem);
         $coupon = $orderItem->createCoupon();
+        $this->assertInstanceOf(OrderCoupon::class, $coupon);
 
         $this->assertEqualsWithDelta(15.00, $coupon->Amount, PHP_FLOAT_EPSILON);
         $this->assertSame('Amount', $coupon->Type, "Coupon type is 'Amount'");

@@ -49,7 +49,8 @@ class CouponForm extends Form
         $requestHandler->extend('updateCouponForm', $this, $order);
     }
 
-    public function applyCoupon($data, $form): HTTPResponse
+    /** @param array<string, mixed> $data */
+    public function applyCoupon(array $data, Form $form): HTTPResponse
     {
         // form validation has passed by this point, so we can save data
         $this->config->setData($form->getData());
@@ -57,9 +58,12 @@ class CouponForm extends Form
         return $this->controller->redirectBack();
     }
 
-    public function removeCoupon($data, $form): HTTPResponse
+    /** @param array<string, mixed> $data */
+    public function removeCoupon(array $data, Form $form): HTTPResponse
     {
-        Controller::curr()->getRequest()->getSession()->clear('cart.couponcode');
+        if ($controller = Controller::curr()) {
+            $controller->getRequest()->getSession()->clear('cart.couponcode');
+        }
 
         $order = $this->config->getOrder();
 

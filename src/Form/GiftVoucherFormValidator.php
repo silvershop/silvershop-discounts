@@ -6,6 +6,7 @@ use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 
 class GiftVoucherFormValidator extends RequiredFieldsValidator
 {
+    /** @param array<string, mixed> $data */
     public function php($data): bool
     {
         $valid =  parent::php($data);

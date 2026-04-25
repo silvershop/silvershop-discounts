@@ -11,7 +11,7 @@ use SilverShop\Model\Order;
 class ValueDiscountConstraintTest extends SapphireTest
 {
 
-    public $placedorder;
+    protected Order $placedorder;
 
     protected static $fixture_file = [
         'shop.yml'

@@ -20,8 +20,9 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 
     public function updateCMSFields(FieldList $fieldList): void
     {
+        $owner = $this->getOwner();
         //multiselect subtypes of orderitem
-        if ($this->owner->isInDB() && $this->owner->ForItems) {
+        if ($owner->isInDB() && $owner->ForItems) {
             $fieldList->addFieldsToTab(
                 'Root.Constraints.ConstraintsTabs.Product',
                 [
@@ -33,7 +34,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
                     ListBoxField::create(
                         'ProductTypes',
                         '',
-                        $this->getTypes(false, $this->owner) ?? []
+                        $this->getTypes(false, $owner) ?? []
                     )
                 ]
             );
@@ -67,16 +68,22 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         }
 
         $buyable = $orderItem->Buyable();
+        if (!is_object($buyable) || !method_exists($buyable, 'getClassName')) {
+            return false;
+        }
+
         return isset($types[$buyable->getClassName()]);
     }
 
-    protected function getTypes($selected, Discount $discount): ?array
+    /** @return array<string, string>|null */
+    protected function getTypes(bool $selected, Discount $discount): ?array
     {
         $types = $selected ? array_filter(explode(',', $discount->ProductTypes ?? '')) : $this->BuyableClasses();
-        if ($types && $types !== []) {
+        if (count($types) > 0) {
             $types = array_combine($types, $types);
             foreach (array_keys($types) as $type) {
-                $types[$type] = singleton($type)->i18n_singular_name();
+                $name = singleton($type)->i18n_singular_name();
+                $types[$type] = is_string($name) && $name !== '' ? $name : $type;
             }
 
             return $types;
@@ -85,6 +92,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
         return null;
     }
 
+    /** @return array<class-string, class-string> */
     protected function BuyableClasses(): array
     {
         $implementors = ClassInfo::implementorsOf('Buyable');
@@ -95,8 +103,8 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 
         $classes = array_combine($classes, $classes);
 
-        if (array_key_exists('ProductVariation', $classes)) {
-            unset($classes['ProductVariation']);
+        if (array_key_exists(\SilverShop\Model\Variation\Variation::class, $classes)) {
+            unset($classes[\SilverShop\Model\Variation\Variation::class]);
         }
 
         return $classes;

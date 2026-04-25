@@ -30,25 +30,28 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
 
     public function updateCMSFields(FieldList $fieldList): void
     {
-        if ($this->owner->isInDB()) {
-            $fieldList->addFieldsToTab(
-                'Root.Constraints.ConstraintsTabs.Product',
-                [
-                    GridField::create(
-                        'Products',
-                        _t(__CLASS__ . 'SPECIFICPRODUCTS', 'Specific products'),
-                        $this->owner->Products(),
-                        GridFieldConfig_RelationEditor::create()
-                            ->removeComponentsByType(GridFieldAddNewButton::class)
-                            ->removeComponentsByType(GridFieldEditButton::class)
-                    ),
-                    CheckboxField::create(
-                        'ExactProducts',
-                        _t(__CLASS__ . '.ALLPRODUCTSINCART', 'All the selected products must be present in cart.')
-                    ),
-                ]
-            );
+        $owner = $this->getOwner();
+        if (!$owner->isInDB()) {
+            return;
         }
+
+        $fieldList->addFieldsToTab(
+            'Root.Constraints.ConstraintsTabs.Product',
+            [
+                GridField::create(
+                    'Products',
+                    _t(__CLASS__ . 'SPECIFICPRODUCTS', 'Specific products'),
+                    $owner->Products(),
+                    GridFieldConfig_RelationEditor::create()
+                        ->removeComponentsByType(GridFieldAddNewButton::class)
+                        ->removeComponentsByType(GridFieldEditButton::class)
+                ),
+                CheckboxField::create(
+                    'ExactProducts',
+                    _t(__CLASS__ . '.ALLPRODUCTSINCART', 'All the selected products must be present in cart.')
+                ),
+            ]
+        );
     }
 
     public function check(Discount $discount): bool
@@ -101,13 +104,13 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
     public function itemMatchesCriteria(OrderItem $orderItem, Discount $discount): bool
     {
         $manyManyList = $discount->Products();
-        $itemproduct = $orderItem->Product(true); // true forces the current version of product to be retrieved.
+        $itemproduct = $orderItem->Buyable();
 
         if ($manyManyList->exists()) {
             foreach ($manyManyList as $product) {
                 // uses 'DiscountedProductID' since some subclasses of buyable could be used as the item product (such as
                 // a bundle) rather than the product stored.
-                if ($product->ID == $itemproduct->DiscountedProductID) {
+                if (is_object($itemproduct) && isset($itemproduct->DiscountedProductID) && $product->ID == $itemproduct->DiscountedProductID) {
                     return true;
                 }
             }

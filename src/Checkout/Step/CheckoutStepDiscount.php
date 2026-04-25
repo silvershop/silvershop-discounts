@@ -7,7 +7,9 @@ use SilverShop\Checkout\CheckoutComponentConfig;
 use SilverShop\Cart\ShoppingCart;
 use SilverShop\Discounts\Checkout\CouponCheckoutComponent;
 use SilverShop\Forms\CheckoutForm;
+use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
 
 class CheckoutStepDiscount extends CheckoutStep
@@ -28,6 +30,7 @@ class CheckoutStepDiscount extends CheckoutStep
         return $checkoutComponentConfig;
     }
 
+    /** @return array{OrderForm: CheckoutForm} */
     public function discount(): array
     {
         return [
@@ -37,18 +40,29 @@ class CheckoutStepDiscount extends CheckoutStep
 
     public function CouponForm(): CheckoutForm
     {
-        $checkoutForm = CheckoutForm::create($this->owner, 'CouponForm', $this->checkoutconfig());
+        $owner = $this->getOwner();
+        $checkoutForm = CheckoutForm::create($owner, 'CouponForm', $this->checkoutconfig());
         $checkoutForm->setActions(
             FieldList::create(FormAction::create('setcoupon', _t('SilverShop\Checkout\Step\CheckoutStep.Continue', 'Continue')))
         );
-        $this->owner->extend('updateCouponForm', $checkoutForm);
+        if (method_exists($owner, 'extend')) {
+            $owner->extend('updateCouponForm', $checkoutForm);
+        }
 
         return $checkoutForm;
     }
 
-    public function setcoupon($data, $form)
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function setcoupon(array $data, Form $form): HTTPResponse
     {
         $this->checkoutconfig()->setData($form->getData());
-        return $this->owner->redirect($this->NextStepLink());
+        $owner = $this->getOwner();
+        if (method_exists($owner, 'redirect')) {
+            return $owner->redirect($this->NextStepLink());
+        }
+
+        return HTTPResponse::create();
     }
 }

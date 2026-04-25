@@ -9,15 +9,20 @@ use SilverStripe\ORM\Queries\SQLSelect;
 
 class DiscountReport extends ShopPeriodReport
 {
+    /** @var string */
     protected $title = 'Discounts';
 
+    /** @var string */
     protected $dataClass = Discount::class;
 
+    /** @var string */
     protected $periodfield = '"SilverShop_Order"."Paid"';
 
+    /** @var string */
     protected $description = "See the total savings for discounts. Note that the 'Entered' field may not be
 										accurate if old/expired carts have been deleted from the database.";
 
+    /** @return array<string, class-string|non-empty-string> */
     public function columns(): array
     {
         return [
@@ -33,6 +38,7 @@ class DiscountReport extends ShopPeriodReport
     /**
      * Remove unsortable columns
      */
+    /** @return list<string> */
     public function sortColumns(): array
     {
         $cols = $this->columns();
@@ -40,7 +46,8 @@ class DiscountReport extends ShopPeriodReport
         return array_keys($cols);
     }
 
-    public function query($params): ShopReportQuery|SQLSelect
+    /** @param array<string, mixed> $params */
+    public function query(array $params): ShopReportQuery|SQLSelect
     {
         $query = parent::query($params);
         $query->addSelect('"SilverShop_Discount".*')

@@ -11,6 +11,7 @@ class PriceInfo
 
     protected int|float $currentprice; //for compounding discounts
 
+    /** @var array<int, Adjustment> */
     protected array $adjustments = [];
 
     protected ?Adjustment $bestadjustment = null;
@@ -57,6 +58,7 @@ class PriceInfo
         return $this->bestadjustment;
     }
 
+    /** @return array<int, Adjustment> */
     public function getAdjustments(): array
     {
         return $this->adjustments;

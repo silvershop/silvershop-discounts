@@ -23,19 +23,22 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
 
     public function updateCMSFields(FieldList $fieldList): void
     {
-        if ($this->owner->isInDB()) {
-            $fieldList->addFieldToTab(
-                'Root.Constraints.ConstraintsTabs.Product',
-                GridField::create(
-                    'Categories',
-                    _t(__CLASS__ . '.PRODUCTCATEGORIES', 'Product categories'),
-                    $this->owner->Categories(),
-                    GridFieldConfig_RelationEditor::create()
-                        ->removeComponentsByType(GridFieldAddNewButton::class)
-                        ->removeComponentsByType(GridFieldEditButton::class)
-                )
-            );
+        $owner = $this->getOwner();
+        if (!$owner->isInDB()) {
+            return;
         }
+
+        $fieldList->addFieldToTab(
+            'Root.Constraints.ConstraintsTabs.Product',
+            GridField::create(
+                'Categories',
+                _t(__CLASS__ . '.PRODUCTCATEGORIES', 'Product categories'),
+                $owner->Categories(),
+                GridFieldConfig_RelationEditor::create()
+                    ->removeComponentsByType(GridFieldAddNewButton::class)
+                    ->removeComponentsByType(GridFieldEditButton::class)
+            )
+        );
     }
 
     public function check(Discount $discount): bool
@@ -64,7 +67,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
 
         //get category ids from buyable
         $buyable = $orderItem->Buyable();
-        if (!method_exists($buyable, 'getCategoryIDs')) {
+        if (!is_object($buyable) || !method_exists($buyable, 'getCategoryIDs')) {
             return false;
         }
 

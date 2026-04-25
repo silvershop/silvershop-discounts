@@ -8,7 +8,7 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\PartialUseDiscount;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
@@ -31,6 +31,7 @@ class DiscountedOrderExtension extends Extension
     /**
      * Get all discounts that have been applied to an order.
      */
+    /** @return ArrayList<Discount> */
     public function Discounts(): ArrayList
     {
         $arrayList = ArrayList::create();
@@ -63,8 +64,12 @@ class DiscountedOrderExtension extends Extension
 
         foreach ($arrayList as $discount) {
             //only bother creating a remainder discount, if savings have been made
+            if (!$discount instanceof PartialUseDiscount) {
+                continue;
+            }
+
             if ($savings = $discount->getSavingsForOrder($this->owner)) {
-                $discount->createRemainder($savings);
+                $discount->createRemainder((float) $savings);
                 //deactivate discounts
                 $discount->Active = false;
                 $discount->write();

@@ -7,6 +7,7 @@ use SilverShop\Page\Product;
 use SilverShop\Model\Variation\Variation;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Security\Group;
+use SilverStripe\Security\Member;
 use SilverStripe\Security\Permission;
 use SilverStripe\ORM\DataList;
 
@@ -56,7 +57,8 @@ class SpecificPrice extends DataObject
             return true;
         }
 
-        return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+        $memberArg = $member instanceof Member ? $member : 0;
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
     public function canEdit($member = null): bool
@@ -65,16 +67,19 @@ class SpecificPrice extends DataObject
             return true;
         }
 
-        return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+        $memberArg = $member instanceof Member ? $member : 0;
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
+    /** @param array<string, mixed> $context */
     public function canCreate($member = null, $context = []): bool
     {
         if (parent::canCreate($member, $context)) {
             return true;
         }
 
-        return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+        $memberArg = $member instanceof Member ? $member : 0;
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
     public function canDelete($member = null): bool
@@ -83,9 +88,15 @@ class SpecificPrice extends DataObject
             return true;
         }
 
-        return (bool) Permission::checkMember($member, 'MANAGE_DISCOUNTS');
+        $memberArg = $member instanceof Member ? $member : 0;
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
+    /**
+     * @param DataList<SpecificPrice> $dataList
+     * @param Member|null $member
+     * @return DataList<SpecificPrice>
+     */
     public static function filter(DataList $dataList, $member = null): DataList
     {
         $now = date('Y-m-d H:i:s');

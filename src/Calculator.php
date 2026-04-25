@@ -2,7 +2,7 @@
 
 namespace SilverShop\Discounts;
 
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverShop\Discounts\Actions\SubtotalDiscountAction;
 use SilverShop\Discounts\Extensions\Constraints\ItemDiscountConstraint;
 use SilverShop\Discounts\Model\Discount;
@@ -20,13 +20,16 @@ class Calculator
 
     protected Order $order;
 
+    /** @var ArrayList<Discount> */
     protected ArrayList $discounts;
 
-    protected $modifier;
+    protected OrderDiscountModifier $modifier;
 
+    /** @var array<int, array{Level: string, Amount: int|float, Discount: string}> */
     protected array $log = [];
 
-    public function __construct(Order $order, $context = [])
+    /** @param array<string, mixed> $context */
+    public function __construct(Order $order, array $context = [])
     {
         $this->order = $order;
 
@@ -182,13 +185,17 @@ class Calculator
             ->sum('DiscountAmount');
     }
 
-    protected function createPriceInfoList(DataList $dataList): array
+    /**
+     * @param iterable<\SilverStripe\ORM\DataObject> $dataList
+     * @return array<int, ItemPriceInfo>
+     */
+    protected function createPriceInfoList(iterable $dataList): array
     {
         $output = [];
 
         foreach ($dataList as $item) {
-            $priceInfoClass = $item->getPriceInfoClass();
-            if (!$priceInfoClass) {
+            $priceInfoClass = $item->hasMethod('getPriceInfoClass') ? $item->getPriceInfoClass() : null;
+            if (!is_string($priceInfoClass) || $priceInfoClass === '') {
                 $priceInfoClass = ItemPriceInfo::class;
             }
 
@@ -198,17 +205,20 @@ class Calculator
         return $output;
     }
 
-    protected function getItemDiscounts()
+    /** @return ArrayList<Discount> */
+    protected function getItemDiscounts(): ArrayList
     {
         return $this->discounts->filter('ForItems', true);
     }
 
-    protected function getCartDiscounts()
+    /** @return ArrayList<Discount> */
+    protected function getCartDiscounts(): ArrayList
     {
         return $this->discounts->filter('ForCart', true);
     }
 
-    protected function getShippingDiscounts()
+    /** @return ArrayList<Discount> */
+    protected function getShippingDiscounts(): ArrayList
     {
         return $this->discounts->filter('ForShipping', true);
     }
@@ -225,6 +235,7 @@ class Calculator
         ];
     }
 
+    /** @return array<int, array{Level: string, Amount: int|float, Discount: string}> */
     public function getLog(): array
     {
         return $this->log;

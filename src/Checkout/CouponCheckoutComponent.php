@@ -34,6 +34,7 @@ class CouponCheckoutComponent extends CheckoutComponent
         $this->validwhenblank = $valid;
     }
 
+    /** @param array<string, mixed> $data */
     public function validateData(Order $order, array $data): bool
     {
         $validationResult = ValidationResult::create();
@@ -62,17 +63,20 @@ class CouponCheckoutComponent extends CheckoutComponent
         return $validationResult->isValid();
     }
 
+    /** @return array{Code: mixed} */
     public function getData(Order $order): array
     {
+        $controller = Controller::curr();
         return [
-            'Code' => Controller::curr()->getRequest()->getSession()->get('cart.couponcode')
+            'Code' => $controller ? $controller->getRequest()->getSession()->get('cart.couponcode') : null
         ];
     }
 
+    /** @param array<string, mixed> $data */
     public function setData(Order $order, array $data): Order
     {
-        if ($data['Code']) {
-            Controller::curr()->getRequest()->getSession()->set('cart.couponcode', strtoupper((string) $data['Code']));
+        if (!empty($data['Code']) && ($controller = Controller::curr())) {
+            $controller->getRequest()->getSession()->set('cart.couponcode', strtoupper((string) $data['Code']));
         }
 
         $order->getModifier(OrderDiscountModifier::class, true);

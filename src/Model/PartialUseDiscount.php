@@ -4,6 +4,7 @@ namespace SilverShop\Discounts\Model;
 
 use SilverStripe\Core\Validation\ValidationException;
 use SilverStripe\Core\Validation\ValidationResult;
+use SilverStripe\Forms\FieldList;
 
 /**
  * @property int $ChildID
@@ -35,7 +36,8 @@ class PartialUseDiscount extends Discount
 
     private static string $table_name = 'SilverShop_PartialUseDiscount';
 
-    public function getCMSFields($params = null)
+    /** @param array<string, mixed>|null $params */
+    public function getCMSFields($params = null): FieldList
     {
         $fieldList = parent::getCMSFields(['forcetype' => 'Amount']);
 
@@ -50,7 +52,9 @@ class PartialUseDiscount extends Discount
 
         $limitfield = $fieldList->dataFieldByName('UseLimit');
 
-        $fieldList->replaceField('UseLimit', $limitfield->performReadonlyTransformation());
+        if ($limitfield) {
+            $fieldList->replaceField('UseLimit', $limitfield->performReadonlyTransformation());
+        }
         return $fieldList;
     }
 
@@ -81,10 +85,11 @@ class PartialUseDiscount extends Discount
             $remainder->deleteRelationships();
 
             // create proper new relationships
+            $manyMany = $this->manyMany();
             $this->duplicateRelations(
                 $this,
                 $remainder,
-                array_keys($this->manyMany())
+                is_array($manyMany) ? array_keys($manyMany) : []
             );
 
             $remainder->Amount = $amount - $used;
@@ -115,9 +120,10 @@ class PartialUseDiscount extends Discount
 
         //prevent vital things from changing.  Note: only this extension's defaults.
         if ($this->isInDB()) {
-            foreach (static::$defaults as $field => $value) {
+            $defaults = static::config()->get('defaults');
+            foreach ($defaults as $field => $value) {
                 if ($this->isChanged($field)) {
-                    $validationResult->addError('The field: ' . $field . ' should not be changed for partial use discounts.  Current value is: ' . $value . '.  Expected: ' . static::$defaults[$field] . '.');
+                    $validationResult->addError('The field: ' . $field . ' should not be changed for partial use discounts.  Current value is: ' . $value . '.  Expected: ' . $defaults[$field] . '.');
                 }
             }
         }

@@ -18,7 +18,8 @@ class GridField_LinkComponent implements GridField_HTMLProvider
         $this->url = $url;
     }
 
-    public function getHTMLFragments($gridField)
+    /** @return array<string, string> */
+    public function getHTMLFragments($gridField): array
     {
         return [
             'before' => sprintf('<a href="%s" class="ss-ui-button %s">%s</a>', $this->url, $this->extraclasses, $this->title)

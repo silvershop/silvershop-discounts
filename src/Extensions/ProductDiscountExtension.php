@@ -17,7 +17,7 @@ class ProductDiscountExtension extends Extension
     /**
      * Get the difference between the original price and the new price.
      */
-    public function getTotalReduction($original = 'BasePrice'): int|float
+    public function getTotalReduction(string $original = 'BasePrice'): int|float
     {
         $reduction = $this->owner->{$original} - $this->owner->sellingPrice();
         //keep it above 0;

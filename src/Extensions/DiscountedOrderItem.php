@@ -31,7 +31,7 @@ class DiscountedOrderItem extends Extension
 
     public function getDiscountedProductID(): int
     {
-        $productKey = OrderItem::config()->buyable_relationship . 'ID';
+        $productKey = (string) OrderItem::config()->get('buyable_relationship') . 'ID';
 
         return $this->owner->{$productKey};
     }

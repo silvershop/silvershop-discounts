@@ -49,21 +49,25 @@ class CouponFormTest extends FunctionalTest
         $data = ['Code' => '5B97AA9D75'];
         $couponForm->loadDataFrom($data);
 
-        $valid = $couponForm->validationResult()->isValid();
+        $validationResult = $couponForm->validate();
+        $valid = $validationResult->isValid();
         $this->assertTrue($valid);
 
-        $errors = $couponForm->getValidator()->getErrors();
-        $this->assertTrue($valid, print_r($errors, true));
+        $errors = $validationResult->getMessages();
+        $this->assertEmpty($errors, print_r($errors, true));
 
         $couponForm->applyCoupon($data, $couponForm);
         $configData = $couponForm->config->getData();
         $this->assertSame('5B97AA9D75', $configData['Code']);
 
-        $coupon = Controller::curr()->getRequest()->getSession()->get('cart.couponcode');
+        $controller = Controller::curr();
+        $this->assertNotNull($controller);
+        $coupon = $controller->getRequest()->getSession()->get('cart.couponcode');
         $this->assertSame('5B97AA9D75', $coupon);
 
         $couponForm->removeCoupon([], $couponForm);
         $fresh_copy_of_order = Order::get()->byID($order->ID);
+        $this->assertNotNull($fresh_copy_of_order);
         $this->assertEmpty($fresh_copy_of_order->CouponCode);
     }
 }

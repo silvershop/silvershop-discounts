@@ -41,7 +41,7 @@ class GiftVoucherOrderItem extends OrderItem
     /**
      * Don't get unit price from product
      */
-    public function UnitPrice()
+    public function UnitPrice(): int|float
     {
         if ($this->Product()->VariableAmount) {
             return $this->UnitPrice;
@@ -61,7 +61,7 @@ class GiftVoucherOrderItem extends OrderItem
             $remaining = $this->Quantity - $this->Coupons()->Count();
 
             for ($i = 0; $i < $remaining; $i++) {
-                if ($coupon = $this->createCoupon()) {
+                if (($coupon = $this->createCoupon()) instanceof OrderCoupon) {
                     $this->sendVoucher($coupon);
                 }
             }
@@ -103,7 +103,8 @@ class GiftVoucherOrderItem extends OrderItem
      */
     public function sendVoucher(OrderCoupon $orderCoupon): bool
     {
-        $from = Email::config()->admin_email;
+        $adminEmail = Email::config()->get('admin_email');
+        $from = is_string($adminEmail) ? $adminEmail : '';
         $to = $this->Order()->exists() ? $this->Order()->getLatestEmail() : '';
         $subject = _t('Order.GIFTVOUCHERSUBJECT', 'Gift voucher');
         $email = Email::create();
@@ -118,6 +119,9 @@ class GiftVoucherOrderItem extends OrderItem
         );
 
         $this->extend('updateVoucherMail', $email, $orderCoupon);
+        if (!$email instanceof Email) {
+            return false;
+        }
 
         try {
             $email->send();

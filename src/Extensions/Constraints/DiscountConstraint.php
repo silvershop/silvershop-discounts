@@ -5,6 +5,7 @@ namespace SilverShop\Discounts\Extensions\Constraints;
 use SilverStripe\Core\Extension;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Model\Order;
+use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataList;
 
 /**
@@ -21,6 +22,7 @@ abstract class DiscountConstraint extends Extension
 {
     protected Order $order;
 
+    /** @var array<string, mixed> */
     protected array $context = [];
 
     protected string $message = '';
@@ -33,6 +35,7 @@ abstract class DiscountConstraint extends Extension
         return $this;
     }
 
+    /** @param array<string, mixed> $context */
     public function setContext(array $context): static
     {
         $this->context = $context;
@@ -46,6 +49,9 @@ abstract class DiscountConstraint extends Extension
      * 'X' OR Value IS NULL
      *
      * See predefined constraints for examples.
+     */
+    /** @param DataList<Discount>|DataList<DataObject> $dataList
+     *  @return DataList<Discount>|DataList<DataObject>
      */
     public function filter(DataList $dataList): DataList
     {

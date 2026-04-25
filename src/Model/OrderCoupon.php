@@ -4,6 +4,7 @@ namespace SilverShop\Discounts\Model;
 
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Validation\ValidationResult;
+use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Security\RandomGenerator;
 
@@ -41,13 +42,13 @@ class OrderCoupon extends Discount
 
     private static string $plural_name = 'Coupons';
 
-    private static $minimum_code_length;
+    private static ?int $minimum_code_length = null;
 
     private static int $generated_code_length = 10;
 
     private static string $table_name = 'SilverShop_OrderCoupon';
 
-    public static function get_by_code($code)
+    public static function get_by_code(string $code): ?self
     {
         return self::get()
             ->filter('Code:nocase', $code)
@@ -62,7 +63,7 @@ class OrderCoupon extends Discount
      */
     public static function generate_code(?int $length = null, string $prefix = ''): string
     {
-        $length = $length !== null && $length !== 0 ? $length : self::config()->generated_code_length;
+        $length = $length !== null && $length !== 0 ? $length : (int) self::config()->get('generated_code_length');
         $code = null;
         $randomGenerator = Injector::inst()->create(RandomGenerator::class);
         do {
@@ -73,7 +74,8 @@ class OrderCoupon extends Discount
         return $code;
     }
 
-    public function getCMSFields($params = null)
+    /** @param array<string, mixed>|null $params */
+    public function getCMSFields($params = null): FieldList
     {
         $fieldList = parent::getCMSFields();
         $fieldList->addFieldsToTab(
@@ -83,7 +85,7 @@ class OrderCoupon extends Discount
             ],
             'Active'
         );
-        if ($this->owner->Code && $codefield->exists()) {
+        if ($this->Code && $codefield->exists()) {
             $fieldList->replaceField(
                 'Code',
                 $codefield->performReadonlyTransformation()
@@ -96,7 +98,7 @@ class OrderCoupon extends Discount
     public function validate(): ValidationResult
     {
         $validationResult = parent::validate();
-        $minLength = self::config()->minimum_code_length;
+        $minLength = self::config()->get('minimum_code_length');
         $code = $this->getField('Code');
 
         if ($minLength && $code && $this->isChanged('Code') && strlen((string) $code) < $minLength) {
@@ -104,7 +106,7 @@ class OrderCoupon extends Discount
                 _t(
                     'OrderCoupon.INVALIDMINLENGTH',
                     'Coupon code must be at least {length} characters in length',
-                    ['length' => self::config()->minimum_code_length]
+                    ['length' => self::config()->get('minimum_code_length')]
                 ),
                 ValidationResult::TYPE_ERROR,
                 'INVALIDMINLENGTH'
@@ -141,6 +143,7 @@ class OrderCoupon extends Discount
         return true;
     }
 
+    /** @param array<string, mixed> $context */
     public function canCreate($member = null, $context = []): bool
     {
         return true;

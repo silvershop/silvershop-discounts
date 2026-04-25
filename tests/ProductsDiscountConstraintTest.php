@@ -143,6 +143,7 @@ class ProductsDiscountConstraintTest extends SapphireTest
         //get individual item discounts
         $discount = $this->objFromFixture(OrderItem::class, 'megacart_socks')
             ->Discounts()->first();
+        $this->assertNotNull($discount);
         $this->assertSame(32, (int) $discount->DiscountAmount);
     }
 

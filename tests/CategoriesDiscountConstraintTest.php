@@ -152,6 +152,7 @@ class CategoriesDiscountConstraintTest extends SapphireTest
             $variation,
             'Variation exists'
         );
+        $this->assertTrue($variation->Product()->exists());
         $this->assertEquals(
             35,
             $variation->Product()->sellingPrice(),

@@ -8,8 +8,14 @@ use SilverShop\Discounts\Extensions\Constraints\ItemDiscountConstraint;
 
 abstract class ItemDiscountAction extends DiscountAction
 {
+    /**
+     * @var array<int, ItemPriceInfo>
+     */
     protected array $infoitems;
 
+    /**
+     * @param array<int, ItemPriceInfo> $infoitems
+     */
     public function __construct(array $infoitems, Discount $discount)
     {
         parent::__construct($discount);

@@ -7,6 +7,7 @@ use SilverStripe\ORM\HasManyList;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\Tab;
 use SilverShop\Discounts\Model\SpecificPrice;
 use SilverStripe\Security\Security;
 
@@ -23,10 +24,12 @@ class SpecificPricingExtension extends Extension
     public function updateCMSFields(FieldList $fieldList): void
     {
         if ($tab = $fieldList->fieldByName('Root.Pricing')) {
-            $fieldList = $tab->Fields();
+            if ($tab instanceof Tab) {
+                $fieldList = $tab->Fields();
+            }
         }
 
-        if ($this->owner->isInDB() && ($fieldList->fieldByName('BasePrice') || $fieldList->fieldByName('Price'))) {
+        if (method_exists($this->owner, 'isInDB') && $this->owner->isInDB() && ($fieldList->fieldByName('BasePrice') || $fieldList->fieldByName('Price'))) {
             $fieldList->push(
                 GridField::create(
                     'SpecificPrices',
@@ -38,7 +41,7 @@ class SpecificPricingExtension extends Extension
         }
     }
 
-    public function updateSellingPrice(&$price): void
+    public function updateSellingPrice(int|float &$price): void
     {
         $hasManyList = $this->owner->SpecificPrices()->filter(['Price:LessThan' => $price ]);
 

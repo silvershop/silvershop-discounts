@@ -9,6 +9,7 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 use SilverStripe\Forms\Form;
 use SilverShop\Discounts\Model\OrderDiscount;
@@ -16,6 +17,7 @@ use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Discounts\Model\PartialUseDiscount;
 use SilverShop\Discounts\Form\GridField_LinkComponent;
 use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\DataObject;
 
 class DiscountModelAdmin extends ModelAdmin
 {
@@ -48,7 +50,8 @@ class DiscountModelAdmin extends ModelAdmin
     {
         $form = parent::getEditForm($id, $fields);
 
-        if ($grid = $form->Fields()->fieldByName(OrderCoupon::class)) {
+        $grid = $form->Fields()->fieldByName(OrderCoupon::class);
+        if ($grid instanceof GridField) {
             $grid->getConfig()
                 ->addComponent(
                     $gridFieldLinkComponent = new GridField_LinkComponent('Generate Multiple Coupons', $this->Link() . '/generatecoupons'),
@@ -60,8 +63,10 @@ class DiscountModelAdmin extends ModelAdmin
         $descriptions = self::config()->get('model_descriptions');
 
         if (isset($descriptions[$this->modelClass])) {
-            $form->Fields()->fieldByName($this->modelClass)
-                ->setDescription($descriptions[$this->modelClass]);
+            $modelField = $form->Fields()->fieldByName($this->modelClass);
+            if ($modelField) {
+                $modelField->setDescription($descriptions[$this->modelClass]);
+            }
         }
 
         return $form;
@@ -70,6 +75,7 @@ class DiscountModelAdmin extends ModelAdmin
     /**
      * Update results list, to include custom search filters
      */
+    /** @return DataList<DataObject> */
     public function getList(): DataList
     {
         $params = $this->request->requestVar('q');
@@ -125,7 +131,7 @@ class DiscountModelAdmin extends ModelAdmin
                     'Length',
                     'Code Characters Length',
                     array_combine(range(5, 20), range(5, 20)),
-                    OrderCoupon::config()->generated_code_length
+                    (int) OrderCoupon::config()->get('generated_code_length')
                 )->setDescription('This is in addition to the length of the prefix.')
             )
             ],
@@ -155,7 +161,8 @@ class DiscountModelAdmin extends ModelAdmin
         return $form;
     }
 
-    public function generate($data, $form): void
+    /** @param array<string, mixed> $data */
+    public function generate(array $data, Form $form): void
     {
         $count = 1;
 
@@ -164,7 +171,7 @@ class DiscountModelAdmin extends ModelAdmin
         }
 
         $prefix = $data['Prefix'] ?? '';
-        $length = isset($data['Length']) ? (int) $data['Length'] : OrderCoupon::config()->generated_code_length;
+        $length = isset($data['Length']) ? (int) $data['Length'] : (int) OrderCoupon::config()->get('generated_code_length');
 
         for ($i = 0; $i < $count; $i++) {
             $coupon = OrderCoupon::create();
@@ -178,9 +185,10 @@ class DiscountModelAdmin extends ModelAdmin
             $coupon->write();
         }
 
-        $this->redirect($this->Link());
+        $this->redirect($this->Link() ?? '');
     }
 
+    /** @return array<string, string|Form> */
     public function generatecoupons(): array
     {
         return [
