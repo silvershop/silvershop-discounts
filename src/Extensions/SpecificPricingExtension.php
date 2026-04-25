@@ -21,6 +21,14 @@ class SpecificPricingExtension extends Extension
         'SpecificPrices' => SpecificPrice::class
     ];
 
+    private static array $cascade_deletes = [
+        'SpecificPrices',
+    ];
+
+    private static array $cascade_duplicates = [
+        'SpecificPrices',
+    ];
+
     public function updateCMSFields(FieldList $fieldList): void
     {
         if ($tab = $fieldList->fieldByName('Root.Pricing')) {

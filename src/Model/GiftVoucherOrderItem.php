@@ -23,6 +23,14 @@ class GiftVoucherOrderItem extends OrderItem
         'Coupons' => OrderCoupon::class
     ];
 
+    private static array $cascade_deletes = [
+        'Coupons',
+    ];
+
+    private static array $cascade_duplicates = [
+        'Coupons',
+    ];
+
     private static array $required_fields = [
         'UnitPrice'
     ];
@@ -89,7 +97,7 @@ class GiftVoucherOrderItem extends OrderItem
             ]
         );
 
-        $this->extend('updateCreateCupon', $orderCoupon);
+        $this->extend('updateCreateCoupon', $orderCoupon);
 
         $orderCoupon->write();
 
@@ -126,12 +134,16 @@ class GiftVoucherOrderItem extends OrderItem
         try {
             $email->send();
         } catch (TransportExceptionInterface $transportException) {
-            $this->logger->error('GiftVoucherOrderItem.sendVoucher: error sending email in ' . __FILE__ . ' line ' . __LINE__ . (': ' . $transportException->getMessage()));
+            $this->logger->error(sprintf(
+                'GiftVoucherOrderItem.sendVoucher: error sending email in %s line %s: %s', __FILE__, __LINE__, $transportException->getMessage()
+            ));
+
             return false;
         }
 
         return true;
     }
+
 
     public function setLogger(LoggerInterface $logger): static
     {
