@@ -2,9 +2,9 @@
 
 namespace SilverShop\Discounts\Form;
 
-use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 
-class GiftVoucherFormValidator extends RequiredFields
+class GiftVoucherFormValidator extends RequiredFieldsValidator
 {
     public function php($data): bool
     {

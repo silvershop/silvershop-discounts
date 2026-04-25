@@ -14,7 +14,7 @@ use SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverShop\Model\Order;
-use SilverStripe\ORM\ArrayList;
+use SilverStripe\Model\List\ArrayList;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TabSet;
 use SilverStripe\Forms\Tab;
@@ -41,7 +41,6 @@ use SilverStripe\ORM\Filters\GreaterThanOrEqualFilter;
 use SilverStripe\ORM\Filters\LessThanOrEqualFilter;
 use SilverShop\Model\OrderAttribute;
 use SilverShop\Model\OrderItem;
-use SilverStripe\Dev\Deprecation;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverStripe\Core\Injector\Injector;
 use SilverShop\Discounts\Extensions\Constraints\DiscountConstraint;
@@ -650,16 +649,5 @@ class Discount extends DataObject implements PermissionProvider
         return [
             'MANAGE_DISCOUNTS' => 'Manage discounts',
         ];
-    }
-
-    /**
-     * @deprecated
-     * @param      $order
-     * @param      array $context
-     */
-    public function valid(Order $order, $context = []): bool
-    {
-        Deprecation::notice('1.2', 'use validateOrder instead');
-        return $this->validateOrder($order, $context);
     }
 }

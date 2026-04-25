@@ -2,8 +2,8 @@
 
 namespace SilverShop\Discounts\Model;
 
-use SilverStripe\ORM\ValidationException;
-use SilverStripe\ORM\ValidationResult;
+use SilverStripe\Core\Validation\ValidationException;
+use SilverStripe\Core\Validation\ValidationResult;
 
 /**
  * @property int $ChildID

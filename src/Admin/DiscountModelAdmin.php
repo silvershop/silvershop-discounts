@@ -9,7 +9,7 @@ use SilverStripe\Forms\TextField;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
-use SilverStripe\Forms\RequiredFields;
+use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 use SilverStripe\Forms\Form;
 use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Discounts\Model\OrderCoupon;
@@ -133,7 +133,7 @@ class DiscountModelAdmin extends ModelAdmin
         );
 
         $actions = FieldList::create(FormAction::create('generate', 'Generate'));
-        $requiredFields = RequiredFields::create(
+        $requiredFields = RequiredFieldsValidator::create(
             [
                 'Title',
                 'Number',

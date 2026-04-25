@@ -5,10 +5,10 @@ namespace SilverShop\Discounts\Checkout;
 use SilverShop\Checkout\Component\CheckoutComponent;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
+use SilverStripe\Core\Validation\ValidationException;
+use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
-use SilverStripe\ORM\ValidationResult;
-use SilverStripe\ORM\ValidationException;
 use SilverStripe\Control\Controller;
 use SilverShop\Model\Order;
 

@@ -4,7 +4,7 @@ namespace SilverShop\Discounts\Model;
 
 use SilverStripe\ORM\HasManyList;
 use Psr\Log\LoggerInterface;
-use SilverStripe\ORM\ValidationException;
+use SilverStripe\Core\Validation\ValidationException;
 use SilverShop\Model\Product\OrderItem;
 use SilverStripe\Control\Email\Email;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
