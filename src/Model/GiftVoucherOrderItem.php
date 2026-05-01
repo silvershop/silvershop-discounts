@@ -120,6 +120,7 @@ class GiftVoucherOrderItem extends OrderItem
         $email->setTo($to);
         $email->setSubject($subject);
         $email->setHTMLTemplate('GiftVoucherEmail');
+        $email->setPlainTemplate('GiftVoucherEmailPlain');
         $email->setData(
             [
                 'Coupon' => $orderCoupon
