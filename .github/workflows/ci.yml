@@ -9,10 +9,3 @@ jobs:
   ci:
     name: CI
     uses: silverstripe/gha-ci/.github/workflows/ci.yml@v1
-    with:
-      composer_require_extra:
-        phpunit/phpunit:^11.3
-        symfony/http-foundation:^6.4.8
-        moneyphp/money:^4.6.0
-        silverstripe/installer:^6.0
-        silvershop/core:^6.0
