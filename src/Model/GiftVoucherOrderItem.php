@@ -119,8 +119,8 @@ class GiftVoucherOrderItem extends OrderItem
         $email->setFrom($from);
         $email->setTo($to);
         $email->setSubject($subject);
-        $email->setHTMLTemplate('GiftVoucherEmail');
-        $email->setPlainTemplate('GiftVoucherEmailPlain');
+        $email->setHTMLTemplate('SilverShop\\Discounts\\Email\\GiftVoucherEmail');
+        $email->setPlainTemplate('SilverShop\\Discounts\\Email\\GiftVoucherEmailPlain');
         $email->setData(
             [
                 'Coupon' => $orderCoupon
