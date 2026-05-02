@@ -58,6 +58,7 @@ use SilverStripe\ORM\Search\SearchContext;
  * @property bool $ForCart
  * @property bool $ForShipping
  * @property float $MaxAmount
+ * @property bool $MinOrderValueTaxInclusive
  * @method   ManyManyList<OrderItem> OrderItems()
  * @method   ManyManyList<OrderDiscountModifier> DiscountModifiers()
  * @mixin    CategoriesDiscountConstraint
