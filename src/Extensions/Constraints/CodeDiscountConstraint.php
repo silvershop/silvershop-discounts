@@ -3,6 +3,7 @@
 namespace SilverShop\Discounts\Extensions\Constraints;
 
 use SilverShop\Discounts\Model\Discount;
+use SilverStripe\Core\Convert;
 use SilverStripe\ORM\DataList;
 
 /**
@@ -16,12 +17,15 @@ class CodeDiscountConstraint extends DiscountConstraint
 
     public function filter(DataList $dataList): DataList
     {
+        $codeColumn = sprintf('"%s"."Code"', Discount::config()->get('table_name'));
+
         if (($code = $this->findCouponCode()) !== null && ($code = $this->findCouponCode()) !== '' && ($code = $this->findCouponCode()) !== '0') {
+            $code = Convert::raw2sql($code);
             return $dataList
-                ->where(sprintf("(\"Code\" IS NULL) OR (\"Code\" = '%s')", $code));
+                ->where(sprintf("(%s IS NULL) OR (%s = '%s')", $codeColumn, $codeColumn, $code));
         }
 
-        return $dataList->where('"Code" IS NULL');
+        return $dataList->where(sprintf('%s IS NULL', $codeColumn));
     }
 
     public function check(Discount $discount): bool
