@@ -462,6 +462,18 @@ class Discount extends DataObject implements PermissionProvider
         return $used->count();
     }
 
+    public function getUseCountWithLimit(): string
+    {
+        $useCount = $this->getUseCount();
+        $useLimit = (int) $this->UseLimit;
+        if ($useLimit > 0) {
+            $percentage = round(($useCount * 100) / $useLimit, 1);
+            return sprintf('%d (%s%%)', $useCount, rtrim(rtrim((string) $percentage, '0'), '.'));
+        }
+
+        return (string) $useCount;
+    }
+
     /**
      * Returns whether this coupon is used.
      */
