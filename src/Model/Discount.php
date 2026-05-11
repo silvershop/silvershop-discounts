@@ -467,8 +467,8 @@ class Discount extends DataObject implements PermissionProvider
         $useCount = $this->getUseCount();
         $useLimit = (int) $this->UseLimit;
         if ($useLimit > 0) {
-            $percentage = (int) round(($useCount * 100) / $useLimit);
-            return sprintf('%d (%d%%)', $useCount, $percentage);
+            $percentage = round(($useCount * 100) / $useLimit, 1);
+            return sprintf('%d (%s%%)', $useCount, rtrim(rtrim((string) $percentage, '0'), '.'));
         }
 
         return (string) $useCount;
