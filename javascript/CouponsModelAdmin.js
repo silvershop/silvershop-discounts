@@ -1,19 +1,55 @@
-(function($) {
-$(document).ready(function() {
-   var doList = function() {
-     var currentModel = $('#ModelClassSelector').children('select');
-     var currentModelName = $('option:selected', currentModel).val();
-     var strFormname = "#Form_SearchForm" + currentModelName.replace('Form','');
-     $(strFormname).submit();
-     return false;
-   }
+(function () {
+    'use strict';
 
-   $('#ModelClassSelector').live("change",doList);
-   $('button[name=action_clearsearch]').click(doList);
-   $('#list_view').live("click",doList);
+    function doList() {
+        var wrap = document.querySelector('#ModelClassSelector');
+        if (!wrap) {
+            return;
+        }
 
-   if($('#list_view_loading').length) {
-     doList();
-   }
-});
-})(jQuery);
+        var currentModel = wrap.querySelector('select');
+        if (!(currentModel instanceof HTMLSelectElement)) {
+            return;
+        }
+
+        var currentModelName = currentModel.value || '';
+        var formSelector = '#Form_SearchForm' + currentModelName.replace('Form', '');
+        var form = document.querySelector(formSelector);
+        if (form instanceof HTMLFormElement) {
+            form.submit();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('change', function (e) {
+            var t = e.target;
+            if (!(t instanceof Element)) {
+                return;
+            }
+
+            if (t.closest('#ModelClassSelector')) {
+                doList();
+            }
+        });
+
+        document.addEventListener('click', function (e) {
+            var t = e.target;
+            if (!(t instanceof Element)) {
+                return;
+            }
+
+            if (t.matches('button[name=action_clearsearch]')) {
+                e.preventDefault();
+                doList();
+            }
+
+            if (t.closest('#list_view')) {
+                doList();
+            }
+        });
+
+        if (document.querySelector('#list_view_loading')) {
+            doList();
+        }
+    });
+})();

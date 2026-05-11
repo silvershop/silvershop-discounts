@@ -1,60 +1,77 @@
-(function($){
-	$(document).ready(
-		function() {
-			DiscountCoupon.init();
-		}
-	);
-})(jQuery);
+(function () {
+    'use strict';
 
+    var DiscountCoupon = {
+        formID: '#OrderCouponModifier_Form_ModifierForm',
+        fieldID: '#CouponCode input',
+        loadingClass: 'loading',
 
-var DiscountCoupon = {
+        submitForm: function (form) {
+            var applyChanges =
+                window.Cart && typeof window.Cart.setChanges === 'function'
+                    ? window.Cart.setChanges
+                    : window.SilverShop && typeof window.SilverShop.applyCartAjaxChanges === 'function'
+                        ? window.SilverShop.applyCartAjaxChanges
+                        : null;
 
-	formID: "#OrderCouponModifier_Form_ModifierForm",
+            var action = form.getAttribute('action');
+            var url = action && action !== '' ? action : window.location.href;
 
-	fieldID: "#CouponCode input",
+            form.classList.add(DiscountCoupon.loadingClass);
 
-	loadingClass: "loading",
+            var fd = new FormData(form);
+            fetch(url, {
+                method: 'POST',
+                body: fd,
+                credentials: 'same-origin',
+                headers: {
+                    Accept: 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(function (response) {
+                    return response.json().then(function (body) {
+                        if (!response.ok) {
+                            throw new Error(response.statusText || 'Request failed');
+                        }
+                        return body;
+                    });
+                })
+                .then(function (data) {
+                    form.classList.remove(DiscountCoupon.loadingClass);
+                    if (applyChanges) {
+                        applyChanges(data);
+                    }
+                })
+                .catch(function () {
+                    form.classList.remove(DiscountCoupon.loadingClass);
+                });
+        },
 
-	actionsClass: ".Actions",
+        init: function () {
+            var form = document.querySelector(DiscountCoupon.formID);
+            if (!(form instanceof HTMLFormElement)) {
+                return;
+            }
 
-	tableRow: ".ordercouponmodifier",
+            var actions = form.querySelector('.Actions');
+            if (actions) {
+                actions.style.display = 'none';
+            }
 
-	totalCell: ".ordercouponmodifier .total",
+            var field = document.querySelector(DiscountCoupon.fieldID);
+            if (!field) {
+                return;
+            }
 
-	label: ".ordercouponmodifier label",
+            field.removeAttribute('disabled');
+            field.addEventListener('change', function () {
+                DiscountCoupon.submitForm(form);
+            });
+        }
+    };
 
-	availableCountries: new Array(),
-
-	init: function() {
-		var options = {
-			beforeSubmit:  DiscountCoupon.showRequest,  // pre-submit callback
-			success: DiscountCoupon.showResponse,  // post-submit callback
-			dataType: "json"
-		};
-		jQuery(DiscountCoupon.formID).ajaxForm(options);
-		jQuery(DiscountCoupon.formID + " " + DiscountCoupon.actionsClass).hide();
-		jQuery(DiscountCoupon.fieldID).change(
-			function() {
-				jQuery(DiscountCoupon.formID).submit();
-			}
-		);
-	},
-
-	// pre-submit callback
-	showRequest: function (formData, jqForm, options) {
-		jQuery(DiscountCoupon.formID).addClass(DiscountCoupon.loadingClass);
-		return true;
-	},
-
-	// post-submit callback
-	showResponse: function (responseText, statusText)  {
-		//redo quantity boxes
-		//jQuery(DiscountCoupon.updatedDivID).css("height", "auto");
-		jQuery(DiscountCoupon.formID).removeClass(DiscountCoupon.loadingClass);
-		Cart.setChanges(responseText);
-	}
-
-
-
-}
-
+    document.addEventListener('DOMContentLoaded', function () {
+        DiscountCoupon.init();
+    });
+})();
