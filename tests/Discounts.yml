@@ -18,6 +18,11 @@ SilverShop\Discounts\Model\OrderCoupon:
         Code: LIMITED
         Active: 1
         UseLimit: 10
+    unlimited:
+        Title: Unlimited Coupon
+        Code: UNLIMITED
+        Active: 1
+        UseLimit: 0
     used:
         Title: Used
         Code: USEDCOUPON
@@ -66,6 +71,10 @@ SilverShop_OrderDiscountModifier_Discounts:
         DiscountAmount: 40
         SilverShop_OrderDiscountModifierID: '=>SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier.limited'
         SilverShop_DiscountID: '=>SilverShop\Discounts\Model\OrderDiscount.limited'
+    unlimitedcouponmodifier:
+        DiscountAmount: 3
+        SilverShop_OrderDiscountModifierID: '=>SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier.used'
+        SilverShop_DiscountID: '=>SilverShop\Discounts\Model\OrderCoupon.unlimited'
 
 SilverShop_OrderItem_Discounts:
     limitedcouponitem:
