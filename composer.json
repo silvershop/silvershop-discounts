@@ -5,6 +5,7 @@
     "type" : "silverstripe-vendormodule",
     "keywords" : ["silverstripe","shop","shopping cart","ecommerce","discount","coupons"],
     "require" : {
+        "php": "^8.3",
         "silvershop/core": "^6",
         "php-http/guzzle7-adapter": "1.x-dev"
     },

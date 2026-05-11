@@ -19,5 +19,6 @@ class DiscountReportTest extends SapphireTest
         $sqlQueryList = $discountReport->sourceRecords([]);
         $this->assertEqualsWithDelta(44, (int) $sqlQueryList->find('Title', 'Limited Discount')->getSavingsTotal(), PHP_FLOAT_EPSILON);
         $this->assertSame(22, (int) $sqlQueryList->find('Title', 'Limited Coupon')->getSavingsTotal());
+        $this->assertSame('1 (10%)', $sqlQueryList->find('Title', 'Limited Coupon')->getUseCountWithLimit());
     }
 }
