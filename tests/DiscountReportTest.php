@@ -5,6 +5,7 @@ namespace SilverShop\Discounts\Tests;
 use SilverStripe\Dev\SapphireTest;
 
 use SilverShop\Discounts\Model\OrderDiscount;
+use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Discounts\Admin\DiscountReport;
 
 class DiscountReportTest extends SapphireTest
@@ -20,5 +21,9 @@ class DiscountReportTest extends SapphireTest
         $this->assertEqualsWithDelta(44, (int) $sqlQueryList->find('Title', 'Limited Discount')->getSavingsTotal(), PHP_FLOAT_EPSILON);
         $this->assertSame(22, (int) $sqlQueryList->find('Title', 'Limited Coupon')->getSavingsTotal());
         $this->assertSame('1 (10%)', $sqlQueryList->find('Title', 'Limited Coupon')->getUseCountWithLimit());
+
+        $unlimitedCoupon = OrderCoupon::create();
+        $unlimitedCoupon->UseLimit = 0;
+        $this->assertSame('0', $unlimitedCoupon->getUseCountWithLimit());
     }
 }
