@@ -540,7 +540,6 @@ class Discount extends DataObject implements PermissionProvider
      * $includeunpaid include orders where the payment process has
      * started less than 'unpaid_use_timeout' minutes ago.
      */
-    /** @return DataList<Order> */
     public function getAppliedOrders(bool $includeunpaid = false): DataList
     {
         $orders =  Order::get()

@@ -11,3 +11,5 @@ jobs:
     uses: silverstripe/gha-ci/.github/workflows/ci.yml@v1
     with:
       simple_matrix: true
+      composer_require_extra:
+        silvershop/core:dev-main

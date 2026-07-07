@@ -4,7 +4,7 @@ namespace SilverShop\Discounts\Tests;
 
 use SilverShop\Discounts\Calculator;
 use SilverStripe\Dev\SapphireTest;
-use SilverShop\Tests\ShopTest;
+use SilverShop\Tests\ShopTestBootstrap;
 use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Page\Product;
@@ -37,7 +37,7 @@ class ProductsDiscountConstraintTest extends SapphireTest
     {
         parent::setUp();
 
-        ShopTest::setConfiguration();
+        ShopTestBootstrap::setConfiguration();
 
         $this->cart = $this->objFromFixture(Order::class, 'cart');
         $this->placedorder = $this->objFromFixture(Order::class, 'unpaid');

@@ -136,7 +136,10 @@ class GiftVoucherOrderItem extends OrderItem
             $email->send();
         } catch (TransportExceptionInterface $transportException) {
             $this->logger->error(sprintf(
-                'GiftVoucherOrderItem.sendVoucher: error sending email in %s line %s: %s', __FILE__, __LINE__, $transportException->getMessage()
+                'GiftVoucherOrderItem.sendVoucher: error sending email in %s line %s: %s',
+                __FILE__,
+                __LINE__,
+                $transportException->getMessage()
             ));
 
             return false;

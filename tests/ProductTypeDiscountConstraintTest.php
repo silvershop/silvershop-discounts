@@ -5,7 +5,7 @@ namespace SilverShop\Discounts\Tests;
 use SilverShop\Model\Order;
 use SilverShop\Page\Product;
 use SilverStripe\Dev\SapphireTest;
-use SilverShop\Tests\ShopTest;
+use SilverShop\Tests\ShopTestBootstrap;
 use SilverStripe\Core\Config\Config;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Page\GiftVoucherProduct;
@@ -34,7 +34,7 @@ class ProductTypeDiscountConstraintTest extends SapphireTest
     protected function setUp(): void
     {
         parent::setUp();
-        ShopTest::setConfiguration();
+        ShopTestBootstrap::setConfiguration();
         Config::modify()->merge(
             Discount::class,
             'constraints',

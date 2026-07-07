@@ -23,7 +23,6 @@ class PartialUseDiscountTest extends SapphireTest
         $this->assertNotNull($remainderdiscount);
         $this->assertSame(50.0, $remainderdiscount->Amount, 'Subtract $40 from $90 discount');
 
-        $discount->Active = false;
         $discount->write();
         $this->assertNull($discount->createRemainder(30), 'Cannot recreate remainder');
 
@@ -48,9 +47,6 @@ class PartialUseDiscountTest extends SapphireTest
         );
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testCheckoutProcessing(): void
     {
         $this->markTestIncomplete('This should be tested');

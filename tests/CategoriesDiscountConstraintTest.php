@@ -9,7 +9,7 @@ use SilverShop\Model\Variation\AttributeValue;
 use SilverShop\Model\Variation\Variation;
 use SilverShop\Page\Product;
 use SilverShop\Page\ProductCategory;
-use SilverShop\Tests\ShopTest;
+use SilverShop\Tests\ShopTestBootstrap;
 use SilverStripe\Dev\SapphireTest;
 
 class CategoriesDiscountConstraintTest extends SapphireTest
@@ -44,7 +44,7 @@ class CategoriesDiscountConstraintTest extends SapphireTest
     protected function setUp(): void
     {
         parent::setUp();
-        ShopTest::setConfiguration();
+        ShopTestBootstrap::setConfiguration();
 
         $this->socks = $this->objFromFixture(Product::class, "socks");
         $this->socks->publishRecursive();

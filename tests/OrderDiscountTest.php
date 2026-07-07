@@ -3,7 +3,7 @@
 namespace SilverShop\Discounts\Tests;
 
 use SilverStripe\Dev\SapphireTest;
-use SilverShop\Tests\ShopTest;
+use SilverShop\Tests\ShopTestBootstrap;
 use SilverShop\Model\Order;
 use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Discounts\Model\Discount;
@@ -21,7 +21,7 @@ class OrderDiscountTest extends SapphireTest
     protected function setUp(): void
     {
         parent::setUp();
-        ShopTest::setConfiguration();
+        ShopTestBootstrap::setConfiguration();
         $this->cart = $this->objFromFixture(Order::class, 'cart');
     }
 

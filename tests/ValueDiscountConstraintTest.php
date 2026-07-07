@@ -3,23 +3,11 @@
 namespace SilverShop\Discounts\Tests;
 
 use SilverShop\Discounts\Calculator;
-use SilverStripe\Core\Extension;
 use SilverStripe\Dev\SapphireTest;
-use SilverStripe\Dev\TestOnly;
-use SilverShop\Tests\ShopTest;
+use SilverShop\Tests\ShopTestBootstrap;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Model\Order;
-
-/**
- * Raises the amount used for tax-inclusive minimum-order checks (see ValueDiscountConstraint).
- */
-class ValueDiscountConstraintTestOrderExtension extends Extension implements TestOnly
-{
-    public function updateMinimumOrderValueComparisonAmount(\stdClass $context): void
-    {
-        $context->amount += 100;
-    }
-}
+use SilverShop\Discounts\Tests\ValueDiscountConstraintTestOrderExtension;
 
 class ValueDiscountConstraintTest extends SapphireTest
 {
@@ -39,7 +27,7 @@ class ValueDiscountConstraintTest extends SapphireTest
     protected function setUp(): void
     {
         parent::setUp();
-        ShopTest::setConfiguration();
+        ShopTestBootstrap::setConfiguration();
 
         $this->cart = $this->objFromFixture(Order::class, 'cart');
         $this->othercart = $this->objFromFixture(Order::class, 'othercart');
@@ -115,8 +103,8 @@ class ValueDiscountConstraintTest extends SapphireTest
 
             $context2 = ['CouponCode' => $coupon2->Code];
             $this->assertTrue(
-                $coupon2->validateOrder($this->othercart, $context2),
-                '300 augmented subtotal meets 250 inclusive minimum'
+                $coupon2->validateOrder($this->placedorder, $context2),
+                '500 augmented subtotal meets 250 inclusive minimum'
             );
 
             $coupon3 = OrderCoupon::create(

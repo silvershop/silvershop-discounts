@@ -6,7 +6,7 @@ use SilverShop\Discounts\Calculator;
 use SilverShop\Discounts\Adjustment;
 use SilverShop\Discounts\PriceInfo;
 use SilverStripe\Dev\SapphireTest;
-use SilverShop\Tests\ShopTest;
+use SilverShop\Tests\ShopTestBootstrap;
 use SilverShop\Model\Order;
 use SilverShop\Checkout\OrderProcessor;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
@@ -42,7 +42,7 @@ class CalculatorTest extends SapphireTest
     protected function setUp(): void
     {
         parent::setUp();
-        ShopTest::setConfiguration();
+        ShopTestBootstrap::setConfiguration();
 
         Order::config()->modifiers = [
             OrderDiscountModifier::class
@@ -121,9 +121,6 @@ class CalculatorTest extends SapphireTest
         $this->assertEqualsWithDelta(0.8, $calculator->calculate(), PHP_FLOAT_EPSILON);
     }
 
-    /**
-     * @doesNotPerformAssertions
-     */
     public function testZeroOrderDiscount(): void
     {
         OrderDiscount::create(

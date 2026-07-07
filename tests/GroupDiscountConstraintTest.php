@@ -4,7 +4,7 @@ namespace SilverShop\Discounts\Tests;
 
 use SilverShop\Model\Order;
 use SilverStripe\Dev\SapphireTest;
-use SilverShop\Tests\ShopTest;
+use SilverShop\Tests\ShopTestBootstrap;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverStripe\Security\Group;
 use SilverStripe\Security\Member;
@@ -23,7 +23,7 @@ class GroupDiscountConstraintTest extends SapphireTest
     protected function setUp(): void
     {
         parent::setUp();
-        ShopTest::setConfiguration();
+        ShopTestBootstrap::setConfiguration();
         $this->cart = $this->objFromFixture(Order::class, 'cart');
         $this->othercart = $this->objFromFixture(Order::class, 'othercart');
     }

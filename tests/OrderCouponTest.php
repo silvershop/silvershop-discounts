@@ -4,7 +4,7 @@ namespace SilverShop\Discounts\Tests;
 
 use SilverShop\Discounts\Calculator;
 use SilverStripe\Dev\SapphireTest;
-use SilverShop\Tests\ShopTest;
+use SilverShop\Tests\ShopTestBootstrap;
 use SilverStripe\Core\Config\Config;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Page\Product;
@@ -32,7 +32,7 @@ class OrderCouponTest extends SapphireTest
     protected function setUp(): void
     {
         parent::setUp();
-        ShopTest::setConfiguration();
+        ShopTestBootstrap::setConfiguration();
 
         Config::modify()->set(OrderCoupon::class, 'minimum_code_length', null);
 
