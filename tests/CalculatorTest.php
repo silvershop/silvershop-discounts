@@ -396,4 +396,41 @@ class CalculatorTest extends SapphireTest
         $this->assertNotNull($placedOrder);
         $this->assertSame(16, (int) $placedOrder->GrandTotal());
     }
+
+    public function testUseAppliedDiscounts(): void
+    {
+        $discount = OrderDiscount::create(
+            [
+                'Title' => '$25 off cart total',
+                'Type' => 'Amount',
+                'Amount' => 25,
+                'ForItems' => false,
+                'ForCart' => true
+            ]
+        );
+        $discount->write();
+
+        // While active, the discount is applied normally and linked to the order.
+        $calculator = Calculator::create($this->othercart);
+        $this->assertSame(25, (int) $calculator->calculate());
+        $this->assertListEquals(
+            [
+                ['Title' => '$25 off cart total']
+            ],
+            $this->othercart->Discounts()
+        );
+
+        // Deactivate the discount so it no longer qualifies as an active/matching discount.
+        $discount->Active = false;
+        $discount->write();
+
+        // With use_applied_discounts, the order still reprices from the discount already applied to
+        // it (e.g. recalculating a completed or refunded order) even though it is now inactive.
+        $calculator = Calculator::create($this->othercart, ['use_applied_discounts' => true]);
+        $this->assertSame(25, (int) $calculator->calculate(), 'reprices from applied discounts when inactive');
+
+        // Default behaviour: the now-inactive discount is dropped.
+        $calculator = Calculator::create($this->othercart);
+        $this->assertSame(0, (int) $calculator->calculate(), 'inactive discount is not re-matched by default');
+    }
 }
