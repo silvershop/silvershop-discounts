@@ -30,7 +30,7 @@ class DiscountReport extends ShopPeriodReport
             'Code' => 'Code',
             'DiscountNice' => Discount::class,
             'Entered' => 'Entered',
-            'UseCount' => 'Uses',
+            'UseCountWithLimit' => 'Uses (% of limit)',
             'SavingsTotal' => 'Total Savings'
         ];
     }
