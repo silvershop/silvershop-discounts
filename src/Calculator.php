@@ -33,8 +33,15 @@ class Calculator
     {
         $this->order = $order;
 
-        // get qualifying discounts for this order
-        $this->discounts = Discount::get_matching($this->order, $context);
+        if (!empty($context['use_applied_discounts'])) {
+            // Reprice using the discounts already applied to this order (e.g. recalculating a
+            // completed or refunded order) instead of re-matching currently-active discounts —
+            // so a discount that has since expired/been disabled still applies to that order.
+            $this->discounts = $order->Discounts();
+        } else {
+            // get qualifying discounts for this order
+            $this->discounts = Discount::get_matching($this->order, $context);
+        }
     }
 
     /**
