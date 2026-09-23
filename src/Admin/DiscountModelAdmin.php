@@ -83,14 +83,14 @@ class DiscountModelAdmin extends ModelAdmin
 
         if (isset($params['HasBeenUsed'])) {
             $list = $list
-                ->leftJoin("SilverShop_OrderItem_Discounts", '"SilverShop_OrderItem_Discounts"."DiscountID" = "Discount"."ID"')
-                ->leftJoin("SilverShop_OrderDiscountModifier_Discounts", '"SilverShop_OrderDiscountModifier_Discounts"."DiscountID" = "Discount"."ID"')
+                ->leftJoin("SilverShop_OrderItem_Discounts", '"SilverShop_OrderItem_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"')
+                ->leftJoin("SilverShop_OrderDiscountModifier_Discounts", '"SilverShop_OrderDiscountModifier_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"')
                 ->innerJoin(
-                    "OrderAttribute",
+                    "SilverShop_OrderAttribute",
                     implode(
                         " OR ",
                         [
-                            '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."Product_OrderItemID"',
+                            '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."SilverShop_OrderItemID"',
                             '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID"'
                         ]
                     )
@@ -98,15 +98,29 @@ class DiscountModelAdmin extends ModelAdmin
         }
 
         if (isset($params['Products'])) {
-            $list = $list
-                ->innerJoin("Discount_Products", "Discount_Products.DiscountID = Discount.ID")
-                ->filter("Discount_Products.ProductID", $params['Products']);
+            $products = array_filter((array) $params['Products'], static fn($value): bool => $value !== '' && $value !== null);
+            $list = $list->innerJoin(
+                "SilverShop_Discount_Products",
+                '"SilverShop_Discount_Products"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
+            );
+            if ($products !== []) {
+                $list = $list->where([
+                    '"SilverShop_Discount_Products"."SilverShop_ProductID" IN (' . implode(',', array_fill(0, count($products), '?')) . ')' => array_values($products),
+                ]);
+            }
         }
 
         if (isset($params['Categories'])) {
-            return $list
-                ->innerJoin("Discount_Categories", "Discount_Categories.DiscountID = Discount.ID")
-                ->filter("Discount_Categories.ProductCategoryID", $params['Categories']);
+            $categories = array_filter((array) $params['Categories'], static fn($value): bool => $value !== '' && $value !== null);
+            $list = $list->innerJoin(
+                "SilverShop_Discount_Categories",
+                '"SilverShop_Discount_Categories"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
+            );
+            if ($categories !== []) {
+                $list = $list->where([
+                    '"SilverShop_Discount_Categories"."SilverShop_ProductCategoryID" IN (' . implode(',', array_fill(0, count($categories), '?')) . ')' => array_values($categories),
+                ]);
+            }
         }
 
         return $list;
