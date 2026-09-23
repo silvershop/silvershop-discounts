@@ -135,10 +135,13 @@ class Calculator
 
         if (class_exists('SilverShop\Shipping\ShippingFrameworkModifier') && $shipping = $this->order->getModifier('SilverShop\Shipping\ShippingFrameworkModifier')) {
             // work out all shipping-level discounts, and load into shippingpriceinfo
-            $shippingpriceinfo = new PriceInfo($shipping->Amount);
+            // Amount is nullable on the modifier until it has been calculated,
+            // but PriceInfo and SubtotalDiscountAction both require int|float.
+            $shippingAmount = $shipping->Amount ?? 0;
+            $shippingpriceinfo = new PriceInfo($shippingAmount);
 
             foreach ($this->getShippingDiscounts() as $discount) {
-                $action = new SubtotalDiscountAction($shipping->Amount, $discount);
+                $action = new SubtotalDiscountAction($shippingAmount, $discount);
                 $action->reduceRemaining($this->discountSubtotal($discount));
                 $shippingpriceinfo->adjustPrice(
                     new Adjustment($action->perform(), $discount)
