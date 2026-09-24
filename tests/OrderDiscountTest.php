@@ -96,18 +96,24 @@ class OrderDiscountTest extends SapphireTest
 
         // set timeout to 60 minutes
         Discount::config()->unpaid_use_timeout = 60;
-        //set payment to be created 20 min ago
+
+        // A recently started payment counts as a use.
         $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->write();
-        $this->assertSame(1, $orderDiscount->getUseCount());
-        //set payment ot be created 2 days ago
+        $recentUse = $orderDiscount->getUseCount();
+        $this->assertSame(1, $recentUse, 'recent started payment counts as a use');
+
+        // A payment older than the timeout no longer counts.
         $payment->Created = date('Y-m-d H:i:s', strtotime('-2 days'));
         $payment->write();
-        $this->assertSame(0, $orderDiscount->getUseCount());
-        //failed payments should be ignored
+        $expiredUse = $orderDiscount->getUseCount();
+        $this->assertSame(0, $expiredUse, 'payment older than the timeout no longer counts');
+
+        // A voided payment is ignored.
         $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->Status = 'Void';
         $payment->write();
-        $this->assertSame(0, $orderDiscount->getUseCount());
+        $voidedUse = $orderDiscount->getUseCount();
+        $this->assertSame(0, $voidedUse, 'voided payment is ignored');
     }
 }

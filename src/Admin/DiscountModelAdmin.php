@@ -98,27 +98,39 @@ class DiscountModelAdmin extends ModelAdmin
         }
 
         if (isset($params['Products'])) {
-            $products = array_filter((array) $params['Products'], static fn($value): bool => $value !== '' && $value !== null);
+            $products = [];
+            foreach ((array) $params['Products'] as $value) {
+                $value = (string) $value;
+                if ($value !== '') {
+                    $products[] = $value;
+                }
+            }
             $list = $list->innerJoin(
                 "SilverShop_Discount_Products",
                 '"SilverShop_Discount_Products"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
             );
             if ($products !== []) {
                 $list = $list->where([
-                    '"SilverShop_Discount_Products"."SilverShop_ProductID" IN (' . implode(',', array_fill(0, count($products), '?')) . ')' => array_values($products),
+                    '"SilverShop_Discount_Products"."SilverShop_ProductID" IN (' . implode(',', array_fill(0, count($products), '?')) . ')' => $products,
                 ]);
             }
         }
 
         if (isset($params['Categories'])) {
-            $categories = array_filter((array) $params['Categories'], static fn($value): bool => $value !== '' && $value !== null);
+            $categories = [];
+            foreach ((array) $params['Categories'] as $value) {
+                $value = (string) $value;
+                if ($value !== '') {
+                    $categories[] = $value;
+                }
+            }
             $list = $list->innerJoin(
                 "SilverShop_Discount_Categories",
                 '"SilverShop_Discount_Categories"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
             );
             if ($categories !== []) {
                 $list = $list->where([
-                    '"SilverShop_Discount_Categories"."SilverShop_ProductCategoryID" IN (' . implode(',', array_fill(0, count($categories), '?')) . ')' => array_values($categories),
+                    '"SilverShop_Discount_Categories"."SilverShop_ProductCategoryID" IN (' . implode(',', array_fill(0, count($categories), '?')) . ')' => $categories,
                 ]);
             }
         }

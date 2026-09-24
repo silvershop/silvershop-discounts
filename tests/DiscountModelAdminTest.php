@@ -13,7 +13,9 @@ class DiscountModelAdminTest extends SapphireTest
     {
         $admin = DiscountModelAdmin::create();
         $admin->setRequest(new HTTPRequest('GET', 'admin/discounts', ['q' => $q]));
-        $admin->modelClass = OrderDiscount::class;
+        // Point the admin at OrderDiscount without reaching into the protected property directly.
+        $modelClass = new \ReflectionProperty($admin, 'modelClass');
+        $modelClass->setValue($admin, OrderDiscount::class);
 
         // Executing the query runs the custom search-filter joins. Before the fix these referenced
         // pre-SS6 unprefixed tables/columns, which don't exist under SS6's namespaced schema, so
@@ -23,16 +25,16 @@ class DiscountModelAdminTest extends SapphireTest
 
     public function testHasBeenUsedFilterProducesValidSql(): void
     {
-        $this->assertIsInt($this->countForFilter(['HasBeenUsed' => 1]));
+        $this->assertGreaterThanOrEqual(0, $this->countForFilter(['HasBeenUsed' => 1]));
     }
 
     public function testProductsFilterProducesValidSql(): void
     {
-        $this->assertIsInt($this->countForFilter(['Products' => [1]]));
+        $this->assertGreaterThanOrEqual(0, $this->countForFilter(['Products' => [1]]));
     }
 
     public function testCategoriesFilterProducesValidSql(): void
     {
-        $this->assertIsInt($this->countForFilter(['Categories' => [1]]));
+        $this->assertGreaterThanOrEqual(0, $this->countForFilter(['Categories' => [1]]));
     }
 }

@@ -450,6 +450,7 @@ class Discount extends DataObject implements PermissionProvider
      * Get the number of times a discount has been used.
      *
      * @param int $orderID - ignore this order when counting uses
+     * @phpstan-impure Reads live payment/order data, so the count changes between calls.
      */
     public function getUseCount(?int $orderID = null): int
     {
