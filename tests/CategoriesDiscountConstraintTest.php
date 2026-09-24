@@ -161,4 +161,29 @@ class CategoriesDiscountConstraintTest extends SapphireTest
 
         $this->assertEqualsWithDelta(1.75, $calculator->calculate(), PHP_FLOAT_EPSILON, '5% discount for kite in cart.  Uses variations.');
     }
+
+    public function testCategoryConstraintStillAppliesWhenCategoriesAreNotVisible(): void
+    {
+        $kites = $this->objFromFixture(ProductCategory::class, 'kites');
+
+        $orderDiscount = OrderDiscount::create(
+            [
+                'Title' => '5% off kites',
+                'Type' => 'Percent',
+                'Percent' => 0.05
+            ]
+        );
+        $orderDiscount->write();
+        $orderDiscount->Categories()->add($kites);
+
+        $this->assertFalse($orderDiscount->validateOrder($this->cart), 'Cart has no kites');
+
+        // Hide the category from every stage, e.g. archived, or untranslated in the current locale.
+        // The discount must stay constrained rather than falling back to applying to every order.
+        $kites->doArchive();
+        $this->assertCount(0, $orderDiscount->Categories());
+
+        $this->assertFalse($orderDiscount->validateOrder($this->cart), 'Constraint still applies');
+        $this->assertSame(0, Calculator::create($this->cart)->calculate());
+    }
 }

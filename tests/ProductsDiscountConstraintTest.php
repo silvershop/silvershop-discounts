@@ -171,4 +171,28 @@ class ProductsDiscountConstraintTest extends SapphireTest
 
         $this->assertSame(0, (int) $calculator->calculate(), "Product coupon does not apply as draft products don't exist");
     }
+
+    public function testProductConstraintStillAppliesWhenProductsAreNotVisible(): void
+    {
+        $orderDiscount = OrderDiscount::create(
+            [
+                'Title' => '20% off mp3 players',
+                'Type' => 'Percent',
+                'Percent' => 0.2
+            ]
+        );
+        $orderDiscount->write();
+        $orderDiscount->Products()->add($this->mp3player);
+
+        $this->assertFalse($orderDiscount->validateOrder($this->cart), 'Cart has no mp3 player');
+
+        // Hide the product from every stage, e.g. archived, or untranslated in the current locale.
+        // The discount must stay constrained rather than falling back to applying to every order.
+        $this->mp3player->doArchive();
+        $this->assertCount(0, $orderDiscount->Products());
+
+        $this->assertFalse($orderDiscount->validateOrder($this->cart), 'Constraint still applies');
+        $this->assertListEquals([], OrderDiscount::get_matching($this->cart));
+        $this->assertSame(0, Calculator::create($this->cart)->calculate());
+    }
 }
