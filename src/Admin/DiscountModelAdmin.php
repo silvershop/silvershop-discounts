@@ -3,6 +3,8 @@
 namespace SilverShop\Discounts\Admin;
 
 use SilverStripe\Admin\ModelAdmin;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\TextField;
@@ -10,6 +12,7 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldExportButton;
 use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 use SilverStripe\Forms\Form;
 use SilverShop\Discounts\Model\OrderDiscount;
@@ -50,22 +53,25 @@ class DiscountModelAdmin extends ModelAdmin
     {
         $form = parent::getEditForm($id, $fields);
 
-        $grid = $form->Fields()->fieldByName(OrderCoupon::class);
+        // ModelAdmin names the grid after the sanitised class name (e.g. SilverShop-Discounts-Model-OrderCoupon)
+        $grid = $form->Fields()->fieldByName($this->sanitiseClassName(OrderCoupon::class));
         if ($grid instanceof GridField) {
-            $grid->getConfig()
-                ->addComponent(
-                    $gridFieldLinkComponent = new GridField_LinkComponent('Generate Multiple Coupons', $this->Link() . '/generatecoupons'),
-                    'GridFieldExportButton'
-                );
-            $gridFieldLinkComponent->addExtraClass('ss-ui-action-constructive');
+            $gridFieldLinkComponent = GridField_LinkComponent::create(
+                _t(__CLASS__ . '.GenerateMultipleCoupons', 'Generate Multiple Coupons'),
+                Controller::join_links($this->Link(), 'generatecoupons')
+            );
+            $gridFieldLinkComponent->addExtraClass('btn-primary font-icon-plus-circled');
+            $grid->getConfig()->addComponent($gridFieldLinkComponent, GridFieldExportButton::class);
         }
 
+        // descriptions may be keyed by either the fully qualified or short class name
         $descriptions = self::config()->get('model_descriptions');
+        $description = $descriptions[$this->modelClass] ?? $descriptions[ClassInfo::shortName($this->modelClass)] ?? null;
 
-        if (isset($descriptions[$this->modelClass])) {
-            $modelField = $form->Fields()->fieldByName($this->modelClass);
+        if ($description) {
+            $modelField = $form->Fields()->fieldByName($this->sanitiseClassName($this->modelClass));
             if ($modelField) {
-                $modelField->setDescription($descriptions[$this->modelClass]);
+                $modelField->setDescription($description);
             }
         }
 
@@ -168,7 +174,7 @@ class DiscountModelAdmin extends ModelAdmin
             [
                 'Number' => 1,
                 'Active' => 1,
-                'ForCart' => 1,
+                'For' => 'Cart',
                 'UseLimit' => 1
             ]
         );
