@@ -99,15 +99,18 @@ class OrderDiscountTest extends SapphireTest
         //set payment to be created 20 min ago
         $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->write();
-        $this->assertSame(1, $orderDiscount->getUseCount());
+        $recentUseCount = $orderDiscount->getUseCount();
+        $this->assertSame(1, $recentUseCount);
         //set payment ot be created 2 days ago
         $payment->Created = date('Y-m-d H:i:s', strtotime('-2 days'));
         $payment->write();
-        $this->assertSame(0, $orderDiscount->getUseCount());
+        $expiredUseCount = $orderDiscount->getUseCount();
+        $this->assertSame(0, $expiredUseCount);
         //failed payments should be ignored
         $payment->Created = date('Y-m-d H:i:s', strtotime('-20 minutes'));
         $payment->Status = 'Void';
         $payment->write();
-        $this->assertSame(0, $orderDiscount->getUseCount());
+        $voidUseCount = $orderDiscount->getUseCount();
+        $this->assertSame(0, $voidUseCount);
     }
 }
