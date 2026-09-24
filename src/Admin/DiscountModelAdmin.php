@@ -25,7 +25,7 @@ class DiscountModelAdmin extends ModelAdmin
 
     private static string $menu_title = 'Discounts';
 
-    private static string $menu_icon = 'silvershop/discounts:images/icon-coupons.png';
+    private static string $menu_icon_class = 'font-icon-tags';
 
     private static int $menu_priority = 2;
 
