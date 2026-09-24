@@ -492,9 +492,9 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Map the single 'For' to the For"X" boolean fields
      */
-    public function setFor(string $val): void
+    public function setFor(?string $val): void
     {
-        if ($val === '' || $val === '0') {
+        if ($val === null || $val === '' || $val === '0') {
             return;
         }
 
