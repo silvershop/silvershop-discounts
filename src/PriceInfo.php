@@ -16,6 +16,14 @@ class PriceInfo
 
     protected ?Adjustment $bestadjustment = null;
 
+    /**
+     * Adjustments from discounts that allow stacking, each calculated on the
+     * price remaining after the ones before it.
+     *
+     * @var array<int, Adjustment>
+     */
+    protected array $stackedadjustments = [];
+
     public function __construct(int|float $price)
     {
         $this->currentprice = $price;
@@ -64,15 +72,45 @@ class PriceInfo
         return $this->adjustments;
     }
 
+    public function addStackedAdjustment(Adjustment $adjustment): void
+    {
+        $this->stackedadjustments[] = $adjustment;
+    }
+
+    /** @return array<int, Adjustment> */
+    public function getStackedAdjustments(): array
+    {
+        return $this->stackedadjustments;
+    }
+
+    public function getStackedDiscount(): int|float
+    {
+        return array_sum(array_map(
+            fn (Adjustment $adjustment): int|float => $adjustment->getValue(),
+            $this->stackedadjustments
+        ));
+    }
+
     /**
-     * Sets the best adjustment, if the passed adjustment
-     * is indeed better.
+     * The price remaining after stacked adjustments, which the next stacked
+     * discount is calculated on.
+     */
+    public function getStackedPrice(): int|float
+    {
+        return max(0, $this->originalprice - $this->getStackedDiscount());
+    }
+
+    /**
+     * Sets the best adjustment, if the passed adjustment is better. When two
+     * adjustments are equal the first one wins, so discounts that are
+     * processed first (higher priority) are preferred.
      *
      * @param Adjustment $adjustment for better adjustment
      */
     protected function setBestAdjustment(Adjustment $adjustment): void
     {
-        $this->bestadjustment = $this->bestadjustment instanceof Adjustment ?
-            Adjustment::better_of($this->bestadjustment, $adjustment) : $adjustment;
+        if (!$this->bestadjustment instanceof Adjustment || $adjustment->compareTo($this->bestadjustment) > 0) {
+            $this->bestadjustment = $adjustment;
+        }
     }
 }

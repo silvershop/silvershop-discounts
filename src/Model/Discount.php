@@ -59,6 +59,8 @@ use SilverStripe\ORM\Search\SearchContext;
  * @property bool $ForShipping
  * @property float $MaxAmount
  * @property bool $MinOrderValueTaxInclusive
+ * @property bool $AllowStacking
+ * @property int $Priority
  * @method   ManyManyList<OrderItem> OrderItems()
  * @method   ManyManyList<OrderDiscountModifier> DiscountModifiers()
  * @mixin    CategoriesDiscountConstraint
@@ -81,7 +83,9 @@ class Discount extends DataObject implements PermissionProvider
         'ForItems' => 'Boolean',
         'ForCart' => 'Boolean',
         'ForShipping' => 'Boolean',
-        'MaxAmount' => 'Currency'
+        'MaxAmount' => 'Currency',
+        'AllowStacking' => 'Boolean',
+        'Priority' => 'Int'
     ];
 
     private static array $belongs_many_many = [
@@ -230,7 +234,20 @@ class Discount extends DataObject implements PermissionProvider
                             'Shipping' => 'Shipping subtotal',
                             'Items' => 'Each individual item'
                         ]
-                    )
+                    ),
+                    HeaderField::create('StackingTitle', _t(__CLASS__ . '.StackingTitle', 'Stacking'), 3),
+                    CheckboxField::create('AllowStacking', _t(__CLASS__ . '.AllowStacking', 'Allow stacking'))
+                        ->setDescription(_t(
+                            __CLASS__ . '.AllowStackingDescription',
+                            'Allow this to be combined with other discounts and coupons that also allow stacking. '
+                            . 'Discounts that do not allow stacking are never combined with anything else.'
+                        )),
+                    NumericField::create('Priority', _t(__CLASS__ . '.Priority', 'Priority'))
+                        ->setDescription(_t(
+                            __CLASS__ . '.PriorityDescription',
+                            'Stacked discounts are applied in order of priority, highest first. Each discount is '
+                            . 'calculated on the price remaining after the discounts before it.'
+                        ))
                 ),
                 Tab::create('Constraints', TabSet::create('ConstraintsTabs', $general = Tab::create('General', 'General')))
             )

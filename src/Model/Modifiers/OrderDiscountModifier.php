@@ -5,7 +5,7 @@ namespace SilverShop\Discounts\Model\Modifiers;
 use SilverStripe\ORM\ManyManyList;
 use SilverStripe\Model\List\ArrayList;
 use SilverShop\Model\Modifiers\OrderModifier;
-use SilverStripe\Control\Controller;
+use SilverShop\Discounts\Checkout\AppliedCouponCodes;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Calculator;
 
@@ -52,8 +52,10 @@ class OrderDiscountModifier extends OrderModifier
     {
         $context = [];
 
-        if ($code = $this->getCode()) {
-            $context['CouponCode'] = $code;
+        if ($codes = $this->getCodes()) {
+            $context['CouponCodes'] = $codes;
+            // single code kept for constraints / extensions that predate stacking
+            $context['CouponCode'] = end($codes);
         }
 
         $order = $this->Order();
@@ -67,23 +69,39 @@ class OrderDiscountModifier extends OrderModifier
         return $amount;
     }
 
+    /**
+     * The most recently applied coupon code.
+     */
     public function getCode(): ?string
     {
-        $controller = Controller::curr();
-        $code = $controller ? $controller->getRequest()->getSession()->get('cart.couponcode') : null;
+        $codes = $this->getCodes();
 
-        if (!$code && $this->Order()->exists()) {
+        return $codes === [] ? null : end($codes);
+    }
+
+    /**
+     * All coupon codes applied to this order. Codes entered in the current
+     * session take precedence, otherwise falls back to the codes of coupons
+     * already linked to the order (e.g. when recalculating outside a request).
+     *
+     * @return array<int, string>
+     */
+    public function getCodes(): array
+    {
+        $codes = AppliedCouponCodes::get();
+
+        if ($codes === [] && $this->Order()->exists()) {
             /** @var ArrayList<Discount> $discounts */
             $discounts = $this->Order()->Discounts();
 
             foreach ($discounts as $discount) {
                 if ($discount->Code) {
-                    return $discount->Code;
+                    $codes[] = $discount->Code;
                 }
             }
         }
 
-        return $code;
+        return AppliedCouponCodes::normalise($codes);
     }
 
     public function getSubTitle(): string
