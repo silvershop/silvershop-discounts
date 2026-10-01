@@ -10,7 +10,6 @@ use SilverStripe\Forms\GridField\GridFieldConfig_RelationEditor;
 use SilverStripe\Forms\GridField\GridFieldAddNewButton;
 use SilverStripe\Forms\GridField\GridFieldEditButton;
 use SilverStripe\Forms\CheckboxField;
-use SilverStripe\Versioned\Versioned;
 use SilverShop\Model\OrderItem;
 use SilverShop\Page\Product;
 
@@ -56,24 +55,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
 
     public function check(Discount $discount): bool
     {
-        $products = $discount->Products();
-        $productIds = [];
-
-        if (!$products->exists()) {
-            Versioned::withVersionedMode(
-                function () use ($discount, &$productIds): void {
-                    Versioned::set_stage(Versioned::DRAFT);
-
-                    $manyManyList = $discount->Products();
-
-                    if ($manyManyList->exists()) {
-                        $productIds = $manyManyList->map('ID', 'ID')->toArray();
-                    }
-                }
-            );
-        } else {
-            $productIds = $products->map('ID', 'ID')->toArray();
-        }
+        $productIds = $this->getRelationIDs($discount, 'Products');
 
         if (!$productIds) {
             return true;
@@ -103,25 +85,25 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
 
     public function itemMatchesCriteria(OrderItem $orderItem, Discount $discount): bool
     {
-        $manyManyList = $discount->Products();
-        $itemproduct = $orderItem->Buyable();
+        $productIds = $this->getRelationIDs($discount, 'Products');
 
-        if ($manyManyList->exists()) {
-            foreach ($manyManyList as $product) {
-                // uses 'DiscountedProductID' since some subclasses of buyable could be used as the item product (such as
-                // a bundle) rather than the product stored.
-                if (is_object($itemproduct) && isset($itemproduct->DiscountedProductID) && $product->ID == $itemproduct->DiscountedProductID) {
-                    return true;
-                }
-            }
-
-            $this->error(
-                _t('ProductsDiscountConstraint.MISSINGPRODUCT', 'The required products are not in the cart.')
-            );
-
-            return false;
+        if (!$productIds) {
+            return true;
         }
 
-        return true;
+        // uses 'DiscountedProductID' since some subclasses of buyable could be used as the item product (such as
+        // a bundle) rather than the product stored.
+        $itemproduct = $orderItem->Buyable();
+        if (is_object($itemproduct) && isset($itemproduct->DiscountedProductID)
+            && in_array((int) $itemproduct->DiscountedProductID, $productIds, true)
+        ) {
+            return true;
+        }
+
+        $this->error(
+            _t('ProductsDiscountConstraint.MISSINGPRODUCT', 'The required products are not in the cart.')
+        );
+
+        return false;
     }
 }

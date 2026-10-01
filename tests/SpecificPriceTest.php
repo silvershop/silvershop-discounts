@@ -61,4 +61,22 @@ class SpecificPriceTest extends SapphireTest
         $this->assertTrue($variation->IsReduced());
         $this->assertSame(50, (int) $variation->getTotalReduction());
     }
+
+    public function testProductIsReducedWhenAVariationIsReduced(): void
+    {
+        $product = $this->objFromFixture(Product::class, 'robot');
+        $this->assertTrue($product->IsReduced(), 'robot_30gb has a specific price');
+
+        $this->objFromFixture(SpecificPrice::class, 'robot_30gb_specific')->delete();
+        $product = Product::get()->byID($product->ID);
+        $this->assertFalse($product->IsReduced(), 'No variation is reduced');
+    }
+
+    public function testProductWithoutVariationsIsNotReduced(): void
+    {
+        $product = $this->objFromFixture(Product::class, 'raspberrypi');
+        SpecificPrice::get()->filter('ProductID', $product->ID)->removeAll();
+
+        $this->assertFalse($product->IsReduced());
+    }
 }

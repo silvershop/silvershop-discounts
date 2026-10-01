@@ -467,6 +467,8 @@ class Discount extends DataObject implements PermissionProvider
      * Get the number of times a discount has been used.
      *
      * @param int $orderID - ignore this order when counting uses
+     *
+     * @phpstan-impure
      */
     public function getUseCount(?int $orderID = null): int
     {
@@ -509,9 +511,9 @@ class Discount extends DataObject implements PermissionProvider
     /**
      * Map the single 'For' to the For"X" boolean fields
      */
-    public function setFor(string $val): void
+    public function setFor(?string $val): void
     {
-        if ($val === '' || $val === '0') {
+        if ($val === null || $val === '' || $val === '0') {
             return;
         }
 

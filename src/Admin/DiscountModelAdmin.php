@@ -3,6 +3,8 @@
 namespace SilverShop\Discounts\Admin;
 
 use SilverStripe\Admin\ModelAdmin;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\FieldGroup;
 use SilverStripe\Forms\TextField;
@@ -10,6 +12,7 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldExportButton;
 use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 use SilverStripe\Forms\Form;
 use SilverShop\Discounts\Model\OrderDiscount;
@@ -25,7 +28,7 @@ class DiscountModelAdmin extends ModelAdmin
 
     private static string $menu_title = 'Discounts';
 
-    private static string $menu_icon = 'silvershop/discounts:images/icon-coupons.png';
+    private static string $menu_icon_class = 'font-icon-tags';
 
     private static int $menu_priority = 2;
 
@@ -50,22 +53,25 @@ class DiscountModelAdmin extends ModelAdmin
     {
         $form = parent::getEditForm($id, $fields);
 
-        $grid = $form->Fields()->fieldByName(OrderCoupon::class);
+        // ModelAdmin names the grid after the sanitised class name (e.g. SilverShop-Discounts-Model-OrderCoupon)
+        $grid = $form->Fields()->fieldByName($this->sanitiseClassName(OrderCoupon::class));
         if ($grid instanceof GridField) {
-            $grid->getConfig()
-                ->addComponent(
-                    $gridFieldLinkComponent = new GridField_LinkComponent('Generate Multiple Coupons', $this->Link() . '/generatecoupons'),
-                    'GridFieldExportButton'
-                );
-            $gridFieldLinkComponent->addExtraClass('ss-ui-action-constructive');
+            $gridFieldLinkComponent = GridField_LinkComponent::create(
+                _t(__CLASS__ . '.GenerateMultipleCoupons', 'Generate Multiple Coupons'),
+                Controller::join_links($this->Link(), 'generatecoupons')
+            );
+            $gridFieldLinkComponent->addExtraClass('btn-primary font-icon-plus-circled');
+            $grid->getConfig()->addComponent($gridFieldLinkComponent, GridFieldExportButton::class);
         }
 
+        // descriptions may be keyed by either the fully qualified or short class name
         $descriptions = self::config()->get('model_descriptions');
+        $description = $descriptions[$this->modelClass] ?? $descriptions[ClassInfo::shortName($this->modelClass)] ?? null;
 
-        if (isset($descriptions[$this->modelClass])) {
-            $modelField = $form->Fields()->fieldByName($this->modelClass);
+        if ($description) {
+            $modelField = $form->Fields()->fieldByName($this->sanitiseClassName($this->modelClass));
             if ($modelField) {
-                $modelField->setDescription($descriptions[$this->modelClass]);
+                $modelField->setDescription($description);
             }
         }
 
@@ -83,14 +89,14 @@ class DiscountModelAdmin extends ModelAdmin
 
         if (isset($params['HasBeenUsed'])) {
             $list = $list
-                ->leftJoin("SilverShop_OrderItem_Discounts", '"SilverShop_OrderItem_Discounts"."DiscountID" = "Discount"."ID"')
-                ->leftJoin("SilverShop_OrderDiscountModifier_Discounts", '"SilverShop_OrderDiscountModifier_Discounts"."DiscountID" = "Discount"."ID"')
+                ->leftJoin("SilverShop_OrderItem_Discounts", '"SilverShop_OrderItem_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"')
+                ->leftJoin("SilverShop_OrderDiscountModifier_Discounts", '"SilverShop_OrderDiscountModifier_Discounts"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"')
                 ->innerJoin(
-                    "OrderAttribute",
+                    "SilverShop_OrderAttribute",
                     implode(
                         " OR ",
                         [
-                            '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."Product_OrderItemID"',
+                            '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderItem_Discounts"."SilverShop_OrderItemID"',
                             '"SilverShop_OrderAttribute"."ID" = "SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID"'
                         ]
                     )
@@ -98,18 +104,45 @@ class DiscountModelAdmin extends ModelAdmin
         }
 
         if (isset($params['Products'])) {
-            $list = $list
-                ->innerJoin("Discount_Products", "Discount_Products.DiscountID = Discount.ID")
-                ->filter("Discount_Products.ProductID", $params['Products']);
+            $products = self::getFilterIDs($params['Products']);
+            $list = $list->innerJoin(
+                "SilverShop_Discount_Products",
+                '"SilverShop_Discount_Products"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
+            );
+            if ($products !== []) {
+                $list = $list->where([
+                    '"SilverShop_Discount_Products"."SilverShop_ProductID" IN (' . implode(',', array_fill(0, count($products), '?')) . ')' => $products,
+                ]);
+            }
         }
 
         if (isset($params['Categories'])) {
-            return $list
-                ->innerJoin("Discount_Categories", "Discount_Categories.DiscountID = Discount.ID")
-                ->filter("Discount_Categories.ProductCategoryID", $params['Categories']);
+            $categories = self::getFilterIDs($params['Categories']);
+            $list = $list->innerJoin(
+                "SilverShop_Discount_Categories",
+                '"SilverShop_Discount_Categories"."SilverShop_DiscountID" = "SilverShop_Discount"."ID"'
+            );
+            if ($categories !== []) {
+                $list = $list->where([
+                    '"SilverShop_Discount_Categories"."SilverShop_ProductCategoryID" IN (' . implode(',', array_fill(0, count($categories), '?')) . ')' => $categories,
+                ]);
+            }
         }
 
         return $list;
+    }
+
+    /**
+     * Non-empty values from a search filter, which may be submitted as a single value or a list.
+     *
+     * @return list<mixed>
+     */
+    private static function getFilterIDs(mixed $value): array
+    {
+        return array_values(array_filter(
+            is_array($value) ? $value : [$value],
+            static fn(mixed $id): bool => $id !== '' && $id !== null
+        ));
     }
 
     public function GenerateCouponsForm(): Form
@@ -154,7 +187,7 @@ class DiscountModelAdmin extends ModelAdmin
             [
                 'Number' => 1,
                 'Active' => 1,
-                'ForCart' => 1,
+                'For' => 'Cart',
                 'UseLimit' => 1
             ]
         );

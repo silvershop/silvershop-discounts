@@ -163,6 +163,7 @@ class Calculator
         }
 
         if (class_exists('SilverShop\Shipping\ShippingFrameworkModifier') && $shipping = $this->order->getModifier('SilverShop\Shipping\ShippingFrameworkModifier')) {
+            // Amount is nullable on the modifier until it has been calculated
             $shippingamount = (float) $shipping->Amount;
 
             // work out all shipping-level discounts, and load into shippingpriceinfo

@@ -7,6 +7,8 @@ use SilverShop\Discounts\Model\Discount;
 use SilverShop\Model\Order;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\DataList;
+use SilverStripe\ORM\ManyManyList;
+use SilverStripe\ORM\Queries\SQLSelect;
 
 /**
  * Encapsulate a single kind of constraint.
@@ -63,6 +65,33 @@ abstract class DiscountConstraint extends Extension
      * this constraint.
      */
     abstract public function check(Discount $discount): bool;
+
+    /**
+     * Get the IDs linked to a discount through a many_many relation, read from the join table.
+     *
+     * Reading the relation list applies the related class's query filters (Versioned stage,
+     * Fluent locale, etc). If those hide every linked record, the list is empty and the
+     * constraint looks unconfigured, so the discount would apply to every order.
+     *
+     * @return array<int, int>
+     */
+    protected function getRelationIDs(Discount $discount, string $relation): array
+    {
+        $list = $discount->getManyManyComponents($relation);
+
+        if (!$list instanceof ManyManyList) {
+            // unsaved discount
+            return array_map('intval', array_values($list->getIDList()));
+        }
+
+        $ids = SQLSelect::create(
+            sprintf('"%s"', $list->getLocalKey()),
+            sprintf('"%s"', $list->getJoinTable()),
+            [sprintf('"%s" = ?', $list->getForeignKey()) => $discount->ID]
+        )->execute()->column();
+
+        return array_map('intval', $ids);
+    }
 
     protected function message(string $message, string $type = 'good'): void
     {

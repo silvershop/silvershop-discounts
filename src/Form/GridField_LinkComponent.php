@@ -2,10 +2,14 @@
 
 namespace SilverShop\Discounts\Form;
 
+use SilverStripe\Core\Convert;
+use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\Forms\GridField\GridField_HTMLProvider;
 
 class GridField_LinkComponent implements GridField_HTMLProvider
 {
+    use Injectable;
+
     protected string $title = '';
 
     protected string $url = '';
@@ -22,7 +26,12 @@ class GridField_LinkComponent implements GridField_HTMLProvider
     public function getHTMLFragments($gridField): array
     {
         return [
-            'before' => sprintf('<a href="%s" class="ss-ui-button %s">%s</a>', $this->url, $this->extraclasses, $this->title)
+            'buttons-before-left' => sprintf(
+                '<a href="%s" class="btn %s">%s</a>',
+                Convert::raw2att($this->url),
+                Convert::raw2att($this->extraclasses),
+                Convert::raw2xml($this->title)
+            )
         ];
     }
 

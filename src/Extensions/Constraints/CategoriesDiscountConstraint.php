@@ -43,9 +43,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
 
     public function check(Discount $discount): bool
     {
-        $manyManyList = $discount->Categories();
-
-        if (!$manyManyList->exists()) {
+        if (!$this->getRelationIDs($discount, 'Categories')) {
             return true;
         }
 
@@ -60,7 +58,7 @@ class CategoriesDiscountConstraint extends ItemDiscountConstraint
 
     public function itemMatchesCriteria(OrderItem $orderItem, Discount $discount): bool
     {
-        $discountcategoryids = $discount->Categories()->getIDList();
+        $discountcategoryids = $this->getRelationIDs($discount, 'Categories');
         if (empty($discountcategoryids)) {
             return true;
         }

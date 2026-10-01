@@ -26,11 +26,23 @@ class ProductDiscountExtension extends Extension
     }
 
     /**
-     * Check if this product or variation has a reduced price.
+     * Check if this product, or any of its variations, has a reduced price.
      */
     public function IsReduced(): bool
     {
-        return (bool) $this->getTotalReduction();
+        if ($this->getTotalReduction()) {
+            return true;
+        }
+
+        if ($this->owner->hasMethod('Variations')) {
+            foreach ($this->owner->Variations() as $variation) {
+                if ($variation->hasMethod('IsReduced') && $variation->IsReduced()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public function getDiscountedProductID(): int
