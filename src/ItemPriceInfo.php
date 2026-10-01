@@ -40,6 +40,19 @@ class ItemPriceInfo extends PriceInfo
         return $this->originalprice * $this->quantity;
     }
 
+    /**
+     * Stacked adjustments are line totals, so spread them across the quantity
+     * to get the remaining unit price.
+     */
+    public function getStackedPrice(): int|float
+    {
+        if (!$this->quantity) {
+            return $this->originalprice;
+        }
+
+        return max(0, $this->originalprice - $this->getStackedDiscount() / $this->quantity);
+    }
+
     public function debug(): string
     {
         $discount = $this->getBestDiscount();

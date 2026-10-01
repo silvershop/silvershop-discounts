@@ -16,12 +16,17 @@ Allows creating discounts for products / orders.
   * Number of uses
   * Order value
   * Shipping zone
- * Coupon codes
+ * Coupon codes, including multiple stackable coupons per order
  * Gift voucher products
  * Shipping discount
 
 Discounts can be applied to individual products, cart subtotal, or shipping.
 Discounts can be globally enabled/disabled.
+
+Discounts and coupons can opt in to stacking, so several can be combined on
+one order and applied in priority order. See
+[docs/en/index.md](docs/en/index.md#stacking-discounts-and-multiple-coupons)
+for how stacking works and what to watch out for.
 
 ## Requirements
 
