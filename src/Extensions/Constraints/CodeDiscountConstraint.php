@@ -64,6 +64,15 @@ class CodeDiscountConstraint extends DiscountConstraint
 
         $fieldList->addFieldToTab(
             'Root.Codes',
+            GridField::create(
+                'Codes',
+                _t(__CLASS__ . '.Codes', 'Codes'),
+                $owner->Codes(),
+                $config
+            )
+        );
+        $fieldList->addFieldToTab(
+            'Root.Codes',
             LiteralField::create(
                 'CodesNote',
                 sprintf(
@@ -74,15 +83,6 @@ class CodeDiscountConstraint extends DiscountConstraint
                         . 'Constraints tab apply to all of its codes together.'
                     ))
                 )
-            )
-        );
-        $fieldList->addFieldToTab(
-            'Root.Codes',
-            GridField::create(
-                'Codes',
-                _t(__CLASS__ . '.Codes', 'Codes'),
-                $owner->Codes(),
-                $config
             )
         );
     }

@@ -264,19 +264,6 @@ class Discount extends DataObject implements PermissionProvider
             ]
         );
 
-        $general->push(
-            LiteralField::create(
-                'ConstraintsNote',
-                sprintf(
-                    '<p class="message notice">%s</p>',
-                    _t(
-                        __CLASS__ . '.CONSTRAINTSNOTE',
-                        'These conditions apply to the whole discount. Per-code limits are set on the Codes tab.'
-                    )
-                )
-            )
-        );
-
         if (!$this->isInDB()) {
             $general->push(
                 LiteralField::create(
@@ -332,6 +319,20 @@ class Discount extends DataObject implements PermissionProvider
         $fieldList->fieldByName('Root.Usage')?->setTitle(_t(__CLASS__ . '.TABUSAGE', 'Usage'));
 
         $this->extend('updateCMSFields', $fieldList, $params);
+
+        // placed last so the explanation sits below the constraint fields
+        $general->push(
+            LiteralField::create(
+                'ConstraintsNote',
+                sprintf(
+                    '<p class="message notice">%s</p>',
+                    _t(
+                        __CLASS__ . '.CONSTRAINTSNOTE',
+                        'These conditions apply to the whole discount. Per-code limits are set on the Codes tab.'
+                    )
+                )
+            )
+        );
 
         if (!$fieldList instanceof FieldList) {
             return FieldList::create();

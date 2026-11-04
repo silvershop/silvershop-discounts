@@ -112,8 +112,7 @@ class OrderCoupon extends Discount
                         '<p class="message notice">%s</p>',
                         Convert::raw2xml(_t(__CLASS__ . '.CODEHIDDENNOTE', 'This coupon uses the codes on the Codes tab.'))
                     )
-                ),
-                'Active'
+                )
             );
 
             return $fieldList;
