@@ -123,6 +123,16 @@ class DiscountCodeTest extends SapphireTest
         $this->assertFalse(DiscountCode::code_exists('NEVERSEEN'));
     }
 
+    public function testCodeNormalisationKeepsHyphen(): void
+    {
+        $this->assertSame('SS6-ABC', DiscountCode::normalise_code('ss6-abc'));
+        $this->assertSame('SUMMER-2026', DiscountCode::normalise_code('Summer-2026!'), 'only non-alphanumeric (bar the hyphen) is stripped');
+
+        // a hyphenated prefix survives generation
+        $code = DiscountCode::generate_code(6, 'SS6-');
+        $this->assertStringStartsWith('SS6-', $code);
+    }
+
     public function testGeneratedCodeIsUniqueAcrossBothTables(): void
     {
         $code = DiscountCode::generate_code(10);

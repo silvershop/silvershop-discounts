@@ -150,7 +150,8 @@ class OrderCoupon extends Discount
     public function setCode(?string $code): static
     {
         if ($code !== null && $code !== '' && $code !== '0') {
-            $code = trim((string) preg_replace('/[^0-9a-zA-Z]+/', '', $code));
+            // uppercase alphanumeric, plus the hyphen (a common coupon separator, e.g. SUMMER-2026)
+            $code = trim((string) preg_replace('/[^0-9a-zA-Z-]+/', '', $code));
             $this->setField('Code', strtoupper($code));
         }
 

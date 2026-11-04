@@ -124,7 +124,8 @@ class DiscountCode extends DataObject
 
     public static function normalise_code(string $code): string
     {
-        return strtoupper(trim((string) preg_replace('/[^0-9a-zA-Z]+/', '', $code)));
+        // uppercase alphanumeric, plus the hyphen (a common coupon separator, e.g. SUMMER-2026)
+        return strtoupper(trim((string) preg_replace('/[^0-9a-zA-Z-]+/', '', $code)));
     }
 
     /**
