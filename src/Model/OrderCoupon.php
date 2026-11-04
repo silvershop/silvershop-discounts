@@ -147,9 +147,9 @@ class OrderCoupon extends Discount
     /**
      * Forces codes to be alpha-numeric, uppercase, and trimmed
      */
-    public function setCode(string $code): static
+    public function setCode(?string $code): static
     {
-        if ($code !== '' && $code !== '0') {
+        if ($code !== null && $code !== '' && $code !== '0') {
             $code = trim((string) preg_replace('/[^0-9a-zA-Z]+/', '', $code));
             $this->setField('Code', strtoupper($code));
         }

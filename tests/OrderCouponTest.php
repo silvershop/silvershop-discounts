@@ -131,6 +131,17 @@ class OrderCouponTest extends SapphireTest
         $this->assertFalse($orderCoupon->validateOrder($this->cart, $context), 'Coupon is not set to active');
     }
 
+    public function testSetCodeAcceptsNullAndAutoGenerates(): void
+    {
+        // the admin form passes null for an empty Code field; this must not throw, and
+        // onBeforeWrite() then auto-generates a code
+        $coupon = OrderCoupon::create(['Title' => 'No code given']);
+        $coupon->Code = null;
+        $coupon->write();
+
+        $this->assertNotEmpty($coupon->Code, 'an empty/null code auto-generates on write');
+    }
+
     protected function getCalculator(Order $order, OrderCoupon $orderCoupon): Calculator
     {
         return Calculator::create($order, ['CouponCode' => $orderCoupon->Code]);
