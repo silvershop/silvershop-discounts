@@ -34,6 +34,7 @@ class OrderCoupon extends Discount
         'Title',
         'Code',
         'DiscountNice' => 'Discount',
+        'TimesUsed' => 'Used',
         'StartDate',
         'EndDate'
     ];

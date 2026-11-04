@@ -103,13 +103,31 @@ class CodeDiscountConstraint extends DiscountConstraint
             return true;
         }
 
-        if ($this->matchedCode($discount, $this->findCouponCodes()) !== null) {
-            return true;
+        $codes = $this->findCouponCodes();
+
+        if ($this->matchedCode($discount, $codes) === null) {
+            $this->error("Coupon code doesn't match " . implode(', ', $codes));
+
+            return false;
         }
 
-        $this->error("Coupon code doesn't match " . implode(', ', $this->findCouponCodes()));
+        // when the match is via a child code, enforce that code's own use limit (issue #31)
+        $child = $this->matchedDiscountCode($discount, $codes);
 
-        return false;
+        if ($child instanceof DiscountCode && (int) $child->UseLimit > 0) {
+            $orderID = isset($this->order) ? (int) $this->order->ID : 0;
+
+            if ($child->effectiveUseCount($orderID) >= (int) $child->UseLimit) {
+                $this->error(_t(
+                    __CLASS__ . '.CODEUSELIMITREACHED',
+                    'This code has reached its maximum number of uses.'
+                ));
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

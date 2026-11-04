@@ -2,8 +2,10 @@
 
 namespace SilverShop\Discounts\Model;
 
+use SilverShop\Model\Order;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Validation\ValidationResult;
+use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Permission;
@@ -167,13 +169,48 @@ class DiscountCode extends DataObject
     }
 
     /**
-     * Effective number of uses for limit checks. The stored counter today; a later layer adds the
-     * in-flight (unpaid, within the timeout) carts so a limited code can't be oversold under
-     * concurrency. Kept off the `getUseCount()` name on purpose (see class note).
+     * Orders this code has been redeemed on - paid, and optionally in-flight (unpaid within the
+     * timeout). Delegates to the owning discount's query, narrowed to this code via the
+     * DiscountCodeID link column.
+     */
+    public function getAppliedOrders(bool $includeunpaid = false): DataList
+    {
+        $discount = $this->Discount();
+
+        if (!$discount->exists() || !$this->isInDB()) {
+            return Order::get()->filter('ID', 0);
+        }
+
+        return $discount->getAppliedOrders($includeunpaid, (int) $this->ID);
+    }
+
+    /**
+     * Effective number of uses for limit checks: the derived, pending-aware count, so a limited code
+     * can't be oversold while carts that applied it are still in flight. Deliberately not named
+     * getUseCount() so it never shadows a DB field.
      */
     public function effectiveUseCount(?int $orderID = null): int
     {
-        return (int) $this->getField('TimesUsed');
+        $used = $this->getAppliedOrders(true);
+
+        if ($orderID !== null && $orderID !== 0) {
+            $used = $used->exclude('ID', $orderID);
+        }
+
+        return $used->count();
+    }
+
+    /**
+     * Recompute and store the paid-only {@see $TimesUsed} counter for this code.
+     */
+    public function reconcileTimesUsed(): void
+    {
+        $count = $this->getAppliedOrders(false)->count();
+
+        if ((int) $this->getField('TimesUsed') !== $count) {
+            $this->setField('TimesUsed', $count);
+            $this->write();
+        }
     }
 
     public function canView($member = null): bool
