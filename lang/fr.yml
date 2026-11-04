@@ -1,0 +1,14 @@
+fr:
+  'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
+    Codes: 'Codes'
+    CODEUSELIMITREACHED: "Ce code a atteint son nombre maximal d'utilisations."
+  'SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint':
+    PERCUSTOMERUSELIMIT: 'Utilisations maximales par client'
+    PERCUSTOMERUSELIMITDESC: 'Remarque : 0 = illimité. Les clients connectés sont identifiés précisément, les invités par e-mail.'
+    PERCUSTOMERLIMITREACHED: 'Vous avez déjà utilisé cette remise le nombre maximal de fois.'
+    CODEPERCUSTOMERLIMITREACHED: 'Vous avez déjà utilisé ce code le nombre maximal de fois.'
+  'SilverShop\Discounts\Model\DiscountCode':
+    SINGULARNAME: 'Code'
+    PLURALNAME: 'Codes'
+    CODEREQUIRED: 'Un code est requis.'
+    CODETAKEN: 'Le code "{code}" est déjà utilisé.'

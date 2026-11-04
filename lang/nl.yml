@@ -1,0 +1,14 @@
+nl:
+  'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
+    Codes: 'Codes'
+    CODEUSELIMITREACHED: 'Deze code is al het maximale aantal keer gebruikt.'
+  'SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint':
+    PERCUSTOMERUSELIMIT: 'Maximaal aantal keer per klant'
+    PERCUSTOMERUSELIMITDESC: 'Let op: 0 = onbeperkt. Ingelogde klanten worden exact herkend, gasten op e-mailadres.'
+    PERCUSTOMERLIMITREACHED: 'U hebt deze korting al het maximale aantal keer gebruikt.'
+    CODEPERCUSTOMERLIMITREACHED: 'U hebt deze code al het maximale aantal keer gebruikt.'
+  'SilverShop\Discounts\Model\DiscountCode':
+    SINGULARNAME: 'Code'
+    PLURALNAME: 'Codes'
+    CODEREQUIRED: 'Een code is verplicht.'
+    CODETAKEN: 'De code "{code}" is al in gebruik.'
