@@ -56,3 +56,16 @@ en:
   'SilverShop\Discounts\Model\OrderCoupon':
     SINGULARNAME: 'Coupon'
     PLURALNAME: 'Coupons'
+    CODE: 'Code'
+  'SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint':
+    USELIMIT: 'Maximum number of uses'
+    USELIMITNOTE: 'Note: 0 = unlimited'
+  'SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint':
+    VALIDDATERANGE: 'Valid date range:'
+    RANGESTART: 'Start date/time'
+    RANGEEND: 'End date/time'
+    ENDTIMEDAYNOTE: 'You should set the end time to 23:59:59, if you want to include the entire end day.'
+  'SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint':
+    MINORDERVALUE: 'Minimum subtotal of order'
+    MINORDERVALUE_TAX_INCLUSIVE: 'Apply minimum to tax-inclusive subtotal'
+    MINORDERVALUE_TAX_INCLUSIVE_HELP: 'When enabled, the minimum is compared to the cart line subtotal plus any amount added by an Order extension hook (updateMinimumOrderValueComparisonAmount). Use that hook to add tax or other components so the threshold matches how you price products.'

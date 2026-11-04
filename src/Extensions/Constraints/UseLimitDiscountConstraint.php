@@ -30,7 +30,7 @@ class UseLimitDiscountConstraint extends DiscountConstraint
                 _t(__CLASS__ . '.USELIMIT', $label),
                 0
             )
-            ->setDescription('Note: 0 = unlimited')
+            ->setDescription(_t(__CLASS__ . '.USELIMITNOTE', 'Note: 0 = unlimited'))
         );
     }
 

@@ -56,3 +56,16 @@ de:
   'SilverShop\Discounts\Model\OrderCoupon':
     SINGULARNAME: 'Coupon'
     PLURALNAME: 'Coupons'
+    CODE: 'Code'
+  'SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint':
+    USELIMIT: 'Maximale Anzahl an Nutzungen'
+    USELIMITNOTE: 'Hinweis: 0 = unbegrenzt'
+  'SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint':
+    VALIDDATERANGE: 'Gültigkeitszeitraum:'
+    RANGESTART: 'Startdatum/-zeit'
+    RANGEEND: 'Enddatum/-zeit'
+    ENDTIMEDAYNOTE: 'Setzen Sie die Endzeit auf 23:59:59, wenn Sie den gesamten Endtag einschließen möchten.'
+  'SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint':
+    MINORDERVALUE: 'Mindest-Zwischensumme der Bestellung'
+    MINORDERVALUE_TAX_INCLUSIVE: 'Mindestbetrag auf Zwischensumme inkl. Steuer anwenden'
+    MINORDERVALUE_TAX_INCLUSIVE_HELP: 'Wenn aktiviert, wird der Mindestbetrag mit der Artikel-Zwischensumme des Warenkorbs plus einem von einem Order-Extension-Hook (updateMinimumOrderValueComparisonAmount) hinzugefügten Betrag verglichen. Nutzen Sie diesen Hook, um Steuer oder andere Bestandteile hinzuzufügen, damit die Schwelle zu Ihrer Preisgestaltung passt.'

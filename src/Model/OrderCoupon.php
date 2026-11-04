@@ -100,7 +100,7 @@ class OrderCoupon extends Discount
         $fieldList->addFieldsToTab(
             'Root.Main',
             [
-                $codefield = TextField::create('Code')->setMaxLength(25),
+                $codefield = TextField::create('Code', _t(__CLASS__ . '.CODE', 'Code'))->setMaxLength(25),
             ],
             'Active'
         );

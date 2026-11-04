@@ -56,3 +56,16 @@ nl:
   'SilverShop\Discounts\Model\OrderCoupon':
     SINGULARNAME: 'Coupon'
     PLURALNAME: 'Coupons'
+    CODE: 'Code'
+  'SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint':
+    USELIMIT: 'Maximaal aantal keer gebruiken'
+    USELIMITNOTE: 'Let op: 0 = onbeperkt'
+  'SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint':
+    VALIDDATERANGE: 'Geldige periode:'
+    RANGESTART: 'Startdatum/-tijd'
+    RANGEEND: 'Einddatum/-tijd'
+    ENDTIMEDAYNOTE: 'Stel de eindtijd in op 23:59:59 als je de hele einddag wilt meenemen.'
+  'SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint':
+    MINORDERVALUE: 'Minimaal subtotaal van bestelling'
+    MINORDERVALUE_TAX_INCLUSIVE: 'Minimum toepassen op subtotaal inclusief btw'
+    MINORDERVALUE_TAX_INCLUSIVE_HELP: 'Indien ingeschakeld wordt het minimum vergeleken met het regel-subtotaal van de winkelwagen plus eventueel bedrag dat door een Order-extensiehook (updateMinimumOrderValueComparisonAmount) wordt toegevoegd. Gebruik die hook om btw of andere onderdelen toe te voegen zodat de drempel overeenkomt met hoe je producten prijst.'

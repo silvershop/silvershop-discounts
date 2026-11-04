@@ -56,3 +56,16 @@ es:
   'SilverShop\Discounts\Model\OrderCoupon':
     SINGULARNAME: 'Cupón'
     PLURALNAME: 'Cupones'
+    CODE: 'Código'
+  'SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint':
+    USELIMIT: 'Número máximo de usos'
+    USELIMITNOTE: 'Nota: 0 = ilimitado'
+  'SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint':
+    VALIDDATERANGE: 'Período de validez:'
+    RANGESTART: 'Fecha/hora de inicio'
+    RANGEEND: 'Fecha/hora de fin'
+    ENDTIMEDAYNOTE: 'Establece la hora de fin en 23:59:59 si quieres incluir todo el día final.'
+  'SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint':
+    MINORDERVALUE: 'Subtotal mínimo del pedido'
+    MINORDERVALUE_TAX_INCLUSIVE: 'Aplicar el mínimo al subtotal con impuestos'
+    MINORDERVALUE_TAX_INCLUSIVE_HELP: 'Cuando está activado, el mínimo se compara con el subtotal de líneas del carrito más cualquier importe añadido por un hook de extensión de Order (updateMinimumOrderValueComparisonAmount). Usa ese hook para añadir impuestos u otros componentes para que el umbral coincida con cómo fijas los precios.'
