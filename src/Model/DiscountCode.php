@@ -55,11 +55,11 @@ class DiscountCode extends DataObject
 
     private static array $summary_fields = [
         'Code',
-        'Status' => 'Status',
         'TimesUsed' => 'Used',
         'UseLimit' => 'Limit',
         'PerCustomerUseLimit' => 'Per customer',
-        'Active.Nice' => 'Active'
+        'Active.Nice' => 'Active',
+        'Status' => 'Status'
     ];
 
     private static array $casting = [

@@ -63,6 +63,9 @@ nl:
   'SilverShop\Discounts\Model\OrderDiscount':
     SINGULARNAME: 'Korting'
     PLURALNAME: 'Kortingen'
+  'SilverShop\Discounts\Model\PartialUseDiscount':
+    SINGULARNAME: 'Korting met restwaarde'
+    PLURALNAME: 'Kortingen met restwaarde'
   'SilverShop\Discounts\Model\OrderCoupon':
     SINGULARNAME: 'Coupon'
     PLURALNAME: 'Coupons'

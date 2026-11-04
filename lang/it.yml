@@ -63,6 +63,9 @@ it:
   'SilverShop\Discounts\Model\OrderDiscount':
     SINGULARNAME: 'Sconto'
     PLURALNAME: 'Sconti'
+  'SilverShop\Discounts\Model\PartialUseDiscount':
+    SINGULARNAME: 'Sconto con valore residuo'
+    PLURALNAME: 'Sconti con valore residuo'
   'SilverShop\Discounts\Model\OrderCoupon':
     SINGULARNAME: 'Coupon'
     PLURALNAME: 'Coupon'

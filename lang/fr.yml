@@ -63,6 +63,9 @@ fr:
   'SilverShop\Discounts\Model\OrderDiscount':
     SINGULARNAME: 'Remise'
     PLURALNAME: 'Remises'
+  'SilverShop\Discounts\Model\PartialUseDiscount':
+    SINGULARNAME: 'Remise avec valeur résiduelle'
+    PLURALNAME: 'Remises avec valeur résiduelle'
   'SilverShop\Discounts\Model\OrderCoupon':
     SINGULARNAME: 'Coupon'
     PLURALNAME: 'Coupons'
