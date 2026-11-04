@@ -125,6 +125,22 @@ class DiscountCodeTest extends SapphireTest
         $this->assertFalse(DiscountCode::code_exists($code), 'a freshly generated code is not already taken');
     }
 
+    public function testGenerateCodesCreatesUniqueChildren(): void
+    {
+        $created = $this->coupon->generateCodes(5, 8, 'XM');
+        $this->assertSame(5, $created);
+
+        $generated = $this->coupon->Codes()->filter('Code:StartsWith', 'XM');
+        $this->assertSame(5, $generated->count());
+
+        foreach ($generated as $code) {
+            $this->assertMatchesRegularExpression('/^XM[0-9A-Z]{8}$/', (string) $code->Code);
+        }
+
+        $all = $this->coupon->Codes()->column('Code');
+        $this->assertSame(count($all), count(array_unique($all)), 'generated codes are unique');
+    }
+
     public function testCascadeDeleteRemovesChildCodes(): void
     {
         $id = $this->coupon->ID;
