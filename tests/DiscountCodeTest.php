@@ -241,6 +241,25 @@ class DiscountCodeTest extends SapphireTest
         );
     }
 
+    public function testStatusReflectsLimitAndActive(): void
+    {
+        $code = DiscountCode::create(['Code' => 'STAT1', 'Active' => 1, 'UseLimit' => 0]);
+        $code->DiscountID = $this->coupon->ID;
+        $code->write();
+
+        $this->assertSame(_t(DiscountCode::class . '.STATUSUNLIMITED', 'Unlimited'), $code->getStatus(), 'no limit = unlimited');
+
+        $code->UseLimit = 3;
+        $code->TimesUsed = 1;
+        $this->assertStringContainsString('2', $code->getStatus(), 'shows the remaining uses');
+
+        $code->TimesUsed = 3;
+        $this->assertSame(_t(DiscountCode::class . '.STATUSUSEDUP', 'Used up'), $code->getStatus(), 'at the limit = used up');
+
+        $code->Active = false;
+        $this->assertSame(_t(DiscountCode::class . '.STATUSINACTIVE', 'Inactive'), $code->getStatus(), 'inactive overrides');
+    }
+
     public function testCascadeDeleteRemovesChildCodes(): void
     {
         $id = $this->coupon->ID;

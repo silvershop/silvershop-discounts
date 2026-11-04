@@ -13,6 +13,10 @@ nl:
     PLURALNAME: 'Codes'
     CODEREQUIRED: 'Een code is verplicht.'
     CODETAKEN: 'De code "{code}" is al in gebruik.'
+    STATUSINACTIVE: 'Inactief'
+    STATUSUNLIMITED: 'Onbeperkt'
+    STATUSUSEDUP: 'Verbruikt'
+    STATUSREMAINING: 'nog {count}'
   'SilverShop\Discounts\Form\GridFieldGenerateCodesButton':
     HEADING: 'Codes genereren'
     GENERATE: 'Genereren'

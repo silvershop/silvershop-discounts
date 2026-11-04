@@ -55,10 +55,15 @@ class DiscountCode extends DataObject
 
     private static array $summary_fields = [
         'Code',
+        'Status' => 'Status',
         'TimesUsed' => 'Used',
         'UseLimit' => 'Limit',
         'PerCustomerUseLimit' => 'Per customer',
         'Active.Nice' => 'Active'
+    ];
+
+    private static array $casting = [
+        'Status' => 'Varchar'
     ];
 
     private static array $field_labels = [
@@ -213,6 +218,31 @@ class DiscountCode extends DataObject
             $this->setField('TimesUsed', $count);
             $this->write();
         }
+    }
+
+    /**
+     * A human-readable state for the admin grid, derived from Active + the stored counter vs the
+     * limit. Display only - it never flips the Active flag (which stays a manual switch).
+     */
+    public function getStatus(): string
+    {
+        if (!$this->Active) {
+            return _t(__CLASS__ . '.STATUSINACTIVE', 'Inactive');
+        }
+
+        $limit = (int) $this->UseLimit;
+
+        if ($limit <= 0) {
+            return _t(__CLASS__ . '.STATUSUNLIMITED', 'Unlimited');
+        }
+
+        $remaining = $limit - (int) $this->getField('TimesUsed');
+
+        if ($remaining <= 0) {
+            return _t(__CLASS__ . '.STATUSUSEDUP', 'Used up');
+        }
+
+        return _t(__CLASS__ . '.STATUSREMAINING', '{count} left', ['count' => $remaining]);
     }
 
     public function canView($member = null): bool

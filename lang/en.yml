@@ -13,6 +13,10 @@ en:
     PLURALNAME: 'Codes'
     CODEREQUIRED: 'A code is required.'
     CODETAKEN: 'The code "{code}" is already in use.'
+    STATUSINACTIVE: 'Inactive'
+    STATUSUNLIMITED: 'Unlimited'
+    STATUSUSEDUP: 'Used up'
+    STATUSREMAINING: '{count} left'
   'SilverShop\Discounts\Form\GridFieldGenerateCodesButton':
     HEADING: 'Generate codes'
     GENERATE: 'Generate'
