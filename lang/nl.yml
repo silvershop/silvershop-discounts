@@ -20,3 +20,5 @@ nl:
     PERCUSTOMER: 'Max per klant'
     PREFIX: 'Voorvoegsel'
     LENGTH: 'Lengte'
+  'SilverShop\Discounts\Admin\DiscountModelAdmin':
+    MENUTITLE: 'Kortingen'

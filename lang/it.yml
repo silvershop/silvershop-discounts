@@ -20,3 +20,5 @@ it:
     PERCUSTOMER: 'Max per cliente'
     PREFIX: 'Prefisso'
     LENGTH: 'Lunghezza'
+  'SilverShop\Discounts\Admin\DiscountModelAdmin':
+    MENUTITLE: 'Sconti'
