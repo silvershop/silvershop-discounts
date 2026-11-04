@@ -6,6 +6,7 @@ use SilverShop\Discounts\Calculator;
 use SilverShop\Discounts\Form\GridFieldGenerateCodesButton;
 use SilverShop\Discounts\Model\DiscountCode;
 use SilverShop\Discounts\Model\OrderCoupon;
+use SilverShop\Discounts\Model\OrderDiscount;
 use SilverShop\Model\Order;
 use SilverShop\Page\Product;
 use SilverShop\Tests\ShopTestBootstrap;
@@ -185,6 +186,23 @@ class DiscountCodeTest extends SapphireTest
         $none = $this->coupon->Codes()->count();
         GridFieldGenerateCodesButton::create()->handleAction($grid, 'generatecodes', [], ['GenerateCodesCount' => 0]);
         $this->assertSame($none, $this->coupon->Codes()->count(), 'count 0 generates nothing');
+    }
+
+    public function testCodesGridOnlyOnCoupons(): void
+    {
+        // a coupon surfaces the Codes grid
+        $this->assertNotNull(
+            $this->coupon->getCMSFields()->dataFieldByName('Codes'),
+            'a coupon shows the Codes grid'
+        );
+
+        // a plain (automatic) discount does not — its codes could never be entered at checkout
+        $discount = OrderDiscount::create(['Title' => 'Auto', 'Type' => 'Percent', 'Percent' => 0.1]);
+        $discount->write();
+        $this->assertNull(
+            $discount->getCMSFields()->dataFieldByName('Codes'),
+            'a plain discount has no Codes grid'
+        );
     }
 
     public function testCascadeDeleteRemovesChildCodes(): void

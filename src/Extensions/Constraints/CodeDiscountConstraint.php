@@ -6,6 +6,7 @@ use SilverShop\Discounts\Checkout\AppliedCouponCodes;
 use SilverShop\Discounts\Form\GridFieldGenerateCodesButton;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\DiscountCode;
+use SilverShop\Discounts\Model\OrderCoupon;
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
@@ -45,9 +46,13 @@ class CodeDiscountConstraint extends DiscountConstraint
 
     public function updateCMSFields(FieldList $fieldList): void
     {
+        /** @var Discount $owner */
         $owner = $this->getOwner();
 
-        if (!$owner->isInDB()) {
+        // Codes are an OrderCoupon concept: they are entered at checkout and resolved via
+        // OrderCoupon::get_by_code(), so a plain OrderDiscount's codes could never be redeemed.
+        // Only surface the Codes grid on coupons.
+        if (!$owner instanceof OrderCoupon || !$owner->isInDB()) {
             return;
         }
 
