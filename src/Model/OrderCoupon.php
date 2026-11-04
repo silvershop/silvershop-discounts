@@ -2,9 +2,11 @@
 
 namespace SilverShop\Discounts\Model;
 
+use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Security\RandomGenerator;
 
@@ -57,18 +59,19 @@ class OrderCoupon extends Discount
             return null;
         }
 
-        // a coupon's own (legacy) single code
-        $coupon = self::get()->filter('Code:nocase', $code)->first();
-
-        if ($coupon instanceof self) {
-            return $coupon;
-        }
-
-        // or one of a coupon's many child codes (issue #31)
+        // a child code (issue #31) takes precedence
         $discountCode = DiscountCode::get_by_code($code);
 
         if ($discountCode instanceof DiscountCode && ($owner = $discountCode->Discount()) instanceof self) {
             return $owner;
+        }
+
+        // a coupon's own (legacy) single code - only when that coupon has no child codes, which
+        // otherwise supersede and hide it
+        $coupon = self::get()->filter('Code:nocase', $code)->first();
+
+        if ($coupon instanceof self && !$coupon->Codes()->exists()) {
+            return $coupon;
         }
 
         return null;
@@ -97,6 +100,25 @@ class OrderCoupon extends Discount
     public function getCMSFields($params = null): FieldList
     {
         $fieldList = parent::getCMSFields();
+
+        // When the coupon has its own codes (issue #31) the single legacy Code is ignored, so hide it
+        // and point to the Codes tab rather than showing a confusing extra code.
+        if ($this->hasChildCodes()) {
+            $fieldList->addFieldToTab(
+                'Root.Main',
+                LiteralField::create(
+                    'CodeHidden',
+                    sprintf(
+                        '<div class="form-group"><p class="message notice">%s</p></div>',
+                        Convert::raw2xml(_t(__CLASS__ . '.CODEHIDDENNOTE', 'This coupon uses the codes on the Codes tab.'))
+                    )
+                ),
+                'Active'
+            );
+
+            return $fieldList;
+        }
+
         $fieldList->addFieldsToTab(
             'Root.Main',
             [
@@ -137,11 +159,18 @@ class OrderCoupon extends Discount
 
     protected function onBeforeWrite(): void
     {
-        if (empty($this->Code)) {
+        // Auto-generate a code only when the coupon has no codes at all. A coupon with child codes
+        // (issue #31) is gated by those, so it needs no - and ignores - a legacy single Code.
+        if (empty($this->Code) && !$this->hasChildCodes()) {
             $this->Code = self::generate_code();
         }
 
         parent::onBeforeWrite();
+    }
+
+    protected function hasChildCodes(): bool
+    {
+        return $this->isInDB() && $this->Codes()->exists();
     }
 
     /**

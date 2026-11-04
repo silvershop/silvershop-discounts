@@ -2,6 +2,7 @@ es:
   'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
     Codes: 'Códigos'
     CODEUSELIMITREACHED: 'Este código ha alcanzado su número máximo de usos.'
+    CODESNOTE: 'Cada código pertenece a este cupón y tiene su propio límite. Las condiciones de la pestaña Condiciones se aplican a todos sus códigos en conjunto.'
   'SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint':
     PERCUSTOMERUSELIMIT: 'Usos máximos por cliente'
     PERCUSTOMERUSELIMITDESC: 'Nota: 0 = ilimitado. Los clientes con sesión se identifican con exactitud, los invitados por correo electrónico.'
@@ -50,6 +51,11 @@ es:
     PriorityDescription: 'Los descuentos combinados se aplican por orden de prioridad, el más alto primero. Cada descuento se calcula sobre el precio restante tras los descuentos anteriores.'
     SAVENOTE: 'Aparecerán más restricciones después de guardar por primera vez.'
     USEHEADER: 'Número de usos: {count}'
+    TABMAIN: 'Principal'
+    TABCONSTRAINTS: 'Condiciones'
+    TABGENERAL: 'General'
+    TABUSAGE: 'Uso'
+    CONSTRAINTSNOTE: 'Estas condiciones se aplican a todo el descuento. Los límites por código se definen en la pestaña Códigos.'
   'SilverShop\Discounts\Model\OrderDiscount':
     SINGULARNAME: 'Descuento'
     PLURALNAME: 'Descuentos'
@@ -57,6 +63,7 @@ es:
     SINGULARNAME: 'Cupón'
     PLURALNAME: 'Cupones'
     CODE: 'Código'
+    CODEHIDDENNOTE: 'Este cupón usa los códigos de la pestaña Códigos.'
   'SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint':
     USELIMIT: 'Número máximo de usos'
     USELIMITNOTE: 'Nota: 0 = ilimitado'

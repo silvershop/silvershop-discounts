@@ -259,9 +259,22 @@ class Discount extends DataObject implements PermissionProvider
                             . 'calculated on the price remaining after the discounts before it.'
                         ))
                 ),
-                Tab::create('Constraints', TabSet::create('ConstraintsTabs', $general = Tab::create('General', 'General')))
+                Tab::create('Constraints', TabSet::create('ConstraintsTabs', $general = Tab::create('General', _t(__CLASS__ . '.TABGENERAL', 'General'))))
             )
             ]
+        );
+
+        $general->push(
+            LiteralField::create(
+                'ConstraintsNote',
+                sprintf(
+                    '<p class="message notice">%s</p>',
+                    _t(
+                        __CLASS__ . '.CONSTRAINTSNOTE',
+                        'These conditions apply to the whole discount. Per-code limits are set on the Codes tab.'
+                    )
+                )
+            )
         );
 
         if (!$this->isInDB()) {
@@ -313,6 +326,10 @@ class Discount extends DataObject implements PermissionProvider
                 $fieldList->insertAfter('Percent', $maxamountfield);
             }
         }
+
+        $fieldList->fieldByName('Root.Main')?->setTitle(_t(__CLASS__ . '.TABMAIN', 'Main'));
+        $fieldList->fieldByName('Root.Constraints')?->setTitle(_t(__CLASS__ . '.TABCONSTRAINTS', 'Constraints'));
+        $fieldList->fieldByName('Root.Usage')?->setTitle(_t(__CLASS__ . '.TABUSAGE', 'Usage'));
 
         $this->extend('updateCMSFields', $fieldList, $params);
 

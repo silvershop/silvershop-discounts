@@ -2,6 +2,7 @@ nl:
   'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
     Codes: 'Codes'
     CODEUSELIMITREACHED: 'Deze code is al het maximale aantal keer gebruikt.'
+    CODESNOTE: 'Elke code hoort bij deze coupon en heeft zijn eigen limiet. De voorwaarden op het Voorwaarden-tabblad gelden voor alle codes samen.'
   'SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint':
     PERCUSTOMERUSELIMIT: 'Maximaal aantal keer per klant'
     PERCUSTOMERUSELIMITDESC: 'Let op: 0 = onbeperkt. Ingelogde klanten worden exact herkend, gasten op e-mailadres.'
@@ -50,6 +51,11 @@ nl:
     PriorityDescription: 'Gestapelde kortingen worden toegepast op volgorde van prioriteit, hoogste eerst. Elke korting wordt berekend over de prijs die overblijft na de kortingen ervoor.'
     SAVENOTE: 'Er verschijnen meer voorwaarden nadat je voor het eerst hebt opgeslagen.'
     USEHEADER: 'Aantal keer gebruikt: {count}'
+    TABMAIN: 'Hoofd'
+    TABCONSTRAINTS: 'Voorwaarden'
+    TABGENERAL: 'Algemeen'
+    TABUSAGE: 'Gebruik'
+    CONSTRAINTSNOTE: 'Deze voorwaarden gelden voor de hele korting. Limieten per code stel je in op het Codes-tabblad.'
   'SilverShop\Discounts\Model\OrderDiscount':
     SINGULARNAME: 'Korting'
     PLURALNAME: 'Kortingen'
@@ -57,6 +63,7 @@ nl:
     SINGULARNAME: 'Coupon'
     PLURALNAME: 'Coupons'
     CODE: 'Code'
+    CODEHIDDENNOTE: 'Deze coupon gebruikt de codes op het Codes-tabblad.'
   'SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint':
     USELIMIT: 'Maximaal aantal keer gebruiken'
     USELIMITNOTE: 'Let op: 0 = onbeperkt'
