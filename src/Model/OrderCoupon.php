@@ -2,7 +2,6 @@
 
 namespace SilverShop\Discounts\Model;
 
-use SilverStripe\Core\Convert;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\FieldList;
@@ -108,10 +107,10 @@ class OrderCoupon extends Discount
                 'Root.Main',
                 LiteralField::create(
                     'CodeHidden',
-                    sprintf(
-                        '<p class="message notice">%s</p>',
-                        Convert::raw2xml(_t(__CLASS__ . '.CODEHIDDENNOTE', 'This coupon uses the codes on the Codes tab.'))
-                    )
+                    '<p class="message notice" style="display:flex;align-items:flex-start;gap:.5em">'
+                    . '<span class="font-icon-info-circled" aria-hidden="true"></span><span>'
+                    . _t(__CLASS__ . '.CODEHIDDENNOTE', 'This coupon uses the codes on the Codes tab.')
+                    . '</span></p>'
                 )
             );
 

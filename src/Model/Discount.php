@@ -324,13 +324,13 @@ class Discount extends DataObject implements PermissionProvider
         $general->push(
             LiteralField::create(
                 'ConstraintsNote',
-                sprintf(
-                    '<p class="message notice">%s</p>',
-                    _t(
-                        __CLASS__ . '.CONSTRAINTSNOTE',
-                        'These conditions apply to the whole discount. Per-code limits are set on the Codes tab.'
-                    )
+                '<p class="message notice" style="display:flex;align-items:flex-start;gap:.5em">'
+                . '<span class="font-icon-info-circled" aria-hidden="true"></span><span>'
+                . _t(
+                    __CLASS__ . '.CONSTRAINTSNOTE',
+                    'These conditions apply to the whole discount. Per-code limits are set on the Codes tab.'
                 )
+                . '</span></p>'
             )
         );
 

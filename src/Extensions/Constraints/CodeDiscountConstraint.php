@@ -75,14 +75,14 @@ class CodeDiscountConstraint extends DiscountConstraint
             'Root.Codes',
             LiteralField::create(
                 'CodesNote',
-                sprintf(
-                    '<p class="message notice">%s</p>',
-                    Convert::raw2xml(_t(
-                        __CLASS__ . '.CODESNOTE',
-                        'Each code belongs to this coupon and has its own limit. The conditions on the '
-                        . 'Constraints tab apply to all of its codes together.'
-                    ))
+                '<p class="message notice" style="display:flex;align-items:flex-start;gap:.5em">'
+                . '<span class="font-icon-info-circled" aria-hidden="true"></span><span>'
+                . _t(
+                    __CLASS__ . '.CODESNOTE',
+                    'Each code belongs to this coupon and has its own limit. The conditions on the '
+                    . 'Constraints tab apply to all of its codes together.'
                 )
+                . '</span></p>'
             )
         );
     }
