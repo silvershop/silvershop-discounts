@@ -109,7 +109,7 @@ class OrderCoupon extends Discount
                 LiteralField::create(
                     'CodeHidden',
                     sprintf(
-                        '<div class="form-group"><p class="message notice">%s</p></div>',
+                        '<p class="message notice">%s</p>',
                         Convert::raw2xml(_t(__CLASS__ . '.CODEHIDDENNOTE', 'This coupon uses the codes on the Codes tab.'))
                     )
                 ),
