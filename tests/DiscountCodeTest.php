@@ -3,6 +3,7 @@
 namespace SilverShop\Discounts\Tests;
 
 use SilverShop\Discounts\Calculator;
+use SilverShop\Discounts\Form\GridFieldGenerateCodesButton;
 use SilverShop\Discounts\Model\DiscountCode;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Model\Order;
@@ -10,6 +11,9 @@ use SilverShop\Page\Product;
 use SilverShop\Tests\ShopTestBootstrap;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\SapphireTest;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\Form;
+use SilverStripe\Forms\GridField\GridField;
 
 /**
  * Multi-code coupons (issue #31): a coupon can own many {@link DiscountCode} children; entering any
@@ -139,6 +143,20 @@ class DiscountCodeTest extends SapphireTest
 
         $all = $this->coupon->Codes()->column('Code');
         $this->assertSame(count($all), count(array_unique($all)), 'generated codes are unique');
+    }
+
+    public function testGenerateCodesButtonGeneratesABatch(): void
+    {
+        Config::modify()->set(GridFieldGenerateCodesButton::class, 'batch_size', 3);
+
+        $grid = GridField::create('Codes', 'Codes', $this->coupon->Codes());
+        $form = Form::create(null, 'TestForm', FieldList::create($grid), FieldList::create());
+        $form->loadDataFrom($this->coupon);
+
+        $before = $this->coupon->Codes()->count();
+        GridFieldGenerateCodesButton::create()->handleAction($grid, 'generatecodes', [], []);
+
+        $this->assertSame($before + 3, $this->coupon->Codes()->count(), 'the button generates a batch of codes');
     }
 
     public function testCascadeDeleteRemovesChildCodes(): void

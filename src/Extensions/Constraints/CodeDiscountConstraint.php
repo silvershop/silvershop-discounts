@@ -3,6 +3,7 @@
 namespace SilverShop\Discounts\Extensions\Constraints;
 
 use SilverShop\Discounts\Checkout\AppliedCouponCodes;
+use SilverShop\Discounts\Form\GridFieldGenerateCodesButton;
 use SilverShop\Discounts\Model\Discount;
 use SilverShop\Discounts\Model\DiscountCode;
 use SilverStripe\Core\Convert;
@@ -50,13 +51,16 @@ class CodeDiscountConstraint extends DiscountConstraint
             return;
         }
 
+        $config = GridFieldConfig_RecordEditor::create();
+        $config->addComponent(GridFieldGenerateCodesButton::create());
+
         $fieldList->addFieldToTab(
             'Root.Codes',
             GridField::create(
                 'Codes',
                 _t(__CLASS__ . '.Codes', 'Codes'),
                 $owner->Codes(),
-                GridFieldConfig_RecordEditor::create()
+                $config
             )
         );
     }
