@@ -525,8 +525,13 @@ class Discount extends DataObject implements PermissionProvider
      * Generate $count unique child codes for this discount (issue #31 bulk codes). Each code is
      * unique across all coupons and codes. Returns the number created.
      */
-    public function generateCodes(int $count, ?int $length = null, string $prefix = ''): int
-    {
+    public function generateCodes(
+        int $count,
+        int $useLimit = 0,
+        int $perCustomerUseLimit = 0,
+        ?int $length = null,
+        string $prefix = ''
+    ): int {
         if (!$this->isInDB() || $count < 1) {
             return 0;
         }
@@ -536,6 +541,8 @@ class Discount extends DataObject implements PermissionProvider
         for ($i = 0; $i < $count; $i++) {
             $code = DiscountCode::create();
             $code->Code = DiscountCode::generate_code($length, $prefix);
+            $code->UseLimit = max(0, $useLimit);
+            $code->PerCustomerUseLimit = max(0, $perCustomerUseLimit);
             $code->DiscountID = $this->ID;
             $code->write();
             $created++;

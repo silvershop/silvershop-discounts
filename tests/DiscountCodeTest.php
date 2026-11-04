@@ -131,7 +131,7 @@ class DiscountCodeTest extends SapphireTest
 
     public function testGenerateCodesCreatesUniqueChildren(): void
     {
-        $created = $this->coupon->generateCodes(5, 8, 'XM');
+        $created = $this->coupon->generateCodes(5, 0, 0, 8, 'XM');
         $this->assertSame(5, $created);
 
         $generated = $this->coupon->Codes()->filter('Code:StartsWith', 'XM');
@@ -145,18 +145,46 @@ class DiscountCodeTest extends SapphireTest
         $this->assertSame(count($all), count(array_unique($all)), 'generated codes are unique');
     }
 
-    public function testGenerateCodesButtonGeneratesABatch(): void
+    public function testGenerateCodesAppliesLimits(): void
     {
-        Config::modify()->set(GridFieldGenerateCodesButton::class, 'batch_size', 3);
+        $this->coupon->generateCodes(3, 1, 2, 8, 'LT');
 
+        $generated = $this->coupon->Codes()->filter('Code:StartsWith', 'LT');
+        $this->assertSame(3, $generated->count());
+
+        foreach ($generated as $code) {
+            $this->assertSame(1, (int) $code->UseLimit, 'per-code use limit applied');
+            $this->assertSame(2, (int) $code->PerCustomerUseLimit, 'per-customer limit applied');
+        }
+    }
+
+    public function testGenerateCodesFormHandleActionUsesSubmittedValues(): void
+    {
         $grid = GridField::create('Codes', 'Codes', $this->coupon->Codes());
         $form = Form::create(null, 'TestForm', FieldList::create($grid), FieldList::create());
         $form->loadDataFrom($this->coupon);
 
         $before = $this->coupon->Codes()->count();
-        GridFieldGenerateCodesButton::create()->handleAction($grid, 'generatecodes', [], []);
+        GridFieldGenerateCodesButton::create()->handleAction($grid, 'generatecodes', [], [
+            'GenerateCodesCount' => 3,
+            'GenerateCodesUseLimit' => 1,
+            'GenerateCodesPerCustomer' => 2,
+            'GenerateCodesPrefix' => 'BT',
+            'GenerateCodesLength' => 8
+        ]);
 
-        $this->assertSame($before + 3, $this->coupon->Codes()->count(), 'the button generates a batch of codes');
+        $generated = $this->coupon->Codes()->filter('Code:StartsWith', 'BT');
+        $this->assertSame($before + 3, $this->coupon->Codes()->count(), 'the form generates the requested count');
+        $this->assertSame(3, $generated->count());
+
+        $code = $generated->first();
+        $this->assertSame(1, (int) $code->UseLimit, 'submitted use limit applied');
+        $this->assertSame(2, (int) $code->PerCustomerUseLimit, 'submitted per-customer limit applied');
+
+        // count of 0 is a no-op
+        $none = $this->coupon->Codes()->count();
+        GridFieldGenerateCodesButton::create()->handleAction($grid, 'generatecodes', [], ['GenerateCodesCount' => 0]);
+        $this->assertSame($none, $this->coupon->Codes()->count(), 'count 0 generates nothing');
     }
 
     public function testCascadeDeleteRemovesChildCodes(): void

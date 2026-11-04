@@ -12,3 +12,11 @@ it:
     PLURALNAME: 'Codici'
     CODEREQUIRED: 'È richiesto un codice.'
     CODETAKEN: 'Il codice "{code}" è già in uso.'
+  'SilverShop\Discounts\Form\GridFieldGenerateCodesButton':
+    HEADING: 'Genera codici'
+    GENERATE: 'Genera'
+    NUMBER: 'Numero di codici'
+    USELIMIT: 'Limite di utilizzi per codice'
+    PERCUSTOMER: 'Max per cliente'
+    PREFIX: 'Prefisso'
+    LENGTH: 'Lunghezza'

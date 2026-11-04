@@ -57,6 +57,7 @@ class DiscountCode extends DataObject
         'Code',
         'TimesUsed' => 'Used',
         'UseLimit' => 'Limit',
+        'PerCustomerUseLimit' => 'Per customer',
         'Active.Nice' => 'Active'
     ];
 
