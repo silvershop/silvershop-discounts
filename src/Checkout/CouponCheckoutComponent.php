@@ -10,6 +10,8 @@ use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\TextField;
 use SilverShop\Model\Order;
+use SilverStripe\Control\Controller;
+use SilverStripe\Core\Cache\RateLimiter;
 
 /**
  * Lets the customer enter coupon codes.
@@ -32,6 +34,24 @@ class CouponCheckoutComponent extends CheckoutComponent
      * coupon with a validation message.
      */
     private static bool $replace_non_stackable = true;
+
+    /**
+     * Failed coupon-code lookups allowed from one client before it is temporarily blocked, to slow
+     * down code enumeration / guessing. 0 disables the limit.
+     */
+    private static int $apply_attempt_limit = 10;
+
+    /**
+     * How long (in minutes) the coupon-attempt block lasts once the limit is reached.
+     */
+    private static int $apply_attempt_decay = 5;
+
+    /**
+     * When true, a rejected coupon returns a single uniform message instead of revealing whether the
+     * code was unknown or merely invalid, which removes an enumeration oracle, at the cost of less
+     * helpful feedback for genuine customers. Off by default; enable it for high-value coupon runs.
+     */
+    private static bool $generic_coupon_errors = false;
 
     protected bool $validwhenblank = false;
 
@@ -63,20 +83,37 @@ class CouponCheckoutComponent extends CheckoutComponent
             return $validationResult->isValid();
         }
 
-        // check the coupon exists, and can be used
-        $coupon = $code !== '' ? OrderCoupon::get_by_code($code) : null;
+        $rateLimiter = $this->getRateLimiter();
 
-        if (!$coupon instanceof OrderCoupon) {
+        if ($rateLimiter && !$rateLimiter->canAccess()) {
             $validationResult->addError(
-                _t('OrderCouponModifier.NOTFOUND', 'Coupon could not be found'),
+                _t(
+                    __CLASS__ . '.TOOMANYATTEMPTS',
+                    'Too many coupon attempts. Please wait a moment and try again.'
+                ),
                 'Code'
             );
 
             throw ValidationException::create($validationResult);
         }
 
+        // check the coupon exists, and can be used
+        $coupon = $code !== '' ? OrderCoupon::get_by_code($code) : null;
+
+        if (!$coupon instanceof OrderCoupon) {
+            // count only unknown codes against the limit: that is the enumeration signal, and it
+            // avoids locking out a customer retrying a single real-but-invalid code.
+            if ($rateLimiter) {
+                $rateLimiter->hit();
+            }
+
+            $validationResult->addError($this->couponErrorMessage(), 'Code');
+
+            throw ValidationException::create($validationResult);
+        }
+
         if (!$coupon->validateOrder($order, ['CouponCode' => $code, 'CouponCodes' => [$code]])) {
-            $validationResult->addError($coupon->getMessage(), 'Code');
+            $validationResult->addError($this->couponErrorMessage($coupon), 'Code');
 
             throw ValidationException::create($validationResult);
         }
@@ -87,7 +124,51 @@ class CouponCheckoutComponent extends CheckoutComponent
             throw ValidationException::create($validationResult);
         }
 
+        if ($rateLimiter) {
+            $rateLimiter->clearAttempts();
+        }
+
         return $validationResult->isValid();
+    }
+
+    /**
+     * The validation message for a rejected coupon. With generic_coupon_errors on, both "unknown" and
+     * "invalid" return the same wording so the response can't be used to tell real codes from fake
+     * ones; otherwise the specific reason is kept for helpful customer feedback.
+     */
+    protected function couponErrorMessage(?OrderCoupon $coupon = null): string
+    {
+        if (static::config()->get('generic_coupon_errors')) {
+            return _t(
+                __CLASS__ . '.CANNOTAPPLY',
+                "Sorry, that coupon code can't be applied to your order."
+            );
+        }
+
+        if ($coupon instanceof OrderCoupon) {
+            return (string) $coupon->getMessage();
+        }
+
+        return _t('OrderCouponModifier.NOTFOUND', 'Coupon could not be found');
+    }
+
+    /**
+     * A per-client rate limiter for coupon attempts, keyed by client IP, or null when limiting is
+     * disabled or there is no HTTP context (CLI, unit tests).
+     */
+    protected function getRateLimiter(): ?RateLimiter
+    {
+        $limit = (int) static::config()->get('apply_attempt_limit');
+        $controller = Controller::curr();
+
+        if ($limit <= 0 || $controller === null) {
+            return null;
+        }
+
+        $ip = $controller->getRequest()->getIP() ?: 'unknown';
+        $decay = max(1, (int) static::config()->get('apply_attempt_decay'));
+
+        return RateLimiter::create('shop-coupon-apply-' . md5($ip), $limit, $decay);
     }
 
     /**

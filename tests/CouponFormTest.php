@@ -13,7 +13,9 @@ use SilverShop\Discounts\Checkout\AppliedCouponCodes;
 use SilverShop\Discounts\Checkout\CouponCheckoutComponent;
 use SilverStripe\Core\Validation\ValidationException;
 use SilverStripe\Control\Controller;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Security\Member;
+use Psr\SimpleCache\CacheInterface;
 
 class CouponFormTest extends FunctionalTest
 {
@@ -173,6 +175,56 @@ class CouponFormTest extends FunctionalTest
 
         $couponForm->removeCoupon([], $couponForm);
         $this->assertSame([], AppliedCouponCodes::get());
+    }
+
+    public function testGenericCouponErrorsHideDetail(): void
+    {
+        CouponCheckoutComponent::config()->set('generic_coupon_errors', true);
+        $this->flushCouponRateLimiter();
+
+        $order = $this->objFromFixture(Order::class, 'cart');
+        $component = CouponCheckoutComponent::create();
+
+        try {
+            $component->validateData($order, ['Code' => 'DOESNOTEXIST']);
+            $this->fail('an unknown code should be rejected');
+        } catch (ValidationException $e) {
+            $this->assertStringContainsString("can't be applied", $e->getMessage());
+            $this->assertStringNotContainsString('could not be found', $e->getMessage());
+        }
+    }
+
+    public function testCouponAttemptsAreRateLimited(): void
+    {
+        CouponCheckoutComponent::config()->set('apply_attempt_limit', 3);
+        CouponCheckoutComponent::config()->set('generic_coupon_errors', false);
+        $this->flushCouponRateLimiter();
+
+        $order = $this->objFromFixture(Order::class, 'cart');
+        $component = CouponCheckoutComponent::create();
+
+        // the first three unknown-code attempts are allowed through (each a plain "not found")
+        for ($i = 0; $i < 3; $i++) {
+            try {
+                $component->validateData($order, ['Code' => 'MISSING' . $i]);
+                $this->fail('an unknown code should be rejected');
+            } catch (ValidationException $e) {
+                $this->assertStringNotContainsString('Too many', $e->getMessage());
+            }
+        }
+
+        // the fourth is blocked
+        try {
+            $component->validateData($order, ['Code' => 'MISSINGBLOCK']);
+            $this->fail('attempts past the limit should be blocked');
+        } catch (ValidationException $e) {
+            $this->assertStringContainsString('Too many', $e->getMessage());
+        }
+    }
+
+    protected function flushCouponRateLimiter(): void
+    {
+        Injector::inst()->get(CacheInterface::class . '.RateLimiter')->clear();
     }
 
     protected function createCoupon(string $code, bool $stacking): OrderCoupon
