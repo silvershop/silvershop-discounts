@@ -22,6 +22,7 @@ use SilverShop\Discounts\Model\PartialUseDiscount;
 use SilverShop\Discounts\Form\GridField_LinkComponent;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
+use SilverStripe\Security\Permission;
 
 class DiscountModelAdmin extends ModelAdmin
 {
@@ -209,6 +210,12 @@ class DiscountModelAdmin extends ModelAdmin
     /** @param array<string, mixed> $data */
     public function generate(array $data, Form $form): void
     {
+        // the scaffolded UI hides this from members without MANAGE_DISCOUNTS, but write() does not
+        // enforce canCreate(), so guard the action itself against a direct/forged request.
+        if (!Permission::check('MANAGE_DISCOUNTS')) {
+            $this->httpError(403);
+        }
+
         $count = 1;
 
         if (isset($data['Number']) && is_numeric($data['Number'])) {
@@ -236,6 +243,10 @@ class DiscountModelAdmin extends ModelAdmin
     /** @return array<string, string|Form> */
     public function generatecoupons(): array
     {
+        if (!Permission::check('MANAGE_DISCOUNTS')) {
+            $this->httpError(403);
+        }
+
         return [
             'Title' => 'Generate Coupons',
             'EditForm' => $this->GenerateCouponsForm(),
