@@ -6,6 +6,7 @@ use SilverShop\Discounts\Calculator;
 use SilverStripe\Dev\SapphireTest;
 use SilverShop\Tests\ShopTestBootstrap;
 use SilverStripe\Core\Config\Config;
+use SilverShop\Discounts\Model\DiscountCode;
 use SilverShop\Discounts\Model\OrderCoupon;
 use SilverShop\Page\Product;
 use SilverShop\Model\Order;
@@ -71,6 +72,32 @@ class OrderCouponTest extends SapphireTest
         $coupon = OrderCoupon::create(['Code' => '1']);
         $result = $coupon->validate();
         $this->assertNotContains('INVALIDMINLENGTH', $result->getMessages());
+    }
+
+    public function testCodeSummary(): void
+    {
+        $single = OrderCoupon::create(
+            ['Title' => 'Single', 'Code' => 'SINGLECODE', 'Type' => 'Percent', 'Percent' => 0.1]
+        );
+        $single->write();
+        $this->assertSame('SINGLECODE', $single->getCodeSummary(), 'a single-code coupon shows its own code');
+
+        $multi = OrderCoupon::create(['Title' => 'Multi', 'Type' => 'Percent', 'Percent' => 0.1]);
+        $multi->write();
+        foreach (['AAA111', 'BBB222', 'CCC333'] as $code) {
+            DiscountCode::create(['Code' => $code, 'DiscountID' => $multi->ID])->write();
+        }
+        $this->assertSame(
+            'AAA111, BBB222, …',
+            $multi->getCodeSummary(),
+            'a multi-code coupon shows the first two codes with an ellipsis'
+        );
+
+        $two = OrderCoupon::create(['Title' => 'Two', 'Type' => 'Percent', 'Percent' => 0.1]);
+        $two->write();
+        DiscountCode::create(['Code' => 'XONE11', 'DiscountID' => $two->ID])->write();
+        DiscountCode::create(['Code' => 'YTWO22', 'DiscountID' => $two->ID])->write();
+        $this->assertSame('XONE11, YTWO22', $two->getCodeSummary(), 'exactly two codes need no ellipsis');
     }
 
     public function testPercent(): void

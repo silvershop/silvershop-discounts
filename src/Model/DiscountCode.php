@@ -247,7 +247,13 @@ class DiscountCode extends DataObject
 
     public function canView($member = null): bool
     {
-        return true;
+        if (parent::canView($member)) {
+            return true;
+        }
+
+        $memberArg = $member instanceof Member ? $member : 0;
+
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
     /** @param array<string, mixed> $context */

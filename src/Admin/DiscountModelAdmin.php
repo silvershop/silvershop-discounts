@@ -12,6 +12,7 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\GridField\GridField;
+use SilverStripe\Forms\GridField\GridFieldDataColumns;
 use SilverStripe\Forms\GridField\GridFieldExportButton;
 use SilverStripe\Forms\Validation\RequiredFieldsValidator;
 use SilverStripe\Forms\Form;
@@ -62,6 +63,17 @@ class DiscountModelAdmin extends ModelAdmin
             );
             $gridFieldLinkComponent->addExtraClass('btn-primary font-icon-plus-circled');
             $grid->getConfig()->addComponent($gridFieldLinkComponent, GridFieldExportButton::class);
+
+            // Show the first couple of child codes for a multi-code coupon (issue #31) in the Code
+            // column, keeping it in place; a single-code coupon still shows its own code.
+            $dataColumns = $grid->getConfig()->getComponentByType(GridFieldDataColumns::class);
+            if ($dataColumns instanceof GridFieldDataColumns) {
+                $dataColumns->setFieldFormatting([
+                    'Code' => fn ($value, $item): string => $item instanceof OrderCoupon
+                        ? $item->getCodeSummary()
+                        : (string) $value,
+                ]);
+            }
         }
 
         // descriptions may be keyed by either the fully qualified or short class name
