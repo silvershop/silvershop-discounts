@@ -10,6 +10,7 @@ use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordViewer;
 use SilverStripe\Model\List\ArrayList;
 use SilverShop\Discounts\Model\Discount;
+use SilverShop\Discounts\Model\DiscountCode;
 use SilverShop\Discounts\Model\PartialUseDiscount;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 
@@ -74,6 +75,48 @@ class DiscountedOrderExtension extends Extension
                 $discount->Active = false;
                 $discount->write();
             }
+        }
+    }
+
+    /**
+     * When the order is paid, keep the stored per-discount / per-code redemption counters
+     * ({@see Discount::$TimesUsed}) in step. Only the discounts and the specific codes used on this
+     * order are reconciled; enforcement uses the derived counts, so this is for display/reporting.
+     */
+    public function onPaid(): void
+    {
+        $discountIDs = [];
+        $codeIDs = [];
+
+        $lists = [];
+
+        foreach ($this->owner->Items() as $item) {
+            $lists[] = $item->Discounts();
+        }
+
+        foreach ($this->owner->Modifiers() as $modifier) {
+            if ($modifier instanceof OrderDiscountModifier) {
+                $lists[] = $modifier->Discounts();
+            }
+        }
+
+        foreach ($lists as $list) {
+            foreach ($list as $discount) {
+                $discountIDs[(int) $discount->ID] = true;
+                $codeID = (int) $discount->DiscountCodeID;
+
+                if ($codeID !== 0) {
+                    $codeIDs[$codeID] = true;
+                }
+            }
+        }
+
+        foreach (array_keys($discountIDs) as $id) {
+            Discount::get()->byID($id)?->reconcileTimesUsed();
+        }
+
+        foreach (array_keys($codeIDs) as $id) {
+            DiscountCode::get()->byID($id)?->reconcileTimesUsed();
         }
     }
 

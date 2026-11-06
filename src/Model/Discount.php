@@ -61,6 +61,7 @@ use SilverStripe\ORM\Search\SearchContext;
  * @property bool $MinOrderValueTaxInclusive
  * @property bool $AllowStacking
  * @property int $Priority
+ * @property int $TimesUsed
  * @method   ManyManyList<OrderItem> OrderItems()
  * @method   ManyManyList<OrderDiscountModifier> DiscountModifiers()
  * @mixin    CategoriesDiscountConstraint
@@ -85,7 +86,10 @@ class Discount extends DataObject implements PermissionProvider
         'ForShipping' => 'Boolean',
         'MaxAmount' => 'Currency',
         'AllowStacking' => 'Boolean',
-        'Priority' => 'Int'
+        'Priority' => 'Int',
+        // stored, paid-only redemption counter (display / summary_fields); kept off the getUseCount()
+        // name so it never shadows the derived, pending-aware count used for enforcement
+        'TimesUsed' => 'Int'
     ];
 
     private static array $belongs_many_many = [
@@ -106,6 +110,7 @@ class Discount extends DataObject implements PermissionProvider
     private static array $summary_fields = [
         'Title',
         'DiscountNice' => 'Discount',
+        'TimesUsed' => 'Used',
         'StartDate',
         'EndDate'
     ];
@@ -501,6 +506,51 @@ class Discount extends DataObject implements PermissionProvider
         return $this->getUseCount($orderID) > 0;
     }
 
+    /**
+     * Recompute and store the paid-only redemption counter {@see $TimesUsed}. The derived
+     * getUseCount() stays authoritative for enforcement; this keeps the cheap, sortable
+     * summary_fields value in step (first-deploy backfill, and after each paid order / refund).
+     */
+    public function reconcileTimesUsed(): void
+    {
+        $count = $this->getAppliedOrders(false)->count();
+
+        if ((int) $this->getField('TimesUsed') !== $count) {
+            $this->setField('TimesUsed', $count);
+            $this->write();
+        }
+    }
+
+    /**
+     * Generate $count unique child codes for this discount (issue #31 bulk codes). Each code is
+     * unique across all coupons and codes. Returns the number created.
+     */
+    public function generateCodes(
+        int $count,
+        int $useLimit = 0,
+        int $perCustomerUseLimit = 0,
+        ?int $length = null,
+        string $prefix = ''
+    ): int {
+        if (!$this->isInDB() || $count < 1) {
+            return 0;
+        }
+
+        $created = 0;
+
+        for ($i = 0; $i < $count; $i++) {
+            $code = DiscountCode::create();
+            $code->Code = DiscountCode::generate_code($length, $prefix);
+            $code->UseLimit = max(0, $useLimit);
+            $code->PerCustomerUseLimit = max(0, $perCustomerUseLimit);
+            $code->DiscountID = $this->ID;
+            $code->write();
+            $created++;
+        }
+
+        return $created;
+    }
+
     public function setPercent(float|int $value): void
     {
         $value = $value > 100 ? 100 : $value;
@@ -559,8 +609,19 @@ class Discount extends DataObject implements PermissionProvider
      * $includeunpaid include orders where the payment process has
      * started less than 'unpaid_use_timeout' minutes ago.
      */
-    public function getAppliedOrders(bool $includeunpaid = false): DataList
+    public function getAppliedOrders(bool $includeunpaid = false, ?int $discountCodeID = null): DataList
     {
+        $id = (int) $this->ID;
+        $itemWhere = "SilverShop_OrderItem_Discounts.SilverShop_DiscountID = $id";
+        $modifierWhere = "SilverShop_OrderDiscountModifier_Discounts.SilverShop_DiscountID = $id";
+
+        // narrow to a single child code's redemptions (issue #31 per-code counting)
+        if ($discountCodeID !== null && $discountCodeID !== 0) {
+            $codeID = (int) $discountCodeID;
+            $itemWhere .= " AND SilverShop_OrderItem_Discounts.DiscountCodeID = $codeID";
+            $modifierWhere .= " AND SilverShop_OrderDiscountModifier_Discounts.DiscountCodeID = $codeID";
+        }
+
         $orders =  Order::get()
             ->innerJoin('SilverShop_OrderAttribute', '"SilverShop_OrderAttribute"."OrderID" = "SilverShop_Order"."ID"')
             ->leftJoin(
@@ -571,10 +632,7 @@ class Discount extends DataObject implements PermissionProvider
                 'SilverShop_OrderDiscountModifier_Discounts',
                 '"SilverShop_OrderDiscountModifier_Discounts"."SilverShop_OrderDiscountModifierID" = "SilverShop_OrderAttribute"."ID"'
             )
-            ->where(
-                "SilverShop_OrderItem_Discounts.SilverShop_DiscountID = $this->ID OR SilverShop_OrderDiscountModifier_Discounts.SilverShop_DiscountID = $this->ID
-            "
-            );
+            ->where("($itemWhere) OR ($modifierWhere)");
 
         if ($includeunpaid) {
             $minutes = (int) self::config()->get('unpaid_use_timeout');

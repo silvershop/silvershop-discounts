@@ -34,6 +34,7 @@ class OrderCoupon extends Discount
         'Title',
         'Code',
         'DiscountNice' => 'Discount',
+        'TimesUsed' => 'Used',
         'StartDate',
         'EndDate'
     ];
@@ -50,9 +51,27 @@ class OrderCoupon extends Discount
 
     public static function get_by_code(string $code): ?self
     {
-        return self::get()
-            ->filter('Code:nocase', $code)
-            ->first();
+        $code = trim($code);
+
+        if ($code === '') {
+            return null;
+        }
+
+        // a coupon's own (legacy) single code
+        $coupon = self::get()->filter('Code:nocase', $code)->first();
+
+        if ($coupon instanceof self) {
+            return $coupon;
+        }
+
+        // or one of a coupon's many child codes (issue #31)
+        $discountCode = DiscountCode::get_by_code($code);
+
+        if ($discountCode instanceof DiscountCode && ($owner = $discountCode->Discount()) instanceof self) {
+            return $owner;
+        }
+
+        return null;
     }
 
     /**
