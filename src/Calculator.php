@@ -5,8 +5,10 @@ namespace SilverShop\Discounts;
 use SilverStripe\Model\List\ArrayList;
 use SilverShop\Discounts\Actions\ItemDiscountAction;
 use SilverShop\Discounts\Actions\SubtotalDiscountAction;
+use SilverShop\Discounts\Checkout\AppliedCouponCodes;
 use SilverShop\Discounts\Extensions\Constraints\ItemDiscountConstraint;
 use SilverShop\Discounts\Model\Discount;
+use SilverShop\Discounts\Model\DiscountCode;
 use SilverShop\Discounts\Model\Modifiers\OrderDiscountModifier;
 use SilverShop\Discounts\Actions\ItemPercentDiscount;
 use SilverShop\Discounts\Actions\ItemFixedDiscount;
@@ -25,6 +27,14 @@ class Calculator
     protected ArrayList $discounts;
 
     protected OrderDiscountModifier $modifier;
+
+    /**
+     * Applied coupon codes (uppercase, normalised), used to attribute a redemption to the specific
+     * child {@link DiscountCode} that unlocked a discount.
+     *
+     * @var array<int, string>
+     */
+    protected array $codes = [];
 
     /** @var array<int, array{Level: string, Amount: int|float, Discount: string}> */
     protected array $log = [];
@@ -46,6 +56,15 @@ class Calculator
 
         // stacked discounts compound, so the order they are applied in matters
         $this->discounts = $discounts->sort(['Priority' => 'DESC', 'ID' => 'ASC']);
+
+        $codes = $context['CouponCodes'] ?? [];
+        $codes = is_array($codes) ? $codes : [$codes];
+
+        if (!empty($context['CouponCode'])) {
+            $codes[] = $context['CouponCode'];
+        }
+
+        $this->codes = AppliedCouponCodes::normalise($codes);
     }
 
     /**
@@ -102,7 +121,7 @@ class Calculator
 
                 $infoitem->getItem()->Discounts()->add(
                     $adjustment->getAdjuster(),
-                    ['DiscountAmount' => $amount]
+                    ['DiscountAmount' => $amount, 'DiscountCodeID' => $this->discountCodeID($adjustment->getAdjuster())]
                 );
 
                 $this->logDiscountAmount('Item', $amount, $adjustment->getAdjuster());
@@ -156,7 +175,7 @@ class Calculator
 
             $this->modifier->Discounts()->add(
                 $discount,
-                ['DiscountAmount' => $amount]
+                ['DiscountAmount' => $amount, 'DiscountCodeID' => $this->discountCodeID($discount)]
             );
 
             $this->logDiscountAmount('Cart', $amount, $discount);
@@ -293,6 +312,25 @@ class Calculator
     protected function getStackableDiscounts(ArrayList $discounts): ArrayList
     {
         return $discounts->filter('AllowStacking', true);
+    }
+
+    /**
+     * The id of the child {@link DiscountCode} (issue #31) that unlocked $discount given the codes
+     * applied to this order, or 0 when it was not matched by a child code. Recorded on the discount
+     * link so redemptions can be counted per code.
+     */
+    protected function discountCodeID(Discount $discount): int
+    {
+        if ($this->codes === []) {
+            return 0;
+        }
+
+        $code = DiscountCode::get()
+            ->filter(['DiscountID' => (int) $discount->ID, 'Active' => true])
+            ->filter('Code', $this->codes)
+            ->first();
+
+        return $code instanceof DiscountCode ? (int) $code->ID : 0;
     }
 
     /**

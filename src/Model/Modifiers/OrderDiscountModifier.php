@@ -26,7 +26,9 @@ class OrderDiscountModifier extends OrderModifier
 
     private static array $many_many_extraFields = [
         'Discounts' => [
-            'DiscountAmount' => 'Currency'
+            'DiscountAmount' => 'Currency',
+            // the specific DiscountCode (issue #31) that unlocked this discount, 0 when none
+            'DiscountCodeID' => 'Int'
         ]
     ];
 

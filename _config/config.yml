@@ -19,6 +19,7 @@ SilverShop\Discounts\Model\Discount:
   extensions:
     - SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint
     - SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint
+    - SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint
     - SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint
     - SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint
     - SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint
