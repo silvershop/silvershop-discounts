@@ -1,13 +1,13 @@
-Here is your gift voucher
+<%t SilverShop\Discounts\Model\GiftVoucherOrderItem.EmailIntro "Here is your gift voucher" %>
 
 <% with $Coupon %>
-Code: $Code
+<%t SilverShop\Discounts\Model\GiftVoucherOrderItem.EmailCode "Code" %>: $Code
 <% if $Type = 'Percent' %>
-Percent: $Percent.Nice
+<%t SilverShop\Discounts\Model\GiftVoucherOrderItem.EmailPercent "Percent" %>: $Percent.Nice
 <% else %>
-Amount: $Amount.Nice
+<%t SilverShop\Discounts\Model\GiftVoucherOrderItem.EmailAmount "Amount" %>: $Amount.Nice
 <% end_if %>
 <% if $EndDate %>
-This voucher must be used by $EndDate.Long
+<%t SilverShop\Discounts\Model\GiftVoucherOrderItem.EmailExpiry "This voucher must be used by {date}" date=$EndDate.Long %>
 <% end_if %>
 <% end_with %>

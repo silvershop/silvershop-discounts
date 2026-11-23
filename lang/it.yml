@@ -1,4 +1,6 @@
 it:
+  RemoveCoupon: 'Rimuovi il coupon'
+  ApplyCoupon: 'Applica il coupon'
   'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
     Codes: 'Codici'
     CODEUSELIMITREACHED: 'Questo codice ha raggiunto il numero massimo di utilizzi.'
@@ -27,6 +29,7 @@ it:
     LENGTH: 'Lunghezza'
   'SilverShop\Discounts\Admin\DiscountModelAdmin':
     MENUTITLE: 'Sconti'
+    GenerateMultipleCoupons: 'Genera più coupon'
   'SilverShop\Discounts\Model\Discount':
     SINGULARNAME: 'Sconto'
     PLURALNAME: 'Sconti'
@@ -83,3 +86,57 @@ it:
     MINORDERVALUE: 'Subtotale minimo dell''ordine'
     MINORDERVALUE_TAX_INCLUSIVE: 'Applica il minimo al subtotale IVA inclusa'
     MINORDERVALUE_TAX_INCLUSIVE_HELP: 'Se attivato, il minimo viene confrontato con il subtotale delle righe del carrello più qualsiasi importo aggiunto da un hook di estensione Order (updateMinimumOrderValueComparisonAmount). Usa quell''hook per aggiungere l''IVA o altri componenti in modo che la soglia corrisponda a come fissi i prezzi.'
+    MINORDERVALUE_INCLUSIVE: 'Il subtotale del carrello (IVA inclusa) deve essere almeno %s per usare questo sconto.'
+  'CouponForm':
+    COUPON: 'Inserisci il codice del coupon, se ne hai uno.'
+  'Discount':
+    GROUPED: 'Solo alcuni membri possono usare questo sconto.'
+    INACTIVE: 'Questo %s non è attivo.'
+    MEMBERSHIP: 'Solo alcuni membri possono usare questo sconto.'
+    MINORDERVALUE: 'Il subtotale del carrello deve essere almeno %s per usare questo sconto.'
+  'DiscountConstraint':
+    USELIMITREACHED: 'Questo sconto ha raggiunto il numero massimo di utilizzi.'
+  'GiftVoucherProduct':
+    Amount: 'Importo'
+    MinimumAmountError: 'Il valore del buono regalo deve essere almeno {MinimumAmount}'
+  'Order':
+    GIFTVOUCHERSUBJECT: 'Buono regalo'
+  'OrderCoupon':
+    EXPIRED: 'Questo coupon è già scaduto.'
+    INVALIDMINLENGTH: 'Il codice del coupon deve contenere almeno {length} caratteri'
+    TOOEARLY: 'Questo coupon non è ancora valido.'
+  'OrderCouponModifier':
+    NOTFOUND: 'Coupon non trovato'
+  'ProductsDiscountConstraint':
+    MISSINGPRODUCT: 'I prodotti richiesti non sono nel carrello.'
+  'SilverShop\Checkout\Step\CheckoutStep':
+    Continue: 'Continua'
+  'SilverShop\Discounts\Checkout\CouponCheckoutComponent':
+    APPLIEDNOTSTACKABLE: 'Il coupon {codes} non può essere combinato con altri coupon.'
+    MAXCOUPONS: 'Puoi usare al massimo {count} coupon per ordine.'
+    NOTSTACKABLE: 'Questo coupon non può essere combinato con altri coupon. Rimuovi {codes} per usarlo.'
+    TOOMANYATTEMPTS: 'Troppi tentativi. Attendi un momento e riprova.'
+    CANNOTAPPLY: 'Spiacenti, questo codice non può essere applicato al tuo ordine.'
+  'SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint':
+    CATEGORIESNOTINCART: 'I prodotti richiesti (categorie) non sono nel carrello.'
+    PRODUCTCATEGORIES: 'Categorie di prodotti'
+  'SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint':
+    ANYORNOGROUP: 'Qualsiasi gruppo o nessuno'
+    MEMBERISINGROUP: 'Il membro è nel gruppo'
+  'SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint':
+    MEMBERS: 'Membri'
+  'SilverShop\Discounts\Extensions\Constraints\ProductTypeDiscountConstraint':
+    PRODUCTTYPES: 'Tipi di prodotto'
+    PRODUCTTYPESNOTINCART: 'I tipi di prodotto richiesti non sono nel carrello.'
+  'SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint':
+    ALLPRODUCTSINCART: 'Tutti i prodotti selezionati devono essere nel carrello.'
+    SPECIFICPRODUCTS: 'Prodotti specifici'
+  'SilverShop\Discounts\Form\CouponForm':
+    AppliedCoupons: 'Coupon applicati'
+    RemoveCodesDescription: 'Seleziona i coupon da rimuovere, o lascia vuoto per rimuoverli tutti.'
+  'SilverShop\Discounts\Model\GiftVoucherOrderItem':
+    EmailIntro: 'Ecco il tuo buono regalo'
+    EmailCode: 'Codice'
+    EmailPercent: 'Percentuale'
+    EmailAmount: 'Importo'
+    EmailExpiry: 'Questo buono deve essere usato entro il {date}'
