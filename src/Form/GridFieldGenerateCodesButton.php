@@ -12,6 +12,7 @@ use SilverStripe\Forms\GridField\GridField_FormAction;
 use SilverStripe\Forms\GridField\GridField_HTMLProvider;
 use SilverStripe\Forms\NumericField;
 use SilverStripe\Forms\TextField;
+use SilverStripe\Security\Permission;
 
 /**
  * A small form above a Discount's Codes grid that generates a batch of unique child codes (issue
@@ -35,6 +36,11 @@ class GridFieldGenerateCodesButton implements GridField_HTMLProvider, GridField_
         $record = $gridField->getForm()->getRecord();
 
         if (!$record instanceof Discount || !$record->isInDB()) {
+            return [];
+        }
+
+        // only offer code generation to someone with MANAGE_DISCOUNTS (write() doesn't enforce it)
+        if (!Permission::check('MANAGE_DISCOUNTS')) {
             return [];
         }
 
@@ -100,6 +106,12 @@ class GridFieldGenerateCodesButton implements GridField_HTMLProvider, GridField_
         $record = $gridField->getForm()->getRecord();
 
         if (!$record instanceof Discount || !$record->isInDB()) {
+            return;
+        }
+
+        // DataObject::write() does not enforce canCreate()/canEdit(), so gate the write here:
+        // a member with CMS access to this section but without MANAGE_DISCOUNTS must not mint codes.
+        if (!Permission::check('MANAGE_DISCOUNTS')) {
             return;
         }
 
