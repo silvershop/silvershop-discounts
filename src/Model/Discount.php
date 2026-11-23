@@ -748,7 +748,14 @@ class Discount extends DataObject implements PermissionProvider
 
     public function canDelete($member = null): bool
     {
-        return !$this->isUsed();
+        // a discount that has been used stays, for the order history
+        if ($this->isUsed()) {
+            return false;
+        }
+
+        $memberArg = $member instanceof Member ? $member : 0;
+
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
     public function canEdit($member = null): bool
