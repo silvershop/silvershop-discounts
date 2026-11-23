@@ -12,6 +12,7 @@ use SilverShop\Discounts\Form\CouponForm;
 use SilverShop\Discounts\Checkout\AppliedCouponCodes;
 use SilverShop\Discounts\Checkout\CouponCheckoutComponent;
 use SilverStripe\Core\Validation\ValidationException;
+use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Control\Controller;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Security\Member;
@@ -245,5 +246,32 @@ class CouponFormTest extends FunctionalTest
     {
         $component->validateData($order, ['Code' => $code]);
         $component->setData($order, ['Code' => $code]);
+    }
+
+    public function testCouponErrorsAreReportedOnTheCodeField(): void
+    {
+        CouponCheckoutComponent::config()->set('generic_coupon_errors', false);
+        $this->flushCouponRateLimiter();
+
+        $order = $this->objFromFixture(Order::class, 'cart');
+        $component = CouponCheckoutComponent::create();
+
+        try {
+            $component->validateData($order, ['Code' => 'NOSUCHCODE']);
+            $this->fail('an unknown code should be rejected');
+        } catch (ValidationException $e) {
+            $messages = $e->getResult()->getMessages();
+            $this->assertCount(1, $messages);
+            $message = reset($messages);
+            $this->assertSame('Code', $message['fieldName'], 'the error belongs to the Code field');
+            $this->assertSame(ValidationResult::TYPE_ERROR, $message['messageType'], 'and is typed as an error');
+        }
+
+        // and through the coupon form, the message lands on its Code field
+        $checkoutPage = $this->objFromFixture(CheckoutPage::class, 'checkout');
+        $couponForm = CouponForm::create(CheckoutPageController::create($checkoutPage), CouponForm::class, $order);
+        $couponForm->loadDataFrom(['Code' => 'NOSUCHCODE']);
+        $fieldNames = array_column($couponForm->validate()->getMessages(), 'fieldName');
+        $this->assertContains('Code', $fieldNames);
     }
 }
