@@ -5,8 +5,8 @@ nl:
   'SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint':
     PERCUSTOMERUSELIMIT: 'Maximaal aantal keer per klant'
     PERCUSTOMERUSELIMITDESC: 'Let op: 0 = onbeperkt. Ingelogde klanten worden exact herkend, gasten op e-mailadres.'
-    PERCUSTOMERLIMITREACHED: 'U hebt deze korting al het maximale aantal keer gebruikt.'
-    CODEPERCUSTOMERLIMITREACHED: 'U hebt deze code al het maximale aantal keer gebruikt.'
+    PERCUSTOMERLIMITREACHED: 'Je hebt deze korting al het maximale aantal keer gebruikt.'
+    CODEPERCUSTOMERLIMITREACHED: 'Je hebt deze code al het maximale aantal keer gebruikt.'
   'SilverShop\Discounts\Model\DiscountCode':
     SINGULARNAME: 'Code'
     PLURALNAME: 'Codes'
