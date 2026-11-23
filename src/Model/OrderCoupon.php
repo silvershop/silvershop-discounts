@@ -7,6 +7,8 @@ use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextField;
+use SilverStripe\Security\Member;
+use SilverStripe\Security\Permission;
 use SilverStripe\Security\RandomGenerator;
 
 /**
@@ -172,6 +174,23 @@ class OrderCoupon extends Discount
     }
 
     /**
+     * Code shown in the admin grid. For a single-code coupon that is the legacy Code; for a
+     * multi-code coupon (issue #31) the single Code is empty, so show the first couple of child
+     * codes with an ellipsis when there are more.
+     */
+    public function getCodeSummary(): string
+    {
+        if (!$this->hasChildCodes()) {
+            return (string) $this->Code;
+        }
+
+        $codes = $this->Codes()->sort('Code ASC')->limit(3)->column('Code');
+        $shown = implode(', ', array_slice($codes, 0, 2));
+
+        return count($codes) > 2 ? $shown . ', …' : $shown;
+    }
+
+    /**
      * Forces codes to be alpha-numeric, uppercase, and trimmed
      */
     public function setCode(?string $code): static
@@ -187,13 +206,25 @@ class OrderCoupon extends Discount
 
     public function canView($member = null): bool
     {
-        return true;
+        if (parent::canView($member)) {
+            return true;
+        }
+
+        $memberArg = $member instanceof Member ? $member : 0;
+
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
     /** @param array<string, mixed> $context */
     public function canCreate($member = null, $context = []): bool
     {
-        return true;
+        if (parent::canCreate($member, $context)) {
+            return true;
+        }
+
+        $memberArg = $member instanceof Member ? $member : 0;
+
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
     public function canDelete($member = null): bool

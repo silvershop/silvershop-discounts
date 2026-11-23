@@ -3,6 +3,9 @@ en:
     Codes: 'Codes'
     CODEUSELIMITREACHED: 'This code has reached its maximum number of uses.'
     CODESNOTE: 'Each code belongs to this coupon and has its own limit. The conditions on the Constraints tab apply to all of its codes together.'
+  'SilverShop\Discounts\Checkout\CouponCheckoutComponent':
+    TOOMANYATTEMPTS: 'Too many coupon attempts. Please wait a moment and try again.'
+    CANNOTAPPLY: "Sorry, that coupon code can't be applied to your order."
   'SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint':
     PERCUSTOMERUSELIMIT: 'Maximum uses per customer'
     PERCUSTOMERUSELIMITDESC: 'Note: 0 = unlimited. Logged-in customers are matched exactly; guests by email.'
