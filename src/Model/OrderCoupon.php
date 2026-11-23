@@ -229,11 +229,23 @@ class OrderCoupon extends Discount
 
     public function canDelete($member = null): bool
     {
-        return $this->getUseCount() === 0;
+        // a coupon that has been used stays, for the order history
+        if ($this->getUseCount() !== 0) {
+            return false;
+        }
+
+        $memberArg = $member instanceof Member ? $member : 0;
+
+        return (bool) Permission::checkMember($memberArg, 'MANAGE_DISCOUNTS');
     }
 
     public function canEdit($member = null): bool
     {
-        return !($this->getUseCount() && !$this->Active);
+        // a used coupon that has been deactivated is locked
+        if ($this->getUseCount() && !$this->Active) {
+            return false;
+        }
+
+        return parent::canEdit($member);
     }
 }

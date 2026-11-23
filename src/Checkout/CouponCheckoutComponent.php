@@ -86,12 +86,12 @@ class CouponCheckoutComponent extends CheckoutComponent
         $rateLimiter = $this->getRateLimiter();
 
         if ($rateLimiter && !$rateLimiter->canAccess()) {
-            $validationResult->addError(
+            $validationResult->addFieldError(
+                'Code',
                 _t(
                     __CLASS__ . '.TOOMANYATTEMPTS',
                     'Too many coupon attempts. Please wait a moment and try again.'
-                ),
-                'Code'
+                )
             );
 
             throw ValidationException::create($validationResult);
@@ -107,19 +107,19 @@ class CouponCheckoutComponent extends CheckoutComponent
                 $rateLimiter->hit();
             }
 
-            $validationResult->addError($this->couponErrorMessage(), 'Code');
+            $validationResult->addFieldError('Code', $this->couponErrorMessage());
 
             throw ValidationException::create($validationResult);
         }
 
         if (!$coupon->validateOrder($order, ['CouponCode' => $code, 'CouponCodes' => [$code]])) {
-            $validationResult->addError($this->couponErrorMessage($coupon), 'Code');
+            $validationResult->addFieldError('Code', $this->couponErrorMessage($coupon));
 
             throw ValidationException::create($validationResult);
         }
 
         if ($message = $this->getStackingError($coupon)) {
-            $validationResult->addError($message, 'Code');
+            $validationResult->addFieldError('Code', $message);
 
             throw ValidationException::create($validationResult);
         }
