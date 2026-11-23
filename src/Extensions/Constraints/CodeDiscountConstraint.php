@@ -11,6 +11,8 @@ use SilverStripe\Core\Convert;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\GridField\GridField;
 use SilverStripe\Forms\GridField\GridFieldConfig_RecordEditor;
+use SilverStripe\Forms\GridField\GridFieldExportButton;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\DataList;
 
 /**
@@ -58,6 +60,7 @@ class CodeDiscountConstraint extends DiscountConstraint
 
         $config = GridFieldConfig_RecordEditor::create();
         $config->addComponent(GridFieldGenerateCodesButton::create());
+        $config->addComponent(GridFieldExportButton::create('buttons-before-right'));
 
         $fieldList->addFieldToTab(
             'Root.Codes',
@@ -66,6 +69,20 @@ class CodeDiscountConstraint extends DiscountConstraint
                 _t(__CLASS__ . '.Codes', 'Codes'),
                 $owner->Codes(),
                 $config
+            )
+        );
+        $fieldList->addFieldToTab(
+            'Root.Codes',
+            LiteralField::create(
+                'CodesNote',
+                '<p class="message notice" style="display:flex;align-items:flex-start;gap:.5em">'
+                . '<span class="font-icon-info-circled" aria-hidden="true"></span><span>'
+                . _t(
+                    __CLASS__ . '.CODESNOTE',
+                    'Each code belongs to this coupon and has its own limit. The conditions on the '
+                    . 'Constraints tab apply to all of its codes together.'
+                )
+                . '</span></p>'
             )
         );
     }
@@ -83,11 +100,12 @@ class CodeDiscountConstraint extends DiscountConstraint
                 $codes
             ));
 
-            // match: legacy code in the applied list, OR a child code in the applied list,
+            // match: a child code in the applied list (a coupon with child codes uses ONLY those),
+            // OR the legacy code in the applied list but only when there are no child codes,
             // OR the discount is not coded at all (no legacy code AND no child codes).
             return $dataList->where(sprintf(
-                '(%1$s IN (%2$s)) '
-                . 'OR ("%3$s"."ID" IN (SELECT "DiscountID" FROM "%4$s" WHERE "Code" IN (%2$s))) '
+                '("%3$s"."ID" IN (SELECT "DiscountID" FROM "%4$s" WHERE "Code" IN (%2$s))) '
+                . 'OR (%1$s IN (%2$s) AND "%3$s"."ID" NOT IN (SELECT "DiscountID" FROM "%4$s")) '
                 . 'OR (%1$s IS NULL AND "%3$s"."ID" NOT IN (SELECT "DiscountID" FROM "%4$s"))',
                 $codeColumn,
                 $inList,
@@ -152,14 +170,16 @@ class CodeDiscountConstraint extends DiscountConstraint
             return null;
         }
 
-        if ($discount->Code && in_array(strtoupper((string) $discount->Code), $codes, true)) {
-            return strtoupper((string) $discount->Code);
+        // Once a coupon has its own child codes, only those count — the single legacy Code is
+        // ignored (and hidden in the CMS). A single-code coupon still matches on its legacy Code.
+        if ($discount->Codes()->exists()) {
+            $child = $this->matchedDiscountCode($discount, $codes);
+
+            return $child instanceof DiscountCode ? strtoupper((string) $child->Code) : null;
         }
 
-        foreach ($discount->Codes() as $child) {
-            if ($child->Active && in_array(strtoupper((string) $child->Code), $codes, true)) {
-                return strtoupper((string) $child->Code);
-            }
+        if ($discount->Code && in_array(strtoupper((string) $discount->Code), $codes, true)) {
+            return strtoupper((string) $discount->Code);
         }
 
         return null;

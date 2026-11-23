@@ -5,6 +5,7 @@ namespace SilverShop\Discounts\Model;
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\TextField;
 use SilverStripe\Security\RandomGenerator;
 
@@ -57,18 +58,19 @@ class OrderCoupon extends Discount
             return null;
         }
 
-        // a coupon's own (legacy) single code
-        $coupon = self::get()->filter('Code:nocase', $code)->first();
-
-        if ($coupon instanceof self) {
-            return $coupon;
-        }
-
-        // or one of a coupon's many child codes (issue #31)
+        // a child code (issue #31) takes precedence
         $discountCode = DiscountCode::get_by_code($code);
 
         if ($discountCode instanceof DiscountCode && ($owner = $discountCode->Discount()) instanceof self) {
             return $owner;
+        }
+
+        // a coupon's own (legacy) single code - only when that coupon has no child codes, which
+        // otherwise supersede and hide it
+        $coupon = self::get()->filter('Code:nocase', $code)->first();
+
+        if ($coupon instanceof self && !$coupon->Codes()->exists()) {
+            return $coupon;
         }
 
         return null;
@@ -97,10 +99,28 @@ class OrderCoupon extends Discount
     public function getCMSFields($params = null): FieldList
     {
         $fieldList = parent::getCMSFields();
+
+        // When the coupon has its own codes (issue #31) the single legacy Code is ignored, so hide it
+        // and point to the Codes tab rather than showing a confusing extra code.
+        if ($this->hasChildCodes()) {
+            $fieldList->addFieldToTab(
+                'Root.Main',
+                LiteralField::create(
+                    'CodeHidden',
+                    '<p class="message notice" style="display:flex;align-items:flex-start;gap:.5em">'
+                    . '<span class="font-icon-info-circled" aria-hidden="true"></span><span>'
+                    . _t(__CLASS__ . '.CODEHIDDENNOTE', 'This coupon uses the codes on the Codes tab.')
+                    . '</span></p>'
+                )
+            );
+
+            return $fieldList;
+        }
+
         $fieldList->addFieldsToTab(
             'Root.Main',
             [
-                $codefield = TextField::create('Code')->setMaxLength(25),
+                $codefield = TextField::create('Code', _t(__CLASS__ . '.CODE', 'Code'))->setMaxLength(25),
             ],
             'Active'
         );
@@ -137,20 +157,28 @@ class OrderCoupon extends Discount
 
     protected function onBeforeWrite(): void
     {
-        if (empty($this->Code)) {
+        // Auto-generate a code only when the coupon has no codes at all. A coupon with child codes
+        // (issue #31) is gated by those, so it needs no - and ignores - a legacy single Code.
+        if (empty($this->Code) && !$this->hasChildCodes()) {
             $this->Code = self::generate_code();
         }
 
         parent::onBeforeWrite();
     }
 
+    protected function hasChildCodes(): bool
+    {
+        return $this->isInDB() && $this->Codes()->exists();
+    }
+
     /**
      * Forces codes to be alpha-numeric, uppercase, and trimmed
      */
-    public function setCode(string $code): static
+    public function setCode(?string $code): static
     {
-        if ($code !== '' && $code !== '0') {
-            $code = trim((string) preg_replace('/[^0-9a-zA-Z]+/', '', $code));
+        if ($code !== null && $code !== '' && $code !== '0') {
+            // uppercase alphanumeric, plus the hyphen (a common coupon separator, e.g. SUMMER-2026)
+            $code = trim((string) preg_replace('/[^0-9a-zA-Z-]+/', '', $code));
             $this->setField('Code', strtoupper($code));
         }
 

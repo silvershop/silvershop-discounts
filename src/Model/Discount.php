@@ -205,41 +205,46 @@ class Discount extends DataObject implements PermissionProvider
                 'Root',
                 Tab::create(
                     'Main',
-                    TextField::create('Title'),
-                    CheckboxField::create('Active', 'Active')
-                    ->setDescription('Enable/disable all use of this discount.'),
-                    HeaderField::create('ActionTitle', 'Action', 3),
+                    TextField::create('Title', _t(__CLASS__ . '.TITLE', 'Title')),
+                    CheckboxField::create('Active', _t(__CLASS__ . '.ACTIVE', 'Active'))
+                    ->setDescription(_t(__CLASS__ . '.ACTIVEDESC', 'Enable/disable all use of this discount.')),
+                    HeaderField::create('ActionTitle', _t(__CLASS__ . '.ACTION', 'Action'), 3),
                     SelectionGroup::create(
                         'Type',
                         [
                             SelectionGroup_Item::create(
                                 'Percent',
                                 $percentgroup = FieldGroup::create(
-                                    $percentfield = NumericField::create('Percent', 'Percentage', '0.00')
+                                    $percentfield = NumericField::create('Percent', _t(__CLASS__ . '.PERCENTAGE', 'Percentage'), '0.00')
                                         ->setScale(null)
-                                        ->setDescription('e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%'),
+                                        ->setDescription(_t(__CLASS__ . '.PERCENTDESC', 'e.g. 0.05 = 5%, 0.5 = 50%, and 5 = 500%')),
                                     $maxamountfield = CurrencyField::create(
                                         'MaxAmount',
-                                        _t('MaxAmount', 'Maximum Amount')
+                                        _t(__CLASS__ . '.MAXAMOUNT', 'Maximum Amount')
                                     )->setDescription(
-                                        'The total allowable discount. 0 means unlimited.'
+                                        _t(__CLASS__ . '.MAXAMOUNTDESC', 'The total allowable discount. 0 means unlimited.')
                                     )
                                 ),
-                                'Discount by percentage'
+                                _t(__CLASS__ . '.DISCOUNTBYPERCENT', 'Discount by percentage')
                             ),
-                            SelectionGroup_Item::create('Amount', $amountfield = CurrencyField::create('Amount', 'Amount', '$0.00'), 'Discount by fixed amount')
+                            SelectionGroup_Item::create('Amount', $amountfield = CurrencyField::create('Amount', _t(__CLASS__ . '.AMOUNT', 'Amount'), '$0.00'), _t(__CLASS__ . '.DISCOUNTBYAMOUNT', 'Discount by fixed amount'))
                         ]
-                    )->setTitle('Type'),
+                    )->setTitle(_t(__CLASS__ . '.TYPE', 'Type')),
                     OptionSetField::create(
                         'For',
-                        'Applies to',
+                        _t(__CLASS__ . '.APPLIESTO', 'Applies to'),
                         [
-                            'Order' => 'Entire order',
-                            'Cart' => 'Cart subtotal',
-                            'Shipping' => 'Shipping subtotal',
-                            'Items' => 'Each individual item'
+                            'Order' => _t(__CLASS__ . '.FORORDER', 'Entire order'),
+                            'Cart' => _t(__CLASS__ . '.FORCART', 'Cart subtotal'),
+                            'Shipping' => _t(__CLASS__ . '.FORSHIPPING', 'Shipping subtotal'),
+                            'Items' => _t(__CLASS__ . '.FORITEMS', 'Each individual item')
                         ]
-                    ),
+                    )->setDescription(_t(
+                        __CLASS__ . '.APPLIESTODESC',
+                        'Which part of the order the discount reduces. "Each individual item" applies to every '
+                        . 'qualifying line (for a fixed amount that is per item times quantity); "Cart subtotal" '
+                        . 'takes it off the items subtotal once; "Entire order" also discounts shipping.'
+                    )),
                     HeaderField::create('StackingTitle', _t(__CLASS__ . '.StackingTitle', 'Stacking'), 3),
                     CheckboxField::create('AllowStacking', _t(__CLASS__ . '.AllowStacking', 'Allow stacking'))
                         ->setDescription(_t(
@@ -254,7 +259,7 @@ class Discount extends DataObject implements PermissionProvider
                             . 'calculated on the price remaining after the discounts before it.'
                         ))
                 ),
-                Tab::create('Constraints', TabSet::create('ConstraintsTabs', $general = Tab::create('General', 'General')))
+                Tab::create('Constraints', TabSet::create('ConstraintsTabs', $general = Tab::create('General', _t(__CLASS__ . '.TABGENERAL', 'General'))))
             )
             ]
         );
@@ -265,14 +270,14 @@ class Discount extends DataObject implements PermissionProvider
                     'SaveNote',
                     sprintf(
                         '<p class="message good">%s</p>',
-                        _t(__CLASS__ . 'SaveNote', 'More constraints will show up after you save for the first time.')
+                        _t(__CLASS__ . '.SAVENOTE', 'More constraints will show up after you save for the first time.')
                     )
                 )
             );
         }
 
         if (($count = $this->getUseCount()) !== 0) {
-            $useHeader = _t('Discount.USEHEADER', 'Use Count: {count}', ['count' => $count]);
+            $useHeader = _t(__CLASS__ . '.USEHEADER', 'Use Count: {count}', ['count' => $count]);
 
             $fieldList->addFieldsToTab(
                 'Root.Usage',
@@ -309,7 +314,25 @@ class Discount extends DataObject implements PermissionProvider
             }
         }
 
+        $fieldList->fieldByName('Root.Main')?->setTitle(_t(__CLASS__ . '.TABMAIN', 'Main'));
+        $fieldList->fieldByName('Root.Constraints')?->setTitle(_t(__CLASS__ . '.TABCONSTRAINTS', 'Constraints'));
+        $fieldList->fieldByName('Root.Usage')?->setTitle(_t(__CLASS__ . '.TABUSAGE', 'Usage'));
+
         $this->extend('updateCMSFields', $fieldList, $params);
+
+        // placed last so the explanation sits below the constraint fields
+        $general->push(
+            LiteralField::create(
+                'ConstraintsNote',
+                '<p class="message notice" style="display:flex;align-items:flex-start;gap:.5em">'
+                . '<span class="font-icon-info-circled" aria-hidden="true"></span><span>'
+                . _t(
+                    __CLASS__ . '.CONSTRAINTSNOTE',
+                    'These conditions apply to the whole discount. Per-code limits are set on the Codes tab.'
+                )
+                . '</span></p>'
+            )
+        );
 
         if (!$fieldList instanceof FieldList) {
             return FieldList::create();

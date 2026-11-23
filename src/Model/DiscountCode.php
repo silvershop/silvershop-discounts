@@ -58,7 +58,12 @@ class DiscountCode extends DataObject
         'TimesUsed' => 'Used',
         'UseLimit' => 'Limit',
         'PerCustomerUseLimit' => 'Per customer',
-        'Active.Nice' => 'Active'
+        'Active.Nice' => 'Active',
+        'Status' => 'Status'
+    ];
+
+    private static array $casting = [
+        'Status' => 'Varchar'
     ];
 
     private static array $field_labels = [
@@ -124,7 +129,8 @@ class DiscountCode extends DataObject
 
     public static function normalise_code(string $code): string
     {
-        return strtoupper(trim((string) preg_replace('/[^0-9a-zA-Z]+/', '', $code)));
+        // uppercase alphanumeric, plus the hyphen (a common coupon separator, e.g. SUMMER-2026)
+        return strtoupper(trim((string) preg_replace('/[^0-9a-zA-Z-]+/', '', $code)));
     }
 
     /**
@@ -212,6 +218,31 @@ class DiscountCode extends DataObject
             $this->setField('TimesUsed', $count);
             $this->write();
         }
+    }
+
+    /**
+     * A human-readable state for the admin grid, derived from Active + the stored counter vs the
+     * limit. Display only - it never flips the Active flag (which stays a manual switch).
+     */
+    public function getStatus(): string
+    {
+        if (!$this->Active) {
+            return _t(__CLASS__ . '.STATUSINACTIVE', 'Inactive');
+        }
+
+        $limit = (int) $this->UseLimit;
+
+        if ($limit <= 0) {
+            return _t(__CLASS__ . '.STATUSUNLIMITED', 'Unlimited');
+        }
+
+        $remaining = $limit - (int) $this->getField('TimesUsed');
+
+        if ($remaining <= 0) {
+            return _t(__CLASS__ . '.STATUSUSEDUP', 'Used up');
+        }
+
+        return _t(__CLASS__ . '.STATUSREMAINING', '{count} left', ['count' => $remaining]);
     }
 
     public function canView($member = null): bool

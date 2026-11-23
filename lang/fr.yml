@@ -2,6 +2,7 @@ fr:
   'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
     Codes: 'Codes'
     CODEUSELIMITREACHED: "Ce code a atteint son nombre maximal d'utilisations."
+    CODESNOTE: 'Chaque code appartient à ce coupon et a sa propre limite. Les conditions de l''onglet Conditions s''appliquent à tous ses codes ensemble.'
   'SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint':
     PERCUSTOMERUSELIMIT: 'Utilisations maximales par client'
     PERCUSTOMERUSELIMITDESC: 'Remarque : 0 = illimité. Les clients connectés sont identifiés précisément, les invités par e-mail.'
@@ -12,6 +13,10 @@ fr:
     PLURALNAME: 'Codes'
     CODEREQUIRED: 'Un code est requis.'
     CODETAKEN: 'Le code "{code}" est déjà utilisé.'
+    STATUSINACTIVE: 'Inactif'
+    STATUSUNLIMITED: 'Illimité'
+    STATUSUSEDUP: 'Épuisé'
+    STATUSREMAINING: '{count} restant(s)'
   'SilverShop\Discounts\Form\GridFieldGenerateCodesButton':
     HEADING: 'Générer des codes'
     GENERATE: 'Générer'
@@ -22,3 +27,59 @@ fr:
     LENGTH: 'Longueur'
   'SilverShop\Discounts\Admin\DiscountModelAdmin':
     MENUTITLE: 'Remises'
+  'SilverShop\Discounts\Model\Discount':
+    SINGULARNAME: 'Remise'
+    PLURALNAME: 'Remises'
+    TITLE: 'Titre'
+    ACTIVE: 'Actif'
+    ACTIVEDESC: 'Active/désactive toute utilisation de cette remise.'
+    ACTION: 'Action'
+    TYPE: 'Type'
+    PERCENTAGE: 'Pourcentage'
+    PERCENTDESC: 'p. ex. 0.05 = 5%, 0.5 = 50% et 5 = 500%'
+    MAXAMOUNT: 'Montant maximum'
+    MAXAMOUNTDESC: 'La remise totale autorisée. 0 signifie illimité.'
+    DISCOUNTBYPERCENT: 'Remise en pourcentage'
+    AMOUNT: 'Montant'
+    DISCOUNTBYAMOUNT: 'Remise d''un montant fixe'
+    APPLIESTO: 'S''applique à'
+    FORORDER: 'Toute la commande'
+    FORCART: 'Sous-total du panier'
+    FORSHIPPING: 'Sous-total de livraison'
+    FORITEMS: 'Chaque article individuel'
+    APPLIESTODESC: 'La partie de la commande que la remise réduit. "Chaque article individuel" s''applique à chaque ligne éligible (pour un montant fixe, c''est par article multiplié par la quantité) ; "Sous-total du panier" la déduit une seule fois du sous-total des articles ; "Toute la commande" remise aussi la livraison.'
+    StackingTitle: 'Cumul'
+    AllowStacking: 'Autoriser le cumul'
+    AllowStackingDescription: 'Autoriser la combinaison avec d''autres remises et coupons qui autorisent aussi le cumul. Les remises qui n''autorisent pas le cumul ne sont jamais combinées avec autre chose.'
+    Priority: 'Priorité'
+    PriorityDescription: 'Les remises cumulées sont appliquées par ordre de priorité, la plus élevée en premier. Chaque remise est calculée sur le prix restant après les remises précédentes.'
+    SAVENOTE: 'D''autres contraintes apparaîtront après le premier enregistrement.'
+    USEHEADER: 'Nombre d''utilisations : {count}'
+    TABMAIN: 'Principal'
+    TABCONSTRAINTS: 'Conditions'
+    TABGENERAL: 'Général'
+    TABUSAGE: 'Utilisation'
+    CONSTRAINTSNOTE: 'Ces conditions s''appliquent à toute la remise. Les limites par code se définissent dans l''onglet Codes.'
+  'SilverShop\Discounts\Model\OrderDiscount':
+    SINGULARNAME: 'Remise'
+    PLURALNAME: 'Remises'
+  'SilverShop\Discounts\Model\PartialUseDiscount':
+    SINGULARNAME: 'Remise avec valeur résiduelle'
+    PLURALNAME: 'Remises avec valeur résiduelle'
+  'SilverShop\Discounts\Model\OrderCoupon':
+    SINGULARNAME: 'Coupon'
+    PLURALNAME: 'Coupons'
+    CODE: 'Code'
+    CODEHIDDENNOTE: 'Ce coupon utilise les codes de l''onglet Codes.'
+  'SilverShop\Discounts\Extensions\Constraints\UseLimitDiscountConstraint':
+    USELIMIT: 'Nombre maximal d''utilisations'
+    USELIMITNOTE: 'Remarque : 0 = illimité'
+  'SilverShop\Discounts\Extensions\Constraints\DatetimeDiscountConstraint':
+    VALIDDATERANGE: 'Période de validité :'
+    RANGESTART: 'Date/heure de début'
+    RANGEEND: 'Date/heure de fin'
+    ENDTIMEDAYNOTE: 'Réglez l''heure de fin sur 23:59:59 si vous voulez inclure toute la journée de fin.'
+  'SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint':
+    MINORDERVALUE: 'Sous-total minimum de la commande'
+    MINORDERVALUE_TAX_INCLUSIVE: 'Appliquer le minimum au sous-total TTC'
+    MINORDERVALUE_TAX_INCLUSIVE_HELP: 'Lorsque cette option est activée, le minimum est comparé au sous-total des lignes du panier plus tout montant ajouté par un hook d''extension Order (updateMinimumOrderValueComparisonAmount). Utilisez ce hook pour ajouter la taxe ou d''autres composants afin que le seuil corresponde à votre façon de fixer les prix.'
