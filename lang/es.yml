@@ -1,0 +1,24 @@
+es:
+  'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
+    Codes: 'Códigos'
+    CODEUSELIMITREACHED: 'Este código ha alcanzado su número máximo de usos.'
+  'SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint':
+    PERCUSTOMERUSELIMIT: 'Usos máximos por cliente'
+    PERCUSTOMERUSELIMITDESC: 'Nota: 0 = ilimitado. Los clientes con sesión se identifican con exactitud, los invitados por correo electrónico.'
+    PERCUSTOMERLIMITREACHED: 'Ya has usado este descuento el número máximo de veces.'
+    CODEPERCUSTOMERLIMITREACHED: 'Ya has usado este código el número máximo de veces.'
+  'SilverShop\Discounts\Model\DiscountCode':
+    SINGULARNAME: 'Código'
+    PLURALNAME: 'Códigos'
+    CODEREQUIRED: 'Se requiere un código.'
+    CODETAKEN: 'El código "{code}" ya está en uso.'
+  'SilverShop\Discounts\Form\GridFieldGenerateCodesButton':
+    HEADING: 'Generar códigos'
+    GENERATE: 'Generar'
+    NUMBER: 'Número de códigos'
+    USELIMIT: 'Límite de usos por código'
+    PERCUSTOMER: 'Máx por cliente'
+    PREFIX: 'Prefijo'
+    LENGTH: 'Longitud'
+  'SilverShop\Discounts\Admin\DiscountModelAdmin':
+    MENUTITLE: 'Descuentos'
