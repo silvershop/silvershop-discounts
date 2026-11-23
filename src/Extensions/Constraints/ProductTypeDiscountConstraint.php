@@ -51,7 +51,7 @@ class ProductTypeDiscountConstraint extends ItemDiscountConstraint
 
         $incart = $this->itemsInCart($discount);
         if (!$incart) {
-            $this->error(_t(__CLASS__ . '.PRODUCTTYPESNOTINCART', 'The required product type(s), are not in the cart.'));
+            $this->error(_t(__CLASS__ . '.PRODUCTTYPESNOTINCART', 'The required product type(s) are not in the cart.'));
         }
 
         return $incart;

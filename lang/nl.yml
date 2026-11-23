@@ -1,4 +1,6 @@
 nl:
+  RemoveCoupon: 'Kortingscode verwijderen'
+  ApplyCoupon: 'Kortingscode toepassen'
   'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
     Codes: 'Codes'
     CODEUSELIMITREACHED: 'Deze code is al het maximale aantal keer gebruikt.'
@@ -27,6 +29,7 @@ nl:
     LENGTH: 'Lengte'
   'SilverShop\Discounts\Admin\DiscountModelAdmin':
     MENUTITLE: 'Kortingen'
+    GenerateMultipleCoupons: 'Meerdere coupons genereren'
   'SilverShop\Discounts\Model\Discount':
     SINGULARNAME: 'Korting'
     PLURALNAME: 'Kortingen'
@@ -83,3 +86,57 @@ nl:
     MINORDERVALUE: 'Minimaal subtotaal van bestelling'
     MINORDERVALUE_TAX_INCLUSIVE: 'Minimum toepassen op subtotaal inclusief btw'
     MINORDERVALUE_TAX_INCLUSIVE_HELP: 'Indien ingeschakeld wordt het minimum vergeleken met het regel-subtotaal van de winkelwagen plus eventueel bedrag dat door een Order-extensiehook (updateMinimumOrderValueComparisonAmount) wordt toegevoegd. Gebruik die hook om btw of andere onderdelen toe te voegen zodat de drempel overeenkomt met hoe je producten prijst.'
+    MINORDERVALUE_INCLUSIVE: 'Je subtotaal (inclusief btw) moet minimaal %s zijn om deze korting te gebruiken.'
+  'CouponForm':
+    COUPON: 'Vul je kortingscode in als je die hebt.'
+  'Discount':
+    GROUPED: 'Alleen bepaalde leden kunnen deze korting gebruiken.'
+    INACTIVE: 'Deze %s is niet actief.'
+    MEMBERSHIP: 'Alleen bepaalde leden kunnen deze korting gebruiken.'
+    MINORDERVALUE: 'Je subtotaal moet minimaal %s zijn om deze korting te gebruiken.'
+  'DiscountConstraint':
+    USELIMITREACHED: 'Deze korting is al het maximale aantal keer gebruikt.'
+  'GiftVoucherProduct':
+    Amount: 'Bedrag'
+    MinimumAmountError: 'De waarde van de cadeaubon moet minimaal {MinimumAmount} zijn'
+  'Order':
+    GIFTVOUCHERSUBJECT: 'Cadeaubon'
+  'OrderCoupon':
+    EXPIRED: 'Deze kortingscode is verlopen.'
+    INVALIDMINLENGTH: 'Een kortingscode moet minimaal {length} tekens lang zijn'
+    TOOEARLY: 'Deze kortingscode is nog niet geldig.'
+  'OrderCouponModifier':
+    NOTFOUND: 'Kortingscode niet gevonden'
+  'ProductsDiscountConstraint':
+    MISSINGPRODUCT: 'De vereiste producten zitten niet in je winkelwagen.'
+  'SilverShop\Checkout\Step\CheckoutStep':
+    Continue: 'Ga verder'
+  'SilverShop\Discounts\Checkout\CouponCheckoutComponent':
+    APPLIEDNOTSTACKABLE: 'De kortingscode {codes} kan niet worden gecombineerd met andere kortingscodes.'
+    MAXCOUPONS: 'Je kunt maximaal {count} kortingscodes per bestelling gebruiken.'
+    NOTSTACKABLE: 'Deze kortingscode kan niet worden gecombineerd met andere kortingscodes. Verwijder {codes} om hem te gebruiken.'
+    TOOMANYATTEMPTS: 'Te veel pogingen. Wacht even en probeer het opnieuw.'
+    CANNOTAPPLY: 'Deze kortingscode kan helaas niet op je bestelling worden toegepast.'
+  'SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint':
+    CATEGORIESNOTINCART: 'De vereiste producten (categorieën) zitten niet in je winkelwagen.'
+    PRODUCTCATEGORIES: 'Productcategorieën'
+  'SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint':
+    ANYORNOGROUP: 'Elke of geen groep'
+    MEMBERISINGROUP: 'Lid zit in groep'
+  'SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint':
+    MEMBERS: 'Leden'
+  'SilverShop\Discounts\Extensions\Constraints\ProductTypeDiscountConstraint':
+    PRODUCTTYPES: 'Producttypen'
+    PRODUCTTYPESNOTINCART: 'De vereiste producttypen zitten niet in je winkelwagen.'
+  'SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint':
+    ALLPRODUCTSINCART: 'Alle geselecteerde producten moeten in de winkelwagen zitten.'
+    SPECIFICPRODUCTS: 'Specifieke producten'
+  'SilverShop\Discounts\Form\CouponForm':
+    AppliedCoupons: 'Toegepaste kortingscodes'
+    RemoveCodesDescription: 'Selecteer de kortingscodes die je wilt verwijderen, of laat leeg om alles te verwijderen.'
+  'SilverShop\Discounts\Model\GiftVoucherOrderItem':
+    EmailIntro: 'Hier is je cadeaubon'
+    EmailCode: 'Code'
+    EmailPercent: 'Percentage'
+    EmailAmount: 'Bedrag'
+    EmailExpiry: 'Gebruik deze cadeaubon uiterlijk op {date}'

@@ -39,7 +39,7 @@ class ProductsDiscountConstraint extends ItemDiscountConstraint
             [
                 GridField::create(
                     'Products',
-                    _t(__CLASS__ . 'SPECIFICPRODUCTS', 'Specific products'),
+                    _t(__CLASS__ . '.SPECIFICPRODUCTS', 'Specific products'),
                     $owner->Products(),
                     GridFieldConfig_RelationEditor::create()
                         ->removeComponentsByType(GridFieldAddNewButton::class)

@@ -1,4 +1,6 @@
 es:
+  RemoveCoupon: 'Quitar cupón'
+  ApplyCoupon: 'Aplicar cupón'
   'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
     Codes: 'Códigos'
     CODEUSELIMITREACHED: 'Este código ha alcanzado su número máximo de usos.'
@@ -27,6 +29,7 @@ es:
     LENGTH: 'Longitud'
   'SilverShop\Discounts\Admin\DiscountModelAdmin':
     MENUTITLE: 'Descuentos'
+    GenerateMultipleCoupons: 'Generar varios cupones'
   'SilverShop\Discounts\Model\Discount':
     SINGULARNAME: 'Descuento'
     PLURALNAME: 'Descuentos'
@@ -83,3 +86,57 @@ es:
     MINORDERVALUE: 'Subtotal mínimo del pedido'
     MINORDERVALUE_TAX_INCLUSIVE: 'Aplicar el mínimo al subtotal con impuestos'
     MINORDERVALUE_TAX_INCLUSIVE_HELP: 'Cuando está activado, el mínimo se compara con el subtotal de líneas del carrito más cualquier importe añadido por un hook de extensión de Order (updateMinimumOrderValueComparisonAmount). Usa ese hook para añadir impuestos u otros componentes para que el umbral coincida con cómo fijas los precios.'
+    MINORDERVALUE_INCLUSIVE: 'El subtotal de tu carrito (impuestos incluidos) debe ser de al menos %s para usar este descuento.'
+  'CouponForm':
+    COUPON: 'Introduce tu código de cupón si tienes uno.'
+  'Discount':
+    GROUPED: 'Solo determinados miembros pueden usar este descuento.'
+    INACTIVE: 'Este %s no está activo.'
+    MEMBERSHIP: 'Solo determinados miembros pueden usar este descuento.'
+    MINORDERVALUE: 'El subtotal de tu carrito debe ser de al menos %s para usar este descuento.'
+  'DiscountConstraint':
+    USELIMITREACHED: 'Este descuento ha alcanzado su número máximo de usos.'
+  'GiftVoucherProduct':
+    Amount: 'Importe'
+    MinimumAmountError: 'El valor de la tarjeta regalo debe ser de al menos {MinimumAmount}'
+  'Order':
+    GIFTVOUCHERSUBJECT: 'Tarjeta regalo'
+  'OrderCoupon':
+    EXPIRED: 'Este cupón ya ha caducado.'
+    INVALIDMINLENGTH: 'El código del cupón debe tener al menos {length} caracteres'
+    TOOEARLY: 'Este cupón aún no es válido.'
+  'OrderCouponModifier':
+    NOTFOUND: 'No se ha encontrado el cupón'
+  'ProductsDiscountConstraint':
+    MISSINGPRODUCT: 'Los productos necesarios no están en el carrito.'
+  'SilverShop\Checkout\Step\CheckoutStep':
+    Continue: 'Continuar'
+  'SilverShop\Discounts\Checkout\CouponCheckoutComponent':
+    APPLIEDNOTSTACKABLE: 'El cupón {codes} no se puede combinar con otros cupones.'
+    MAXCOUPONS: 'Puedes usar como máximo {count} cupones por pedido.'
+    NOTSTACKABLE: 'Este cupón no se puede combinar con otros cupones. Quita {codes} para usarlo.'
+    TOOMANYATTEMPTS: 'Demasiados intentos. Espera un momento y vuelve a intentarlo.'
+    CANNOTAPPLY: 'Lo sentimos, este código no se puede aplicar a tu pedido.'
+  'SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint':
+    CATEGORIESNOTINCART: 'Los productos necesarios (categorías) no están en el carrito.'
+    PRODUCTCATEGORIES: 'Categorías de productos'
+  'SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint':
+    ANYORNOGROUP: 'Cualquier grupo o ninguno'
+    MEMBERISINGROUP: 'El miembro está en el grupo'
+  'SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint':
+    MEMBERS: 'Miembros'
+  'SilverShop\Discounts\Extensions\Constraints\ProductTypeDiscountConstraint':
+    PRODUCTTYPES: 'Tipos de producto'
+    PRODUCTTYPESNOTINCART: 'Los tipos de producto necesarios no están en el carrito.'
+  'SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint':
+    ALLPRODUCTSINCART: 'Todos los productos seleccionados deben estar en el carrito.'
+    SPECIFICPRODUCTS: 'Productos específicos'
+  'SilverShop\Discounts\Form\CouponForm':
+    AppliedCoupons: 'Cupones aplicados'
+    RemoveCodesDescription: 'Selecciona los cupones que quieres quitar, o déjalo en blanco para quitarlos todos.'
+  'SilverShop\Discounts\Model\GiftVoucherOrderItem':
+    EmailIntro: 'Aquí tienes tu tarjeta regalo'
+    EmailCode: 'Código'
+    EmailPercent: 'Porcentaje'
+    EmailAmount: 'Importe'
+    EmailExpiry: 'Esta tarjeta regalo debe usarse antes del {date}'

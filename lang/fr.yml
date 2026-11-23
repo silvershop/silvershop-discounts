@@ -1,4 +1,6 @@
 fr:
+  RemoveCoupon: 'Retirer le coupon'
+  ApplyCoupon: 'Appliquer le coupon'
   'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
     Codes: 'Codes'
     CODEUSELIMITREACHED: "Ce code a atteint son nombre maximal d'utilisations."
@@ -27,6 +29,7 @@ fr:
     LENGTH: 'Longueur'
   'SilverShop\Discounts\Admin\DiscountModelAdmin':
     MENUTITLE: 'Remises'
+    GenerateMultipleCoupons: 'Générer plusieurs coupons'
   'SilverShop\Discounts\Model\Discount':
     SINGULARNAME: 'Remise'
     PLURALNAME: 'Remises'
@@ -83,3 +86,57 @@ fr:
     MINORDERVALUE: 'Sous-total minimum de la commande'
     MINORDERVALUE_TAX_INCLUSIVE: 'Appliquer le minimum au sous-total TTC'
     MINORDERVALUE_TAX_INCLUSIVE_HELP: 'Lorsque cette option est activée, le minimum est comparé au sous-total des lignes du panier plus tout montant ajouté par un hook d''extension Order (updateMinimumOrderValueComparisonAmount). Utilisez ce hook pour ajouter la taxe ou d''autres composants afin que le seuil corresponde à votre façon de fixer les prix.'
+    MINORDERVALUE_INCLUSIVE: 'Le sous-total de votre panier (TVA comprise) doit être d''au moins %s pour utiliser cette remise.'
+  'CouponForm':
+    COUPON: 'Saisissez votre code promo si vous en avez un.'
+  'Discount':
+    GROUPED: 'Seuls certains membres peuvent utiliser cette remise.'
+    INACTIVE: 'Cette offre n''est pas active.'
+    MEMBERSHIP: 'Seuls certains membres peuvent utiliser cette remise.'
+    MINORDERVALUE: 'Le sous-total de votre panier doit être d''au moins %s pour utiliser cette remise.'
+  'DiscountConstraint':
+    USELIMITREACHED: 'Cette remise a atteint son nombre maximal d''utilisations.'
+  'GiftVoucherProduct':
+    Amount: 'Montant'
+    MinimumAmountError: 'La valeur du chèque-cadeau doit être d''au moins {MinimumAmount}'
+  'Order':
+    GIFTVOUCHERSUBJECT: 'Chèque-cadeau'
+  'OrderCoupon':
+    EXPIRED: 'Ce coupon a déjà expiré.'
+    INVALIDMINLENGTH: 'Le code du coupon doit comporter au moins {length} caractères'
+    TOOEARLY: 'Ce coupon n''est pas encore valable.'
+  'OrderCouponModifier':
+    NOTFOUND: 'Coupon introuvable'
+  'ProductsDiscountConstraint':
+    MISSINGPRODUCT: 'Les produits requis ne sont pas dans le panier.'
+  'SilverShop\Checkout\Step\CheckoutStep':
+    Continue: 'Continuer'
+  'SilverShop\Discounts\Checkout\CouponCheckoutComponent':
+    APPLIEDNOTSTACKABLE: 'Le coupon {codes} ne peut pas être combiné avec d''autres coupons.'
+    MAXCOUPONS: 'Vous pouvez utiliser au maximum {count} coupons par commande.'
+    NOTSTACKABLE: 'Ce coupon ne peut pas être combiné avec d''autres coupons. Retirez {codes} pour l''utiliser.'
+    TOOMANYATTEMPTS: 'Trop de tentatives. Veuillez patienter un instant et réessayer.'
+    CANNOTAPPLY: 'Désolé, ce code ne peut pas être appliqué à votre commande.'
+  'SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint':
+    CATEGORIESNOTINCART: 'Les produits requis (catégories) ne sont pas dans le panier.'
+    PRODUCTCATEGORIES: 'Catégories de produits'
+  'SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint':
+    ANYORNOGROUP: 'N''importe quel groupe ou aucun'
+    MEMBERISINGROUP: 'Le membre fait partie du groupe'
+  'SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint':
+    MEMBERS: 'Membres'
+  'SilverShop\Discounts\Extensions\Constraints\ProductTypeDiscountConstraint':
+    PRODUCTTYPES: 'Types de produits'
+    PRODUCTTYPESNOTINCART: 'Les types de produits requis ne sont pas dans le panier.'
+  'SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint':
+    ALLPRODUCTSINCART: 'Tous les produits sélectionnés doivent être dans le panier.'
+    SPECIFICPRODUCTS: 'Produits spécifiques'
+  'SilverShop\Discounts\Form\CouponForm':
+    AppliedCoupons: 'Coupons appliqués'
+    RemoveCodesDescription: 'Sélectionnez les coupons à retirer, ou laissez vide pour tous les retirer.'
+  'SilverShop\Discounts\Model\GiftVoucherOrderItem':
+    EmailIntro: 'Voici votre chèque-cadeau'
+    EmailCode: 'Code'
+    EmailPercent: 'Pourcentage'
+    EmailAmount: 'Montant'
+    EmailExpiry: 'Ce chèque-cadeau doit être utilisé avant le {date}'

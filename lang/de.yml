@@ -1,4 +1,6 @@
 de:
+  RemoveCoupon: 'Gutschein entfernen'
+  ApplyCoupon: 'Gutschein einlösen'
   'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
     Codes: 'Codes'
     CODEUSELIMITREACHED: 'Dieser Code hat die maximale Anzahl an Einlösungen erreicht.'
@@ -6,8 +8,8 @@ de:
   'SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint':
     PERCUSTOMERUSELIMIT: 'Maximale Nutzungen pro Kunde'
     PERCUSTOMERUSELIMITDESC: 'Hinweis: 0 = unbegrenzt. Angemeldete Kunden werden exakt zugeordnet, Gäste per E-Mail.'
-    PERCUSTOMERLIMITREACHED: 'Sie haben diesen Rabatt bereits so oft wie möglich verwendet.'
-    CODEPERCUSTOMERLIMITREACHED: 'Sie haben diesen Code bereits so oft wie möglich verwendet.'
+    PERCUSTOMERLIMITREACHED: 'Du hast diesen Rabatt bereits so oft wie möglich verwendet.'
+    CODEPERCUSTOMERLIMITREACHED: 'Du hast diesen Code bereits so oft wie möglich verwendet.'
   'SilverShop\Discounts\Model\DiscountCode':
     SINGULARNAME: 'Code'
     PLURALNAME: 'Codes'
@@ -27,6 +29,7 @@ de:
     LENGTH: 'Länge'
   'SilverShop\Discounts\Admin\DiscountModelAdmin':
     MENUTITLE: 'Rabatte'
+    GenerateMultipleCoupons: 'Mehrere Coupons erzeugen'
   'SilverShop\Discounts\Model\Discount':
     SINGULARNAME: 'Rabatt'
     PLURALNAME: 'Rabatte'
@@ -53,7 +56,7 @@ de:
     AllowStackingDescription: 'Erlaubt die Kombination mit anderen Rabatten und Coupons, die ebenfalls das Kombinieren erlauben. Rabatte, die das Kombinieren nicht erlauben, werden nie mit etwas anderem kombiniert.'
     Priority: 'Priorität'
     PriorityDescription: 'Kombinierte Rabatte werden in der Reihenfolge der Priorität angewendet, höchste zuerst. Jeder Rabatt wird auf den nach den vorherigen Rabatten verbleibenden Preis berechnet.'
-    SAVENOTE: 'Weitere Einschränkungen erscheinen, nachdem Sie zum ersten Mal gespeichert haben.'
+    SAVENOTE: 'Weitere Einschränkungen erscheinen, nachdem du zum ersten Mal gespeichert hast.'
     USEHEADER: 'Anzahl der Nutzungen: {count}'
     TABMAIN: 'Haupt'
     TABCONSTRAINTS: 'Bedingungen'
@@ -78,8 +81,62 @@ de:
     VALIDDATERANGE: 'Gültigkeitszeitraum:'
     RANGESTART: 'Startdatum/-zeit'
     RANGEEND: 'Enddatum/-zeit'
-    ENDTIMEDAYNOTE: 'Setzen Sie die Endzeit auf 23:59:59, wenn Sie den gesamten Endtag einschließen möchten.'
+    ENDTIMEDAYNOTE: 'Setze die Endzeit auf 23:59:59, wenn du den gesamten Endtag einschließen möchtest.'
   'SilverShop\Discounts\Extensions\Constraints\ValueDiscountConstraint':
     MINORDERVALUE: 'Mindest-Zwischensumme der Bestellung'
     MINORDERVALUE_TAX_INCLUSIVE: 'Mindestbetrag auf Zwischensumme inkl. Steuer anwenden'
-    MINORDERVALUE_TAX_INCLUSIVE_HELP: 'Wenn aktiviert, wird der Mindestbetrag mit der Artikel-Zwischensumme des Warenkorbs plus einem von einem Order-Extension-Hook (updateMinimumOrderValueComparisonAmount) hinzugefügten Betrag verglichen. Nutzen Sie diesen Hook, um Steuer oder andere Bestandteile hinzuzufügen, damit die Schwelle zu Ihrer Preisgestaltung passt.'
+    MINORDERVALUE_TAX_INCLUSIVE_HELP: 'Wenn aktiviert, wird der Mindestbetrag mit der Artikel-Zwischensumme des Warenkorbs plus einem von einem Order-Extension-Hook (updateMinimumOrderValueComparisonAmount) hinzugefügten Betrag verglichen. Nutze diesen Hook, um Steuer oder andere Bestandteile hinzuzufügen, damit die Schwelle zu deiner Preisgestaltung passt.'
+    MINORDERVALUE_INCLUSIVE: 'Deine Zwischensumme (inkl. MwSt.) muss mindestens %s betragen, um diesen Rabatt zu nutzen.'
+  'CouponForm':
+    COUPON: 'Gib deinen Gutscheincode ein, falls du einen hast.'
+  'Discount':
+    GROUPED: 'Nur bestimmte Mitglieder können diesen Rabatt nutzen.'
+    INACTIVE: 'Dieser %s ist nicht aktiv.'
+    MEMBERSHIP: 'Nur bestimmte Mitglieder können diesen Rabatt nutzen.'
+    MINORDERVALUE: 'Deine Zwischensumme muss mindestens %s betragen, um diesen Rabatt zu nutzen.'
+  'DiscountConstraint':
+    USELIMITREACHED: 'Dieser Rabatt hat die maximale Anzahl an Nutzungen erreicht.'
+  'GiftVoucherProduct':
+    Amount: 'Betrag'
+    MinimumAmountError: 'Der Gutscheinwert muss mindestens {MinimumAmount} betragen'
+  'Order':
+    GIFTVOUCHERSUBJECT: 'Geschenkgutschein'
+  'OrderCoupon':
+    EXPIRED: 'Dieser Gutschein ist bereits abgelaufen.'
+    INVALIDMINLENGTH: 'Der Gutscheincode muss mindestens {length} Zeichen lang sein'
+    TOOEARLY: 'Dieser Gutschein ist noch nicht gültig.'
+  'OrderCouponModifier':
+    NOTFOUND: 'Gutschein wurde nicht gefunden'
+  'ProductsDiscountConstraint':
+    MISSINGPRODUCT: 'Die erforderlichen Produkte sind nicht im Warenkorb.'
+  'SilverShop\Checkout\Step\CheckoutStep':
+    Continue: 'Weiter'
+  'SilverShop\Discounts\Checkout\CouponCheckoutComponent':
+    APPLIEDNOTSTACKABLE: 'Der Gutschein {codes} kann nicht mit anderen Gutscheinen kombiniert werden.'
+    MAXCOUPONS: 'Pro Bestellung kannst du höchstens {count} Gutscheine verwenden.'
+    NOTSTACKABLE: 'Dieser Gutschein kann nicht mit anderen Gutscheinen kombiniert werden. Entferne {codes}, um ihn zu verwenden.'
+    TOOMANYATTEMPTS: 'Zu viele Versuche. Warte einen Moment und versuche es erneut.'
+    CANNOTAPPLY: 'Dieser Gutscheincode kann leider nicht auf deine Bestellung angewendet werden.'
+  'SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint':
+    CATEGORIESNOTINCART: 'Die erforderlichen Produkte (Kategorien) sind nicht im Warenkorb.'
+    PRODUCTCATEGORIES: 'Produktkategorien'
+  'SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint':
+    ANYORNOGROUP: 'Beliebige oder keine Gruppe'
+    MEMBERISINGROUP: 'Mitglied ist in Gruppe'
+  'SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint':
+    MEMBERS: 'Mitglieder'
+  'SilverShop\Discounts\Extensions\Constraints\ProductTypeDiscountConstraint':
+    PRODUCTTYPES: 'Produkttypen'
+    PRODUCTTYPESNOTINCART: 'Die erforderlichen Produkttypen sind nicht im Warenkorb.'
+  'SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint':
+    ALLPRODUCTSINCART: 'Alle ausgewählten Produkte müssen im Warenkorb sein.'
+    SPECIFICPRODUCTS: 'Bestimmte Produkte'
+  'SilverShop\Discounts\Form\CouponForm':
+    AppliedCoupons: 'Eingelöste Gutscheine'
+    RemoveCodesDescription: 'Wähle die Gutscheine aus, die du entfernen möchtest, oder lass das Feld leer, um alle zu entfernen.'
+  'SilverShop\Discounts\Model\GiftVoucherOrderItem':
+    EmailIntro: 'Hier ist dein Geschenkgutschein'
+    EmailCode: 'Code'
+    EmailPercent: 'Prozent'
+    EmailAmount: 'Betrag'
+    EmailExpiry: 'Löse diesen Gutschein bis spätestens {date} ein'

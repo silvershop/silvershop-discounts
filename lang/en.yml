@@ -1,4 +1,6 @@
 en:
+  RemoveCoupon: 'Remove coupon'
+  ApplyCoupon: 'Apply coupon'
   'SilverShop\Discounts\Extensions\Constraints\CodeDiscountConstraint':
     Codes: 'Codes'
     CODEUSELIMITREACHED: 'This code has reached its maximum number of uses.'
@@ -6,6 +8,9 @@ en:
   'SilverShop\Discounts\Checkout\CouponCheckoutComponent':
     TOOMANYATTEMPTS: 'Too many coupon attempts. Please wait a moment and try again.'
     CANNOTAPPLY: "Sorry, that coupon code can't be applied to your order."
+    APPLIEDNOTSTACKABLE: 'The coupon {codes} can''t be combined with other coupons.'
+    MAXCOUPONS: 'A maximum of {count} coupons can be used per order.'
+    NOTSTACKABLE: 'This coupon can''t be combined with other coupons. Remove {codes} to use it.'
   'SilverShop\Discounts\Extensions\Constraints\CustomerUseLimitDiscountConstraint':
     PERCUSTOMERUSELIMIT: 'Maximum uses per customer'
     PERCUSTOMERUSELIMITDESC: 'Note: 0 = unlimited. Logged-in customers are matched exactly; guests by email.'
@@ -30,6 +35,7 @@ en:
     LENGTH: 'Length'
   'SilverShop\Discounts\Admin\DiscountModelAdmin':
     MENUTITLE: 'Discounts'
+    GenerateMultipleCoupons: 'Generate Multiple Coupons'
   'SilverShop\Discounts\Model\Discount':
     SINGULARNAME: 'Discount'
     PLURALNAME: 'Discounts'
@@ -86,3 +92,51 @@ en:
     MINORDERVALUE: 'Minimum subtotal of order'
     MINORDERVALUE_TAX_INCLUSIVE: 'Apply minimum to tax-inclusive subtotal'
     MINORDERVALUE_TAX_INCLUSIVE_HELP: 'When enabled, the minimum is compared to the cart line subtotal plus any amount added by an Order extension hook (updateMinimumOrderValueComparisonAmount). Use that hook to add tax or other components so the threshold matches how you price products.'
+    MINORDERVALUE_INCLUSIVE: 'Your cart subtotal (including tax) must be at least %s to use this discount'
+  'CouponForm':
+    COUPON: 'Enter your coupon code if you have one.'
+  'Discount':
+    GROUPED: 'Only specific members can use this discount.'
+    INACTIVE: 'This %s is not active.'
+    MEMBERSHIP: 'Only specific members can use this discount.'
+    MINORDERVALUE: 'Your cart subtotal must be at least %s to use this discount'
+  'DiscountConstraint':
+    USELIMITREACHED: 'This discount has reached its maximum number of uses.'
+  'GiftVoucherProduct':
+    Amount: 'Amount'
+    MinimumAmountError: 'Gift value must be at least {MinimumAmount}'
+  'Order':
+    GIFTVOUCHERSUBJECT: 'Gift voucher'
+  'OrderCoupon':
+    EXPIRED: 'This coupon has already expired.'
+    INVALIDMINLENGTH: 'Coupon code must be at least {length} characters in length'
+    TOOEARLY: 'It is too early to use this coupon.'
+  'OrderCouponModifier':
+    NOTFOUND: 'Coupon could not be found'
+  'ProductsDiscountConstraint':
+    MISSINGPRODUCT: 'The required products are not in the cart.'
+  'SilverShop\Checkout\Step\CheckoutStep':
+    Continue: 'Continue'
+  'SilverShop\Discounts\Extensions\Constraints\CategoriesDiscountConstraint':
+    CATEGORIESNOTINCART: 'The required products (categories) are not in the cart.'
+    PRODUCTCATEGORIES: 'Product categories'
+  'SilverShop\Discounts\Extensions\Constraints\GroupDiscountConstraint':
+    ANYORNOGROUP: 'Any or no group'
+    MEMBERISINGROUP: 'Member is in group'
+  'SilverShop\Discounts\Extensions\Constraints\MembershipDiscountConstraint':
+    MEMBERS: 'Members'
+  'SilverShop\Discounts\Extensions\Constraints\ProductTypeDiscountConstraint':
+    PRODUCTTYPES: 'Product types'
+    PRODUCTTYPESNOTINCART: 'The required product type(s) are not in the cart.'
+  'SilverShop\Discounts\Extensions\Constraints\ProductsDiscountConstraint':
+    ALLPRODUCTSINCART: 'All the selected products must be present in cart.'
+    SPECIFICPRODUCTS: 'Specific products'
+  'SilverShop\Discounts\Form\CouponForm':
+    AppliedCoupons: 'Applied coupons'
+    RemoveCodesDescription: 'Select coupons to remove, or leave blank to remove all.'
+  'SilverShop\Discounts\Model\GiftVoucherOrderItem':
+    EmailIntro: 'Here is your gift voucher'
+    EmailCode: 'Code'
+    EmailPercent: 'Percent'
+    EmailAmount: 'Amount'
+    EmailExpiry: 'This voucher must be used by {date}'
